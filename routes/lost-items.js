@@ -111,15 +111,29 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
       return renderSchoolNotFound(res);
     }
 
-    if (!title || !content || !password) {
-      return res.render("lost-item-new", {
+    const titleValue = title?.trim();
+    const contentValue = content?.trim();
+    const foundPlaceValue = found_place?.trim();
+    const pickupPlaceValue = pickup_place?.trim();
+    const itemDateValue = item_date?.trim();
+    const passwordValue = password?.trim();
+
+    if (
+    !titleValue ||
+    !contentValue ||
+    !foundPlaceValue ||
+    !pickupPlaceValue ||
+    !itemDateValue ||
+    !passwordValue
+    ) {
+    return res.render("lost-item-new", {
         school,
-        error: "물건 이름, 설명, 비밀번호는 반드시 입력해야 합니다.",
-      });
+        error: "닉네임을 제외한 모든 항목을 입력해야 합니다.",
+    });
     }
 
     const displayNickname = nickname && nickname.trim() ? nickname.trim() : "익명";
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(passwordValue, 10);
 
     await pool.query(
         `
@@ -140,11 +154,11 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
         `,
         [
             school.id,
-            title.trim(),
-            content.trim(),
-            found_place && found_place.trim() ? found_place.trim() : null,
-            pickup_place && pickup_place.trim() ? pickup_place.trim() : null,
-            item_date || null,
+            titleValue,
+            contentValue,
+            foundPlaceValue,
+            pickupPlaceValue,
+            itemDateValue,
             displayNickname,
             passwordHash,
         ]
