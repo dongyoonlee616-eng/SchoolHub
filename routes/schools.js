@@ -4,7 +4,9 @@ const pool = require("../db");
 
 router.get("/", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM schools ORDER BY id ASC");
+    const result = await pool.query(
+      "SELECT * FROM schools WHERE is_active = true ORDER BY id ASC"
+    );
     res.render("index", { schools: result.rows });
   } catch (error) {
     console.error(error);
@@ -17,7 +19,7 @@ router.get("/schools/:slug", async (req, res) => {
     const { slug } = req.params;
 
     const schoolResult = await pool.query(
-      "SELECT * FROM schools WHERE slug = $1",
+      "SELECT * FROM schools WHERE slug = $1 AND is_active = true",
       [slug]
     );
 
@@ -52,7 +54,7 @@ router.get("/schools/:slug/notices/:id", async (req, res) => {
     const { slug, id } = req.params;
 
     const schoolResult = await pool.query(
-      "SELECT * FROM schools WHERE slug = $1",
+      "SELECT * FROM schools WHERE slug = $1 AND is_active = true",
       [slug]
     );
 

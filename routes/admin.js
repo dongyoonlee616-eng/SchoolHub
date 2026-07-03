@@ -847,28 +847,6 @@ router.get("/admin/lost-items/:id", requireAdmin, async (req, res) => {
   }
 });
 
-// 분실물 승인
-router.post("/admin/lost-items/:id/approve", requireAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    await pool.query(
-      `
-      UPDATE lost_items
-      SET status = 'approved',
-          approved_at = CURRENT_TIMESTAMP
-      WHERE id = $1
-      `,
-      [id]
-    );
-
-    res.redirect(`/admin/lost-items/${id}`);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("분실물 승인 중 오류가 발생했습니다.");
-  }
-});
-
 // 분실물 삭제
 router.post("/admin/lost-items/:id/delete", requireAdmin, async (req, res) => {
   try {
@@ -883,6 +861,240 @@ router.post("/admin/lost-items/:id/delete", requireAdmin, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("분실물 삭제 중 오류가 발생했습니다.");
+  }
+});
+
+// 관리자 학교 관리 목록
+router.get("/admin/schools", requireAdmin, async (req, res) => {
+  try {
+    const errorMessage = req.query.error || null;
+
+    const result = await pool.query(`
+      SELECT
+        schools.*,
+        (SELECT COUNT(*) FROM posts WHERE posts.school_id = schools.id) AS posts_count,
+        (SELECT COUNT(*) FROM notices WHERE notices.school_id = schools.id) AS notices_count,
+        (SELECT COUNT(*) FROM lost_items WHERE lost_items.school_id = schools.id) AS lost_items_count
+      FROM schools
+      ORDER BY schools.id ASC
+    `);
+
+    res.render("admin/schools", {
+      pageTitle: "학교 관리 - SchoolHub",
+      admin: req.session.admin,
+      schools: result.rows,
+      error: errorMessage,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("학교 목록을 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 학교 추가 페이지
+router.get("/admin/schools/new", requireAdmin, (req, res) => {
+  res.render("admin/school-new", {
+    pageTitle: "학교 추가 - SchoolHub",
+    admin: req.session.admin,
+    error: null,
+  });
+});
+
+// 학교 추가 처리
+router.post("/admin/schools", requireAdmin, async (req, res) => {
+  try {
+    let { name, slug } = req.body;
+    const isActive = req.body.is_active === "on";
+
+    name = name?.trim();
+    slug = slug?.trim().toLowerCase();
+
+    if (!name || !slug) {
+      return res.render("admin/school-new", {
+        admin: req.session.admin,
+        error: "학교 이름과 slug를 모두 입력하세요.",
+      });
+    }
+
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return res.render("admin/school-new", {
+        admin: req.session.admin,
+        error: "slug는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.",
+      });
+    }
+
+    await pool.query(
+      `
+      INSERT INTO schools (name, slug, is_active)
+      VALUES ($1, $2, $3)
+      `,
+      [name, slug, isActive]
+    );
+
+    res.redirect("/admin/schools");
+  } catch (error) {
+    console.error(error);
+
+    if (error.code === "23505") {
+      return res.render("admin/school-new", {
+        admin: req.session.admin,
+        error: "이미 사용 중인 slug입니다.",
+      });
+    }
+
+    res.status(500).send("학교를 추가하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 학교 수정 페이지
+router.get("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query("SELECT * FROM schools WHERE id = $1", [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("존재하지 않는 학교입니다.");
+    }
+
+    res.render("admin/school-edit", {
+      pageTitle: "학교 수정 - SchoolHub",
+      admin: req.session.admin,
+      school: result.rows[0],
+      error: null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("학교 수정 페이지를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 학교 수정 처리
+router.post("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    let { name, slug } = req.body;
+    const isActive = req.body.is_active === "on";
+
+    name = name?.trim();
+    slug = slug?.trim().toLowerCase();
+
+    const schoolResult = await pool.query("SELECT * FROM schools WHERE id = $1", [id]);
+
+    if (schoolResult.rows.length === 0) {
+      return res.status(404).send("존재하지 않는 학교입니다.");
+    }
+
+    if (!name || !slug) {
+      return res.render("admin/school-edit", {
+        admin: req.session.admin,
+        school: schoolResult.rows[0],
+        error: "학교 이름과 slug를 모두 입력하세요.",
+      });
+    }
+
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return res.render("admin/school-edit", {
+        admin: req.session.admin,
+        school: {
+          ...schoolResult.rows[0],
+          name,
+          slug,
+          is_active: isActive,
+        },
+        error: "slug는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.",
+      });
+    }
+
+    await pool.query(
+      `
+      UPDATE schools
+      SET name = $1,
+          slug = $2,
+          is_active = $3,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $4
+      `,
+      [name, slug, isActive, id]
+    );
+
+    res.redirect("/admin/schools");
+  } catch (error) {
+    console.error(error);
+
+    if (error.code === "23505") {
+      const { id } = req.params;
+      const schoolResult = await pool.query("SELECT * FROM schools WHERE id = $1", [id]);
+
+      return res.render("admin/school-edit", {
+        admin: req.session.admin,
+        school: schoolResult.rows[0],
+        error: "이미 사용 중인 slug입니다.",
+      });
+    }
+
+    res.status(500).send("학교를 수정하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 학교 활성화 / 비활성화
+router.post("/admin/schools/:id/toggle", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query(
+      `
+      UPDATE schools
+      SET is_active = NOT is_active,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    res.redirect("/admin/schools");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("학교 상태를 변경하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 학교 삭제
+router.post("/admin/schools/:id/delete", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const countResult = await pool.query(
+      `
+      SELECT
+        (SELECT COUNT(*) FROM posts WHERE school_id = $1) AS posts_count,
+        (SELECT COUNT(*) FROM comments WHERE school_id = $1) AS comments_count,
+        (SELECT COUNT(*) FROM notices WHERE school_id = $1) AS notices_count,
+        (SELECT COUNT(*) FROM lost_items WHERE school_id = $1) AS lost_items_count
+      `,
+      [id]
+    );
+
+    const counts = countResult.rows[0];
+    const total =
+      Number(counts.posts_count) +
+      Number(counts.comments_count) +
+      Number(counts.notices_count) +
+      Number(counts.lost_items_count);
+
+    if (total > 0) {
+      return res.redirect(
+        "/admin/schools?error=" +
+          encodeURIComponent("게시글, 댓글, 공지, 분실물이 있는 학교는 삭제할 수 없습니다. 대신 비활성화를 사용하세요.")
+      );
+    }
+
+    await pool.query("DELETE FROM schools WHERE id = $1", [id]);
+
+    res.redirect("/admin/schools");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("학교를 삭제하는 중 오류가 발생했습니다.");
   }
 });
 

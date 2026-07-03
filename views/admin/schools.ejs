@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>학교 관리 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+
+  <main class="admin-main">
+    <a href="/admin" class="back-link">← 관리자 대시보드로 돌아가기</a>
+
+    <section class="admin-section">
+      <div class="admin-section-header">
+        <div>
+          <h1>학교 관리</h1>
+          <p>SchoolHub에 등록된 학교를 추가, 수정, 비활성화할 수 있습니다.</p>
+        </div>
+
+        <a href="/admin/schools/new" class="admin-button">학교 추가</a>
+      </div>
+
+      <% if (error) { %>
+        <p class="error-message"><%= error %></p>
+      <% } %>
+
+      <% if (schools.length === 0) { %>
+        <p>등록된 학교가 없습니다.</p>
+      <% } else { %>
+        <div class="admin-list">
+          <% schools.forEach(school => { %>
+            <article class="admin-card">
+              <div class="admin-card-header">
+                <h2><%= school.name %></h2>
+
+                <% if (school.is_active) { %>
+                  <span class="status-badge status-approved">활성</span>
+                <% } else { %>
+                  <span class="status-badge status-pending">비활성</span>
+                <% } %>
+              </div>
+
+              <p>
+                slug:
+                <code><%= school.slug %></code>
+              </p>
+
+              <p>
+                게시글 <%= school.posts_count %>개 /
+                공지 <%= school.notices_count %>개 /
+                분실물 <%= school.lost_items_count %>개
+              </p>
+
+              <p>
+                생성일:
+                <%= new Date(school.created_at).toLocaleString("ko-KR") %>
+              </p>
+
+              <% if (school.updated_at) { %>
+                <p>
+                  수정일:
+                  <%= new Date(school.updated_at).toLocaleString("ko-KR") %>
+                </p>
+              <% } %>
+
+              <div class="admin-actions">
+                <a href="/admin/schools/<%= school.id %>/edit" class="admin-button">
+                  수정
+                </a>
+
+                <form action="/admin/schools/<%= school.id %>/toggle" method="POST">
+                  <button type="submit" class="admin-button">
+                    <% if (school.is_active) { %>
+                      비활성화
+                    <% } else { %>
+                      활성화
+                    <% } %>
+                  </button>
+                </form>
+
+                <form action="/admin/schools/<%= school.id %>/delete" method="POST">
+                  <button type="submit" class="admin-button danger-button">
+                    삭제
+                  </button>
+                </form>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include("../partials/admin-footer") %>
+
+  <script src="/js/confirm-delete.js"></script>
+</body>
+</html>

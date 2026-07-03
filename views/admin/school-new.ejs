@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>학교 추가 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+
+  <main class="admin-main">
+    <a href="/admin/schools" class="back-link">← 학교 관리로 돌아가기</a>
+
+    <section class="admin-section">
+      <h1>학교 추가</h1>
+      <p>새 학교 커뮤니티를 추가합니다.</p>
+
+      <% if (error) { %>
+        <p class="error-message"><%= error %></p>
+      <% } %>
+
+      <form action="/admin/schools" method="POST" class="admin-form">
+        <div class="form-group">
+          <label for="name">학교 이름</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="예: 근명중학교"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="slug">학교 slug</label>
+          <input
+            type="text"
+            id="slug"
+            name="slug"
+            placeholder="예: geunmyeong-middle"
+            required
+          />
+
+          <p class="form-help">
+            주소에 사용됩니다. 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="is_active" checked />
+            사용자 화면에 표시
+          </label>
+        </div>
+
+        <button type="submit" class="admin-button">학교 추가</button>
+      </form>
+    </section>
+  </main>
+
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>
