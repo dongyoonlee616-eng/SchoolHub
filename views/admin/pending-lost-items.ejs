@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>승인 대기 분실물 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin" class="back-link">← 관리자 대시보드로 돌아가기</a>
+
+    <h1>승인 대기 분실물</h1>
+    <p>학생들이 제출한 분실물을 검토하고 승인할 수 있습니다.</p>
+
+    <% if (items.length === 0) { %>
+      <div class="empty-box">
+        승인 대기 중인 분실물이 없습니다.
+      </div>
+    <% } else { %>
+      <div class="admin-board-list">
+        <% items.forEach(item => { %>
+          <a href="/admin/lost-items/pending/<%= item.id %>" class="admin-board-row">
+            <div>
+              <div class="admin-board-row-meta">
+                <span><%= item.school_name %></span>
+                <span class="status-pending">승인 대기</span>
+              </div>
+
+              <h2><%= item.title %></h2>
+              <p>
+                작성자: <%= item.nickname %> ·
+                발견: <%= item.found_place || '미입력' %> ·
+                찾아갈 곳: <%= item.pickup_place || '미입력' %>
+              </p>
+            </div>
+
+            <strong>검토</strong>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

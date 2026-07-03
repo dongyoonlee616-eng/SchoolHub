@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>공지사항 관리 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin" class="back-link">← 관리자 대시보드로 돌아가기</a>
+
+    <div class="admin-page-header">
+      <div>
+        <h1>공지사항 관리</h1>
+        <p>학교 커뮤니티 메인 화면에 표시될 공지를 관리합니다.</p>
+      </div>
+
+      <a href="/admin/notices/new" class="admin-write-button">
+        공지 작성
+      </a>
+    </div>
+
+    <% if (notices.length === 0) { %>
+      <div class="empty-box">
+        등록된 공지사항이 없습니다.
+      </div>
+    <% } else { %>
+      <div class="notice-admin-list">
+        <% notices.forEach(notice => { %>
+          <article class="notice-admin-card">
+            <div>
+              <span class="notice-school"><%= notice.school_name %></span>
+
+              <div class="admin-notice-title-row">
+                <h2><%= notice.title %></h2>
+
+                <% if (notice.is_pinned) { %>
+                    <span class="pinned-badge">고정</span>
+                <% } %>
+              </div>
+
+              <p><%= notice.content %></p>
+
+              <small>
+                작성일: <%= new Date(notice.created_at).toLocaleString("ko-KR") %>
+              </small>
+            </div>
+
+            <div class="notice-admin-actions">
+              <a href="/admin/notices/<%= notice.id %>/edit">수정</a>
+
+              <form action="/admin/notices/<%= notice.id %>/delete" method="POST">
+                <button type="submit">삭제</button>
+              </form>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <script src="/js/confirm-delete.js"></script>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

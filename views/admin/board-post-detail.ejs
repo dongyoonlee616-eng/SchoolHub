@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= post.title %> - 관리자 게시판</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin/board" class="back-link">← 게시판 관리로 돌아가기</a>
+
+    <article class="admin-board-detail-card">
+      <header class="admin-board-detail-header">
+        <div>
+          <div class="admin-board-row-meta">
+            <span><%= post.school_name %></span>
+            <span><%= post.category %></span>
+            <span class="<%= post.status === 'approved' ? 'status-approved' : 'status-pending' %>">
+              <%= post.status === 'approved' ? '승인됨' : '승인 대기' %>
+            </span>
+          </div>
+
+          <h1><%= post.title %></h1>
+
+          <div class="post-detail-meta">
+            <span>작성자: <%= post.nickname %></span>
+            <span>작성일: <%= new Date(post.created_at).toLocaleString("ko-KR") %></span>
+
+            <% if (post.updated_at) { %>
+              <span>수정일: <%= new Date(post.updated_at).toLocaleString("ko-KR") %></span>
+            <% } %>
+          </div>
+        </div>
+
+        <form action="/admin/board/posts/<%= post.id %>/delete" method="POST">
+          <button type="submit" class="danger-admin-button">
+            게시글 삭제
+          </button>
+        </form>
+      </header>
+
+      <section class="admin-board-detail-content">
+        <%= post.content %>
+      </section>
+    </article>
+
+    <section class="admin-comment-manage-section">
+      <div class="comment-header">
+        <div>
+          <h2>댓글 관리</h2>
+          <p>이 게시글에 작성된 모든 댓글을 확인하고 삭제할 수 있습니다.</p>
+        </div>
+
+        <span><%= comments.length %>개</span>
+      </div>
+
+      <% if (comments.length === 0) { %>
+        <div class="empty-comments">
+          작성된 댓글이 없습니다.
+        </div>
+      <% } else { %>
+        <div class="admin-comment-list">
+          <% comments.forEach(comment => { %>
+            <article class="admin-comment-card">
+              <div>
+                <div class="comment-meta">
+                  <strong><%= comment.nickname %></strong>
+                  <span><%= new Date(comment.created_at).toLocaleString("ko-KR") %></span>
+                </div>
+
+                <div class="admin-board-row-meta">
+                  <span class="<%= comment.status === 'approved' ? 'status-approved' : 'status-pending' %>">
+                    <%= comment.status === 'approved' ? '승인됨' : '승인 대기' %>
+                  </span>
+                </div>
+
+                <p><%= comment.content %></p>
+              </div>
+
+              <form action="/admin/board/comments/<%= comment.id %>/delete" method="POST">
+                <button type="submit" class="danger-small-button">
+                  삭제
+                </button>
+              </form>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

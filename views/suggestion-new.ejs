@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>건의사항 보내기 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/suggestion-new.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/" class="back-link">← 메인으로 돌아가기</a>
+
+    <section class="suggestion-wrap">
+      <div class="suggestion-info">
+        <span class="suggestion-badge">FEEDBACK</span>
+        <h1>건의사항 보내기</h1>
+        <p>
+          SchoolHub를 사용하면서 필요한 기능, 불편한 점, 개선 아이디어가 있다면 자유롭게 보내주세요.
+        </p>
+      </div>
+
+      <div class="suggestion-card">
+        <% if (submitted) { %>
+          <div class="notice-box">
+            건의사항이 제출되었습니다. 의견을 확인하고 반영할 수 있도록 노력하겠습니다.
+          </div>
+        <% } %>
+
+        <% if (error) { %>
+          <div class="error-box">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <form action="/suggestions" method="POST" class="suggestion-form">
+          <label>
+            닉네임
+            <input type="text" name="nickname" maxlength="50" placeholder="비워두면 익명으로 저장됩니다." />
+          </label>
+
+          <label>
+            건의 내용
+            <textarea name="content" rows="9" required placeholder="건의할 내용을 입력해주세요."></textarea>
+          </label>
+
+          <button type="submit">건의사항 제출</button>
+        </form>
+      </div>
+    </section>
+  </main>
+  <%- include("partials/footer") %>
+</body>
+</html>

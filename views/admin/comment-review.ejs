@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>댓글 검토 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin/comments/pending" class="back-link">
+      ← 승인 대기 댓글로 돌아가기
+    </a>
+
+    <section class="comment-review-layout">
+      <article class="review-post-card">
+        <span class="review-label">댓글이 작성된 게시글</span>
+
+        <h1><%= item.post_title %></h1>
+
+        <div class="review-meta">
+          <span>학교: <%= item.school_name %></span>
+          <span>작성자: <%= item.post_nickname %></span>
+          <span>작성일: <%= new Date(item.post_created_at).toLocaleString("ko-KR") %></span>
+        </div>
+
+        <p class="review-post-content"><%= item.post_content %></p>
+      </article>
+
+      <aside class="review-comment-card">
+        <span class="review-label">승인 대기 댓글</span>
+
+        <div class="review-comment-meta">
+          <strong><%= item.nickname %></strong>
+          <span><%= new Date(item.created_at).toLocaleString("ko-KR") %></span>
+        </div>
+
+        <p><%= item.content %></p>
+
+        <div class="review-actions">
+          <form action="/admin/comments/<%= item.id %>/approve" method="POST">
+            <button type="submit" class="approve-button">댓글 승인</button>
+          </form>
+
+          <form action="/admin/comments/<%= item.id %>/delete" method="POST">
+            <button type="submit" class="delete-button">댓글 삭제</button>
+          </form>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <script src="/js/confirm-delete.js"></script>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

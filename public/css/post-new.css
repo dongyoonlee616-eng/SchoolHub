@@ -1,0 +1,87 @@
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(30px, 5vw, 46px);
+  color: #172554;
+}
+
+.container > p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.post-form {
+  margin-top: 30px;
+  padding: 30px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  box-shadow: var(--shadow);
+}
+
+.post-form label {
+  display: block;
+  margin-bottom: 22px;
+  font-weight: 900;
+  color: #374151;
+}
+
+.post-form input,
+.post-form select,
+.post-form textarea {
+  width: 100%;
+  margin-top: 9px;
+  padding: 14px 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  font-size: 15px;
+  background: #fbfdff;
+  color: var(--text);
+  outline: none;
+  transition: 0.18s;
+}
+
+.post-form input:focus,
+.post-form select:focus,
+.post-form textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(59, 91, 219, 0.12);
+  background: white;
+}
+
+.post-form textarea {
+  resize: vertical;
+  min-height: 210px;
+}
+
+.post-form button {
+  width: 100%;
+  padding: 15px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(59, 91, 219, 0.22);
+}
+
+.post-form button:hover {
+  background: var(--primary-dark);
+}
+
+.error-box {
+  margin-top: 20px;
+  padding: 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  color: #b91c1c;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .post-form {
+    padding: 22px;
+  }
+}

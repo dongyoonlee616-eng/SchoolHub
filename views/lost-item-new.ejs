@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>분실물 등록 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/lost-items.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/schools/<%= school.slug %>/lost-items" class="back-link">
+      ← 분실물 목록으로 돌아가기
+    </a>
+
+    <h1 class="lost-form-title">분실물 등록</h1>
+    <p class="lost-form-desc">등록한 내용은 관리자 승인 후 공개됩니다.</p>
+
+    <% if (error) { %>
+      <div class="error-box">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/schools/<%= school.slug %>/lost-items" method="POST" class="lost-form">
+      <label>
+        물건 이름
+        <input type="text" name="title" maxlength="200" placeholder="예: 검은색 지갑, 에어팟 케이스" required />
+      </label>
+
+      <label>
+        설명
+        <textarea name="content" rows="8" placeholder="물건의 특징이나 상황을 적어주세요." required></textarea>
+      </label>
+
+      <label>
+        발견 장소
+        <input 
+            type="text" 
+            name="found_place" 
+            maxlength="200" 
+            placeholder="예: 2층 복도, 운동장, 급식실" 
+        />
+      </label>
+
+      <label>
+        찾아갈 장소
+        <input 
+            type="text" 
+            name="pickup_place" 
+            maxlength="200" 
+            placeholder="예: 교무실, 학생회실, 1층 행정실" 
+        />
+      </label>
+
+      <label>
+        날짜
+        <input type="date" name="item_date" />
+      </label>
+
+      <label>
+        닉네임
+        <input 
+          type="text" 
+          name="nickname" 
+          maxlength="50" 
+          placeholder="작성하지 않으면 익명으로 저장됩니다." 
+        />
+      </label>
+
+      <label>
+        글 비밀번호
+        <input 
+          type="password" 
+          name="password" 
+          placeholder="나중에 수정/삭제 기능 추가 시 사용될 수 있습니다." 
+          required 
+        />
+      </label>
+
+      <button type="submit">분실물 제출</button>
+    </form>
+  </main>
+  <%- include("partials/footer") %>
+</body>
+</html>

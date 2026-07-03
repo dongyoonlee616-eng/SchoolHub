@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>승인 대기 게시글 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin" class="back-link">← 관리자 대시보드로 돌아가기</a>
+
+    <h1>승인 대기 게시글</h1>
+    <p>게시글을 클릭해서 내용을 검토하세요.</p>
+
+    <% if (posts.length === 0) { %>
+      <div class="empty-box">
+        승인 대기 중인 게시글이 없습니다.
+      </div>
+    <% } else { %>
+      <div class="pending-list">
+        <% posts.forEach(post => { %>
+          <a class="pending-row" href="/admin/posts/pending/<%= post.id %>">
+            <div>
+              <h2><%= post.title %></h2>
+              <p>작성자: <%= post.nickname %></p>
+            </div>
+
+            <span><%= post.school_name %></span>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

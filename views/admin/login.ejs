@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>관리자 로그인 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <main class="admin-login-container">
+    <section class="admin-login-box">
+      <h1>SchoolHub 관리자</h1>
+      <p>관리자 계정으로 로그인하세요.</p>
+
+      <% if (error) { %>
+        <div class="error-box">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/admin/login" method="POST" class="admin-form">
+        <label>
+          아이디
+          <input type="text" name="username" required />
+        </label>
+
+        <label>
+          비밀번호
+          <input type="password" name="password" required />
+        </label>
+
+        <button type="submit">로그인</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

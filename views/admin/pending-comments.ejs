@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>승인 대기 댓글 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin" class="back-link">← 관리자 대시보드로 돌아가기</a>
+
+    <h1>승인 대기 댓글</h1>
+    <p>댓글을 클릭하면 작성된 게시글과 함께 검토할 수 있습니다.</p>
+
+    <% if (comments.length === 0) { %>
+      <div class="empty-box">
+        승인 대기 중인 댓글이 없습니다.
+      </div>
+    <% } else { %>
+      <div class="pending-comment-list">
+        <% comments.forEach(comment => { %>
+          <a 
+            href="/admin/comments/pending/<%= comment.id %>" 
+            class="pending-comment-row"
+          >
+            <div>
+              <h2><%= comment.post_title %></h2>
+              <p><%= comment.content %></p>
+            </div>
+
+            <div class="pending-comment-meta">
+              <span><%= comment.school_name %></span>
+              <span>작성자: <%= comment.nickname %></span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

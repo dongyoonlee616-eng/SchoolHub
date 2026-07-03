@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>분실물 관리 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin" class="back-link">← 관리자 대시보드로 돌아가기</a>
+
+    <div class="admin-page-header">
+      <div>
+        <h1>분실물 관리</h1>
+        <p>등록된 분실물을 확인하고 삭제할 수 있습니다.</p>
+      </div>
+    </div>
+
+    <section class="admin-board-tools">
+      <div class="category-filter">
+        <a href="/admin/lost-items" class="filter-chip <%= !selectedStatus ? 'active' : '' %>">
+          전체
+        </a>
+
+        <a href="/admin/lost-items?status=approved" class="filter-chip <%= selectedStatus === 'approved' ? 'active' : '' %>">
+          승인됨
+        </a>
+
+        <a href="/admin/lost-items?status=pending" class="filter-chip <%= selectedStatus === 'pending' ? 'active' : '' %>">
+          승인 대기
+        </a>
+      </div>
+
+      <form class="admin-board-search" action="/admin/lost-items" method="GET">
+        <% if (selectedStatus) { %>
+          <input type="hidden" name="status" value="<%= selectedStatus %>" />
+        <% } %>
+
+        <input 
+          type="text" 
+          name="q" 
+          value="<%= searchQuery %>" 
+          placeholder="물건, 장소, 작성자 검색"
+          autocomplete="off"
+        />
+
+        <button type="submit">검색</button>
+
+        <% if (selectedStatus || searchQuery) { %>
+          <a href="/admin/lost-items" class="reset-search">초기화</a>
+        <% } %>
+      </form>
+    </section>
+
+    <% if (items.length === 0) { %>
+      <div class="empty-box">
+        조건에 맞는 분실물이 없습니다.
+      </div>
+    <% } else { %>
+      <div class="admin-board-list">
+        <% items.forEach(item => { %>
+          <a href="/admin/lost-items/<%= item.id %>" class="admin-board-row">
+            <div>
+              <div class="admin-board-row-meta">
+                <span><%= item.school_name %></span>
+
+                <span class="<%= item.status === 'approved' ? 'status-approved' : 'status-pending' %>">
+                  <%= item.status === 'approved' ? '승인됨' : '승인 대기' %>
+                </span>
+              </div>
+
+              <h2><%= item.title %></h2>
+              <p>
+                작성자: <%= item.nickname %> · 
+                발견: <%= item.found_place || '미입력' %> · 
+                찾아갈 곳: <%= item.pickup_place || '미입력' %>
+              </p>
+            </div>
+
+            <strong>관리</strong>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

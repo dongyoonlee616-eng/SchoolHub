@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/index.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="home-container">
+    <section class="hero-section">
+      <div class="hero-text">
+        <span class="hero-badge">School Community Platform</span>
+        <h1>SchoolHub</h1>
+        <p>
+          학교를 선택하고 학생 커뮤니티에 입장하세요.
+          공지, 게시판, 건의사항을 한곳에서 확인할 수 있습니다.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#school-list" class="primary-action">학교 선택하기</a>
+          <a href="/suggestions/new" class="secondary-action">건의사항 보내기</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-card-top">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <h2>오늘의 SchoolHub</h2>
+        <p>학생들이 더 편하게 소통할 수 있는 학교 커뮤니티를 만들어가는 중입니다.</p>
+
+        <div class="hero-mini-grid">
+          <div>
+            <strong>게시판</strong>
+            <span>승인제 운영</span>
+          </div>
+          <div>
+            <strong>공지</strong>
+            <span>관리자 등록</span>
+          </div>
+          <div>
+            <strong>건의</strong>
+            <span>의견 접수</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="school-section" id="school-list">
+      <div class="section-header">
+        <div>
+          <span class="section-label">SELECT SCHOOL</span>
+          <h2>학교 선택</h2>
+          <p>검색해서 학교 커뮤니티를 찾아보세요.</p>
+        </div>
+
+        <div class="search-box">
+          <input 
+            type="text" 
+            id="schoolSearch" 
+            placeholder="학교 이름 검색"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <div class="school-list">
+        <% schools.forEach(school => { %>
+          <a 
+            class="school-card" 
+            href="/schools/<%= school.slug %>"
+            data-school-name="<%= school.name %>"
+          >
+            <div>
+              <span class="school-badge">입장 가능</span>
+              <h3><%= school.name %></h3>
+              <p>커뮤니티 입장 →</p>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+
+      <div class="no-result" id="noResult">
+        검색 결과가 없습니다.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById("schoolSearch");
+    const schoolCards = document.querySelectorAll(".school-card");
+    const noResult = document.getElementById("noResult");
+
+    searchInput.addEventListener("input", () => {
+      const keyword = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      schoolCards.forEach(card => {
+        const schoolName = card.dataset.schoolName.toLowerCase();
+
+        if (schoolName.includes(keyword)) {
+          card.style.display = "block";
+          visibleCount++;
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      noResult.style.display = visibleCount === 0 ? "block" : "none";
+    });
+  </script>
+  <%- include("partials/footer") %>
+</body>
+</html>

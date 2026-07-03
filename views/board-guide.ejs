@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시판 이용 안내 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/board-guide.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/schools/<%= school.slug %>/posts" class="back-link">
+      ← 게시판으로 돌아가기
+    </a>
+
+    <article class="guide-card">
+      <header class="guide-header">
+        <span class="guide-badge">GUIDE</span>
+        <h1>게시판 이용 안내</h1>
+      </header>
+
+      <section class="guide-content">
+        <p>
+          SchoolHub 게시판은 학생들이 자유롭게 소통하기 위한 공간입니다.
+        </p>
+
+        <p>
+          닉네임에는 본인의 이름이나 닉네임을 적어도 되고, 작성하지 않으면 익명으로 저장됩니다.
+        </p>
+
+        <p>
+          작성한 게시글과 댓글은 관리자 확인 및 승인 후 공개되며, 공개까지 시간이 소요될 수 있습니다.
+        </p>
+
+        <p>
+          다른 사람을 비방하거나 조롱하는 글, 욕설, 개인정보 공개, 허위 사실 유포, 도배성 게시글 등 부적절한 내용은 삭제될 수 있습니다.
+        </p>
+
+        <p>
+          서로 예의를 지키며 모두가 편하게 이용할 수 있는 게시판을 만들어 주세요.
+        </p>
+      </section>
+    </article>
+  </main>
+  <%- include("partials/footer") %>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= notice.title %> - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/notice-detail.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/schools/<%= school.slug %>" class="back-link">
+      ← 커뮤니티로 돌아가기
+    </a>
+
+    <article class="notice-detail-card">
+      <header class="notice-detail-header">
+        <h1><%= notice.title %></h1>
+
+        <div class="notice-detail-meta">
+          <span>작성일: <%= new Date(notice.created_at).toLocaleString("ko-KR") %></span>
+
+          <% if (notice.updated_at) { %>
+            <span>수정일: <%= new Date(notice.updated_at).toLocaleString("ko-KR") %></span>
+          <% } %>
+
+          <% if (notice.is_pinned) { %>
+            <span class="pinned-badge">고정 공지</span>
+          <% } %>
+        </div>
+      </header>
+
+      <section class="notice-detail-content">
+        <%= notice.content %>
+      </section>
+    </article>
+  </main>
+  <%- include("partials/footer") %>
+</body>
+</html>

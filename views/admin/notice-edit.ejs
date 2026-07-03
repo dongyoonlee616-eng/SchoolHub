@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>공지 수정 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin/notices" class="back-link">← 공지사항 관리로 돌아가기</a>
+
+    <h1 class="admin-form-title">공지 수정</h1>
+    <p class="admin-form-desc">등록된 공지사항 내용을 수정합니다.</p>
+
+    <% if (error) { %>
+      <div class="error-box">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/admin/notices/<%= notice.id %>/edit" method="POST" class="notice-form">
+      <label>
+        학교
+        <select name="school_id" required>
+          <% schools.forEach(school => { %>
+            <option value="<%= school.id %>" <%= school.id === notice.school_id ? "selected" : "" %>>
+              <%= school.name %>
+            </option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>
+        제목
+        <input type="text" name="title" maxlength="200" value="<%= notice.title %>" required />
+      </label>
+
+      <label>
+        내용
+        <textarea name="content" rows="10" required><%= notice.content %></textarea>
+      </label>
+
+      <label class="checkbox-label">
+        <input 
+            type="checkbox" 
+            name="is_pinned" 
+            <%= notice.is_pinned ? "checked" : "" %>
+        />
+        <span>고정 공지로 설정</span>
+      </label>
+
+      <button type="submit">공지 수정</button>
+    </form>
+  </main>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

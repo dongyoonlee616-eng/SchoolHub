@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= item.title %> - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/lost-items.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/schools/<%= school.slug %>/lost-items" class="back-link">
+      ← 분실물 목록으로 돌아가기
+    </a>
+
+    <article class="lost-detail-card">
+      <header class="lost-detail-header">
+        <div>
+          <h1><%= item.title %></h1>
+
+          <div class="lost-detail-meta">
+            <span>작성자: <%= item.nickname %></span>
+
+            <% if (item.found_place) { %>
+              <span>발견 장소: <%= item.found_place %></span>
+            <% } %>
+
+            <% if (item.pickup_place) { %>
+              <span>찾아갈 장소: <%= item.pickup_place %></span>
+            <% } %>
+
+            <% if (item.item_date) { %>
+              <span>날짜: <%= new Date(item.item_date).toLocaleDateString("ko-KR") %></span>
+            <% } %>
+
+            <span>작성일: <%= new Date(item.created_at).toLocaleString("ko-KR") %></span>
+          </div>
+        </div>
+      </header>
+
+      <section class="lost-detail-content">
+        <%= item.content %>
+      </section>
+    </article>
+  </main>
+  <%- include("partials/footer") %>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>관리자 대시보드 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <header class="admin-header">
+      <div>
+        <h1>관리자 대시보드</h1>
+        <p><%= admin.username %> 관리자님, 환영합니다.</p>
+      </div>
+    </header>
+
+    <section class="admin-card-grid">
+      <a href="/admin/posts/pending" class="admin-card">
+        <h2>승인 대기 게시글</h2>
+        <p><%= pendingPostsCount %>개</p>
+      </a>
+
+      <a href="/admin/comments/pending" class="admin-card">
+        <h2>승인 대기 댓글</h2>
+        <p><%= pendingCommentsCount %>개</p>
+      </a>
+
+      <a href="/admin/lost-items/pending" class="admin-card">
+        <h2>승인 대기 분실물</h2>
+        <p><%= pendingLostItemsCount %>개</p>
+      </a>
+
+      <a href="/admin/notices" class="admin-card">
+        <h2>공지사항 관리</h2>
+        <p>작성 / 수정 / 삭제</p>
+      </a>
+
+      <a href="/admin/suggestions" class="admin-card">
+        <h2>건의사항 관리</h2>
+        <p>의견 확인</p>
+      </a>
+    </section>
+
+    <section class="admin-service-section">
+    <div class="admin-service-header">
+        <h2>관리자 전용 페이지</h2>
+        <p>사용자 화면과 비슷한 형태로 게시판과 기능을 관리합니다.</p>
+    </div>
+
+    <div class="admin-service-grid">
+        <a href="/admin/board" class="admin-service-card">
+        <span>MANAGE</span>
+        <h3>게시판</h3>
+        <p>모든 게시물과 댓글을 확인하고 삭제할 수 있습니다.</p>
+        </a>
+
+        <a href="/admin/lost-items" class="admin-service-card">
+            <span>MANAGE</span>
+            <h3>분실물</h3>
+            <p>분실물 등록글을 승인하고 상태를 관리할 수 있습니다.</p>
+        </a>
+    </div>
+    </section>
+  </main>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

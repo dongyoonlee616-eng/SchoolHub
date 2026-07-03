@@ -1,0 +1,52 @@
+.guide-card {
+  padding: 34px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  box-shadow: var(--shadow);
+}
+
+.guide-header {
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.guide-badge {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 7px 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.guide-header h1 {
+  margin: 0;
+  font-size: clamp(32px, 5vw, 48px);
+  color: #172554;
+  letter-spacing: -0.06em;
+}
+
+.guide-content {
+  margin-top: 26px;
+}
+
+.guide-content p {
+  margin: 0 0 18px;
+  color: #374151;
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.guide-content p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .guide-card {
+    padding: 24px;
+  }
+}

@@ -1,0 +1,19 @@
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="site-logo">
+      SchoolHub
+    </a>
+
+    <nav class="site-nav">
+      <a href="/">학교 선택</a>
+
+      <% if (typeof school !== "undefined" && school) { %>
+        <a href="/schools/<%= school.slug %>">커뮤니티</a>
+        <a href="/schools/<%= school.slug %>/posts">게시판</a>
+        <a href="/schools/<%= school.slug %>/lost-items">분실물</a>
+      <% } %>
+
+      <a href="/suggestions/new">건의사항</a>
+    </nav>
+  </div>
+</header>

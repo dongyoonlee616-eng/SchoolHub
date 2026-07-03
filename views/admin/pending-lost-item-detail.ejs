@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>분실물 검토 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin/lost-items/pending" class="back-link">
+      ← 승인 대기 분실물로 돌아가기
+    </a>
+
+    <article class="admin-board-detail-card">
+      <header class="admin-board-detail-header">
+        <div>
+          <div class="admin-board-row-meta">
+            <span><%= item.school_name %></span>
+            <span class="status-pending">승인 대기</span>
+          </div>
+
+          <h1><%= item.title %></h1>
+
+          <div class="post-detail-meta">
+            <span>작성자: <%= item.nickname %></span>
+            <span>발견 장소: <%= item.found_place || '미입력' %></span>
+            <span>찾아갈 장소: <%= item.pickup_place || '미입력' %></span>
+
+            <% if (item.item_date) { %>
+              <span>날짜: <%= new Date(item.item_date).toLocaleDateString("ko-KR") %></span>
+            <% } %>
+
+            <span>작성일: <%= new Date(item.created_at).toLocaleString("ko-KR") %></span>
+          </div>
+        </div>
+      </header>
+
+      <section class="admin-board-detail-content">
+        <%= item.content %>
+      </section>
+
+      <div class="review-actions">
+        <form action="/admin/lost-items/<%= item.id %>/approve" method="POST">
+          <button type="submit" class="approve-button">승인</button>
+        </form>
+
+        <form action="/admin/lost-items/<%= item.id %>/delete" method="POST">
+          <button type="submit" class="delete-button">삭제</button>
+        </form>
+      </div>
+    </article>
+  </main>
+  <script src="/js/confirm-delete.js"></script>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

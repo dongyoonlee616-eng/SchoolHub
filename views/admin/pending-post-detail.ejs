@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시글 검토 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+  <main class="container">
+    <a href="/admin/posts/pending" class="back-link">
+      ← 승인 대기 목록으로 돌아가기
+    </a>
+
+    <article class="review-detail-card">
+      <header class="review-detail-header">
+        <h1><%= post.title %></h1>
+
+        <div class="review-meta">
+          <span>학교: <%= post.school_name %></span>
+          <span>작성자: <%= post.nickname %></span>
+          <span>카테고리: <%= post.category %></span>
+          <span>작성일: <%= new Date(post.created_at).toLocaleString("ko-KR") %></span>
+        </div>
+      </header>
+
+      <section class="review-content">
+        <%= post.content %>
+      </section>
+
+      <div class="review-actions">
+        <form action="/admin/posts/<%= post.id %>/approve" method="POST">
+          <button type="submit" class="approve-button">승인</button>
+        </form>
+
+        <form action="/admin/posts/<%= post.id %>/delete" method="POST">
+          <button type="submit" class="delete-button">삭제</button>
+        </form>
+      </div>
+    </article>
+  </main>
+  <script src="/js/confirm-delete.js"></script>
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

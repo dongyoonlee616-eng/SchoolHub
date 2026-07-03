@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시글 수정 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/post-new.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/schools/<%= school.slug %>/posts/<%= post.id %>" class="back-link">
+      ← 게시글로 돌아가기
+    </a>
+
+    <h1>게시글 수정</h1>
+    <p>수정한 게시글은 관리자 재승인 후 다시 공개됩니다.</p>
+
+    <% if (error) { %>
+      <div class="error-box">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form class="post-form" action="/schools/<%= school.slug %>/posts/<%= post.id %>/edit" method="POST">
+      <label>
+        카테고리
+        <select name="category" required>
+          <option value="자유" <%= post.category === "자유" ? "selected" : "" %>>자유</option>
+          <option value="질문" <%= post.category === "질문" ? "selected" : "" %>>질문</option>
+          <option value="건의" <%= post.category === "건의" ? "selected" : "" %>>건의</option>
+        </select>
+      </label>
+
+      <label>
+        제목
+        <input type="text" name="title" maxlength="200" value="<%= post.title %>" required />
+      </label>
+
+      <label>
+        내용
+        <textarea name="content" rows="10" required><%= post.content %></textarea>
+      </label>
+
+      <label>
+        글 비밀번호
+        <input type="password" name="password" required />
+      </label>
+
+      <button type="submit">수정 요청하기</button>
+    </form>
+  </main>
+  <%- include("partials/footer") %>
+</body>
+</html>

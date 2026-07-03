@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= post.title %> - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/post-detail.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/schools/<%= school.slug %>/posts" class="back-link">
+      ← 게시판으로 돌아가기
+    </a>
+
+    <article class="post-detail-card">
+      <header class="post-detail-header">
+        <div class="post-top-row">
+          <div>
+            <h1><%= post.title %></h1>
+
+            <div class="post-detail-meta">
+              <span>작성자: <%= post.nickname %></span>
+              <span>카테고리: <%= post.category %></span>
+              <span>작성일: <%= new Date(post.created_at).toLocaleString("ko-KR") %></span>
+            </div>
+          </div>
+
+          <div class="post-detail-actions top-actions">
+            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/edit" class="edit-link">
+              수정
+            </a>
+
+            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/delete" class="delete-link">
+              삭제
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <section class="post-detail-content">
+        <%= post.content %>
+      </section>
+    </article>
+
+    <section class="comment-section">
+      <div class="comment-header">
+        <div>
+          <h2>댓글</h2>
+          <p>관리자 승인 후 댓글이 공개됩니다.</p>
+        </div>
+
+        <span><%= comments.length %>개</span>
+      </div>
+
+      <% if (commentSubmitted) { %>
+        <div class="notice-box">
+          댓글이 제출되었습니다. 관리자 승인 후 공개됩니다.
+        </div>
+      <% } %>
+
+      <form 
+        class="comment-form" 
+        action="/schools/<%= school.slug %>/posts/<%= post.id %>/comments" 
+        method="POST"
+      >
+        <input 
+          type="text" 
+          name="nickname" 
+          maxlength="50" 
+          placeholder="닉네임을 입력하지 않으면 익명으로 저장됩니다."
+        />
+
+        <textarea 
+          name="content" 
+          rows="4" 
+          placeholder="댓글을 입력하세요." 
+          required
+        ></textarea>
+
+        <button type="submit">댓글 작성</button>
+      </form>
+
+      <div class="comment-list">
+        <% if (comments.length === 0) { %>
+          <div class="empty-comments">
+            아직 공개된 댓글이 없습니다.
+          </div>
+        <% } else { %>
+          <% comments.forEach(comment => { %>
+            <article class="comment-card">
+              <div class="comment-meta">
+                <strong><%= comment.nickname %></strong>
+                <span><%= new Date(comment.created_at).toLocaleString("ko-KR") %></span>
+              </div>
+
+              <p><%= comment.content %></p>
+            </article>
+          <% }) %>
+        <% } %>
+      </div>
+    </section>
+  </main>
+  <%- include("partials/footer") %>
+  <script src="/js/confirm-delete.js"></script>
+</body>
+</html>

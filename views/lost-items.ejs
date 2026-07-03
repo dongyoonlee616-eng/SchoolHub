@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= school.name %> 분실물 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/lost-items.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/schools/<%= school.slug %>" class="back-link">
+      ← 커뮤니티로 돌아가기
+    </a>
+
+    <div class="lost-header">
+      <div>
+        <h1><%= school.name %> 분실물</h1>
+        <p>분실물을 등록하고 확인할 수 있는 공간입니다.</p>
+      </div>
+
+      <a href="/schools/<%= school.slug %>/lost-items/new" class="lost-write-button">
+        분실물 등록
+      </a>
+    </div>
+
+    <section class="lost-tools">
+      <div class="lost-filter">
+        <span class="filter-chip active">전체 분실물</span>
+      </div>
+
+      <form class="lost-search-form" action="/schools/<%= school.slug %>/lost-items" method="GET">
+        <input 
+          type="text" 
+          name="q" 
+          value="<%= searchQuery %>" 
+          placeholder="물건, 장소, 작성자 검색"
+          autocomplete="off"
+        />
+
+        <button type="submit">검색</button>
+
+        <% if (searchQuery) { %>
+          <a href="/schools/<%= school.slug %>/lost-items" class="reset-search">
+            초기화
+          </a>
+        <% } %>
+      </form>
+    </section>
+
+    <% if (submitted) { %>
+      <div class="notice-box">
+        분실물이 제출되었습니다. 관리자 승인 후 공개됩니다.
+      </div>
+    <% } %>
+
+    <% if (items.length === 0) { %>
+      <div class="empty-box">
+        등록된 분실물이 없습니다.
+      </div>
+    <% } else { %>
+      <div class="lost-list">
+        <% items.forEach(item => { %>
+          <a href="/schools/<%= school.slug %>/lost-items/<%= item.id %>" class="lost-row">
+            <div>
+              <div class="lost-row-meta">
+                <% if (item.found_place) { %>
+                  <span>발견: <%= item.found_place %></span>
+                <% } %>
+
+                <% if (item.pickup_place) { %>
+                  <span>찾아갈 곳: <%= item.pickup_place %></span>
+                <% } %>
+              </div>
+
+              <h2><%= item.title %></h2>
+              <p>작성자: <%= item.nickname %></p>
+            </div>
+
+            <strong>상세 보기</strong>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include("partials/footer") %>
+</body>
+</html>

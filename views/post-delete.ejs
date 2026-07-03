@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시글 삭제 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/post-delete.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: typeof school !== "undefined" ? school : null }) %>
+  <main class="container">
+    <a href="/schools/<%= school.slug %>/posts/<%= post.id %>" class="back-link">
+      ← 게시글로 돌아가기
+    </a>
+
+    <section class="delete-card">
+      <span class="delete-badge">DELETE POST</span>
+      <h1>게시글 삭제</h1>
+
+      <p>
+        정말로 이 게시글을 삭제하시겠습니까?<br />
+        삭제한 게시글은 다시 복구할 수 없습니다.
+      </p>
+
+      <div class="delete-target">
+        <strong><%= post.title %></strong>
+        <span>작성자: <%= post.nickname %></span>
+      </div>
+
+      <% if (error) { %>
+        <div class="error-box">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/schools/<%= school.slug %>/posts/<%= post.id %>/delete" method="POST" class="delete-form">
+        <label>
+          글 비밀번호
+          <input type="password" name="password" required />
+        </label>
+
+        <button type="submit">삭제하기</button>
+      </form>
+    </section>
+  </main>
+  <%- include("partials/footer") %>
+  <script src="/js/confirm-delete.js"></script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+.delete-card {
+  max-width: 620px;
+  padding: 34px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  box-shadow: var(--shadow);
+}
+
+.delete-badge {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 7px 12px;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.delete-card h1 {
+  margin: 0 0 12px;
+  font-size: clamp(34px, 5vw, 52px);
+  color: #172554;
+  letter-spacing: -0.06em;
+}
+
+.delete-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.delete-target {
+  display: grid;
+  gap: 6px;
+  margin-top: 24px;
+  padding: 18px;
+  background: #f8faff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.delete-target strong {
+  font-size: 20px;
+  color: #1f2937;
+}
+
+.delete-target span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.delete-form {
+  margin-top: 24px;
+}
+
+.delete-form label {
+  display: block;
+  margin-bottom: 18px;
+  font-weight: 900;
+  color: #374151;
+}
+
+.delete-form input {
+  width: 100%;
+  margin-top: 9px;
+  padding: 14px 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  font-size: 15px;
+  background: #fbfdff;
+  outline: none;
+}
+
+.delete-form input:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+  background: white;
+}
+
+.delete-form button {
+  width: 100%;
+  padding: 15px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.delete-form button:hover {
+  background: #b91c1c;
+}
+
+.error-box {
+  margin-top: 20px;
+  padding: 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  color: #b91c1c;
+  font-weight: 800;
+}
