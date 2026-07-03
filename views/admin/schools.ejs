@@ -84,19 +84,12 @@
                   <% } %>
                 </button>
               </form>
-
-              <form action="/admin/schools/<%= school.id %>/delete" method="POST">
-                <button type="submit">삭제</button>
-              </form>
             </div>
           </article>
         <% }) %>
       </div>
     <% } %>
   </main>
-
   <%- include("../partials/admin-footer") %>
-
-  <script src="/js/confirm-delete.js"></script>
 </body>
 </html>
