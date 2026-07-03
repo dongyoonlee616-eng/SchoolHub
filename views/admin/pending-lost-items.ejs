@@ -9,7 +9,7 @@
 <body>
   <%- include("../partials/admin-header") %>
   <main class="container">
-    <a href="/admin" class="back-link">← 관리자 대시보드로 돌아가기</a>
+    <a href="/admin/schools/<%= school.slug %>/dashboard" class="back-link">← 학교 대시보드로 돌아가기</a>
 
     <h1>승인 대기 분실물</h1>
     <p>학생들이 제출한 분실물을 검토하고 승인할 수 있습니다.</p>
