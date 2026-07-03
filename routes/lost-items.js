@@ -132,6 +132,24 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
     });
     }
 
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!dateRegex.test(itemDateValue)) {
+    return res.render("lost-item-new", {
+        school,
+        error: "날짜는 4자리 연도 형식으로 입력해야 합니다.",
+    });
+    }
+
+    const itemYear = Number(itemDateValue.slice(0, 4));
+
+    if (itemYear < 2000 || itemYear > 2099) {
+    return res.render("lost-item-new", {
+        school,
+        error: "날짜는 2000년부터 2099년 사이로 입력해야 합니다.",
+    });
+    }
+
     const displayNickname = nickname && nickname.trim() ? nickname.trim() : "익명";
     const passwordHash = await bcrypt.hash(passwordValue, 10);
 
