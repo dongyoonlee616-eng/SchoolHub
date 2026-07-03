@@ -189,6 +189,85 @@ button:hover {
   text-align: right;
 }
 
+.not-found-card {
+  max-width: 680px;
+  margin: 80px auto;
+  padding: 54px 36px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.not-found-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.not-found-card h1 {
+  margin: 22px 0 12px;
+  color: #172554;
+  font-size: clamp(30px, 5vw, 46px);
+  letter-spacing: -0.05em;
+}
+
+.not-found-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 700;
+}
+
+.not-found-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.not-found-primary,
+.not-found-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 18px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.not-found-primary {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 12px 24px rgba(59, 91, 219, 0.22);
+}
+
+.not-found-secondary {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+@media (max-width: 520px) {
+  .not-found-card {
+    margin: 50px auto;
+    padding: 40px 24px;
+  }
+
+  .not-found-primary,
+  .not-found-secondary {
+    width: 100%;
+  }
+}
+
 @media (max-width: 760px) {
   .site-header-inner {
     height: auto;

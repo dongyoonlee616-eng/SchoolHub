@@ -171,7 +171,13 @@ router.get("/schools/:slug/lost-items/:id", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("존재하지 않는 분실물입니다.");
+        return res.status(404).render("404", {
+            school,
+            title: "분실물을 찾을 수 없습니다.",
+            message: "삭제되었거나, 존재하지 않는 분실물입니다.",
+            backLabel: "분실물 목록으로 돌아가기",
+            backUrl: `/schools/${school.slug}/lost-items`,
+        });
     }
 
     res.render("lost-item-detail", {

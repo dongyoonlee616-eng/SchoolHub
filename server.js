@@ -32,6 +32,16 @@ app.use("/", adminRoutes);
 app.use("/", suggestionRoutes);
 app.use("/", lostItemRoutes);
 
+app.use((req, res) => {
+  res.status(404).render("404", {
+    school: null,
+    title: "페이지를 찾을 수 없습니다.",
+    message: "주소가 잘못되었거나 삭제된 페이지입니다.",
+    backLabel: "메인 화면으로 돌아가기",
+    backUrl: "/",
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 
 const pool = require("./db");
