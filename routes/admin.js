@@ -29,6 +29,18 @@ function renderAdminSchoolNotFound(res) {
   });
 }
 
+const DEFAULT_BOARD_NOTICE_TITLE = "게시판 이용 안내";
+
+const DEFAULT_BOARD_NOTICE_CONTENT = `SchoolHub 게시판은 학생들이 자유롭게 소통하기 위한 공간입니다.
+
+닉네임에는 본인의 이름이나 닉네임을 적어도 되고, 익명으로 작성해도 됩니다.
+
+작성한 게시글과 댓글은 관리자 확인 및 승인 후 공개되며, 공개까지 시간이 소요될 수 있습니다. 운영진은 최대한 빠르게 확인할 수 있도록 노력하겠습니다.
+
+다른 사람을 비방하거나 조롱하는 글, 욕설, 개인정보 공개, 허위 사실 유포, 도배성 게시글 등 부적절한 내용은 삭제될 수 있습니다.
+
+서로 예의를 지키며 모두가 편하게 이용할 수 있는 게시판을 만들어 주세요.`;
+
 // 관리자 로그인 페이지
 router.get("/admin/login", (req, res) => {
   res.render("admin/login", {
@@ -1132,6 +1144,8 @@ router.get("/admin/schools/new", requireAdmin, (req, res) => {
 
 // 학교 추가 처리
 router.post("/admin/schools", requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+
   try {
     let { name, slug } = req.body;
     const isActive = req.body.is_active === "on";
@@ -1141,6 +1155,7 @@ router.post("/admin/schools", requireAdmin, async (req, res) => {
 
     if (!name || !slug) {
       return res.render("admin/school-new", {
+        pageTitle: "학교 추가 - SchoolHub",
         admin: req.session.admin,
         error: "학교 이름과 slug를 모두 입력하세요.",
       });
@@ -1148,31 +1163,56 @@ router.post("/admin/schools", requireAdmin, async (req, res) => {
 
     if (!/^[a-z0-9-]+$/.test(slug)) {
       return res.render("admin/school-new", {
+        pageTitle: "학교 추가 - SchoolHub",
         admin: req.session.admin,
         error: "slug는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.",
       });
     }
 
-    await pool.query(
+    await client.query("BEGIN");
+
+    const schoolResult = await client.query(
       `
       INSERT INTO schools (name, slug, is_active)
       VALUES ($1, $2, $3)
+      RETURNING id
       `,
       [name, slug, isActive]
     );
 
+    const schoolId = schoolResult.rows[0].id;
+
+    await client.query(
+      `
+      INSERT INTO notices (school_id, title, content, is_pinned)
+      VALUES ($1, $2, $3, true)
+      `,
+      [
+        schoolId,
+        DEFAULT_BOARD_NOTICE_TITLE,
+        DEFAULT_BOARD_NOTICE_CONTENT,
+      ]
+    );
+
+    await client.query("COMMIT");
+
     res.redirect("/admin/schools");
   } catch (error) {
+    await client.query("ROLLBACK");
+
     console.error(error);
 
     if (error.code === "23505") {
       return res.render("admin/school-new", {
+        pageTitle: "학교 추가 - SchoolHub",
         admin: req.session.admin,
         error: "이미 사용 중인 slug입니다.",
       });
     }
 
     res.status(500).send("학교를 추가하는 중 오류가 발생했습니다.");
+  } finally {
+    client.release();
   }
 });
 
