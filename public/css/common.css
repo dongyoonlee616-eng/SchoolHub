@@ -159,8 +159,9 @@ button:hover {
 .site-footer {
   margin-top: auto;
   padding: 34px 0;
-  border-top: 1px solid rgba(199, 210, 254, 0.7);
-  background: rgba(255, 255, 255, 0.45);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(23, 37, 84, 0.94);
+  color: white;
 }
 
 .site-footer-inner {
@@ -173,14 +174,14 @@ button:hover {
 }
 
 .site-footer strong {
-  color: #172554;
+  color: white;
   font-size: 20px;
   font-weight: 900;
 }
 
 .site-footer p {
   margin: 6px 0 0;
-  color: var(--muted);
+  color: #dbeafe;
   font-size: 14px;
 }
 
