@@ -143,7 +143,7 @@ router.get("/schools/:slug/posts/:id", async (req, res) => {
       [id, school.id]
     );
 
-    if (result.rows.length === 0) {
+    if (postResult.rows.length === 0) {
         return res.status(404).render("404", {
             school,
             title: "게시글을 찾을 수 없습니다.",
@@ -200,7 +200,7 @@ router.post("/schools/:slug/posts/:id/comments", async (req, res) => {
       [id, school.id]
     );
 
-    if (result.rows.length === 0) {
+    if (postResult.rows.length === 0) {
         return res.status(404).render("404", {
             school,
             title: "게시글을 찾을 수 없습니다.",
@@ -253,7 +253,7 @@ router.get("/schools/:slug/posts/:id/edit", async (req, res) => {
       [id, school.id]
     );
 
-    if (result.rows.length === 0) {
+    if (postResult.rows.length === 0) {
         return res.status(404).render("404", {
             school,
             title: "게시글을 찾을 수 없습니다.",
@@ -299,7 +299,7 @@ router.post("/schools/:slug/posts/:id/edit", async (req, res) => {
       [id, school.id]
     );
 
-    if (result.rows.length === 0) {
+    if (postResult.rows.length === 0) {
         return res.status(404).render("404", {
             school,
             title: "게시글을 찾을 수 없습니다.",
