@@ -1,6 +1,6 @@
-{
-  "scripts": {
-    "start": "node server.js",
+  {
+    "scripts": {
+    "start": "node setup-db.js && node server.js",
     "dev": "nodemon server.js"
   },
   "dependencies": {
