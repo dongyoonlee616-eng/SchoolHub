@@ -194,7 +194,7 @@
 
 .school-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin-top: 26px;
 }
@@ -313,5 +313,11 @@
 
   .section-header h2 {
     font-size: 34px;
+  }
+}
+
+@media (max-width: 700px) {
+  .school-list {
+    grid-template-columns: 1fr;
   }
 }

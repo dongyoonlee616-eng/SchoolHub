@@ -1098,6 +1098,172 @@
   color: var(--primary);
 }
 
+/* 학교 관리 페이지 */
+.school-admin-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.school-admin-card {
+  padding: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(59, 91, 219, 0.08), transparent 34%),
+    var(--card);
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  box-shadow: var(--shadow);
+}
+
+.school-admin-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.school-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.school-status-badge.active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.school-status-badge.inactive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.school-admin-card h2 {
+  margin: 0 0 22px;
+  font-size: 26px;
+  color: #172554;
+  letter-spacing: -0.04em;
+}
+
+.school-admin-info {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.school-admin-info div {
+  padding: 16px;
+  background: #f8faff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.school-admin-info span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.school-admin-info strong {
+  display: block;
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 900;
+  word-break: break-all;
+}
+
+.school-admin-date {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 22px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.school-admin-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.school-admin-actions form {
+  margin: 0;
+}
+
+.school-admin-actions a,
+.school-admin-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 13px;
+  border: none;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.school-admin-actions a:hover,
+.school-admin-actions button:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.school-admin-empty {
+  margin-top: 30px;
+  padding: 30px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  color: var(--muted);
+  font-weight: 900;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 1000px) {
+  .school-admin-list {
+    grid-template-columns: 1fr;
+  }
+
+  .school-admin-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .school-admin-card-top {
+    flex-direction: column;
+  }
+
+  .school-admin-actions {
+    width: 100%;
+  }
+
+  .school-admin-actions a,
+  .school-admin-actions form,
+  .school-admin-actions button {
+    width: 100%;
+  }
+
+  .school-admin-info {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 950px) {
   .admin-site-header-inner {
     grid-template-columns: 1fr auto;

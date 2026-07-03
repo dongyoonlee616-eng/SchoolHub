@@ -12,84 +12,97 @@
 <body>
   <%- include("../partials/admin-header") %>
 
-  <main class="container">
+    <main class="container">
     <a href="/admin">← 관리자 대시보드로 돌아가기</a>
 
     <section class="admin-page-header">
-      <div>
+        <div>
         <h1>학교 관리</h1>
         <p>SchoolHub에 등록된 학교를 추가, 수정, 비활성화할 수 있습니다.</p>
-      </div>
+        </div>
 
-      <a href="/admin/schools/new" class="admin-write-button">학교 추가</a>
+        <a href="/admin/schools/new" class="admin-write-button">학교 추가</a>
     </section>
 
     <% if (error) { %>
-      <div class="error-box"><%= error %></div>
+        <div class="error-box"><%= error %></div>
     <% } %>
 
     <% if (schools.length === 0) { %>
-      <div class="notice-admin-list">
-        <div class="notice-admin-card">
-          <p>등록된 학교가 없습니다.</p>
+        <div class="school-admin-empty">
+        등록된 학교가 없습니다.
         </div>
-      </div>
     <% } else { %>
-      <div class="notice-admin-list">
+        <div class="school-admin-list">
         <% schools.forEach(school => { %>
-          <article class="notice-admin-card">
-            <div>
-              <% if (school.is_active) { %>
-                <span class="notice-school status-approved">활성</span>
-              <% } else { %>
-                <span class="notice-school status-pending">비활성</span>
-              <% } %>
+            <article class="school-admin-card">
+            <div class="school-admin-card-top">
+                <span class="school-status-badge <%= school.is_active ? "active" : "inactive" %>">
+                <% if (school.is_active) { %>
+                    활성
+                <% } else { %>
+                    비활성
+                <% } %>
+                </span>
 
-              <h2><%= school.name %></h2>
+                <div class="school-admin-actions">
+                <a href="/admin/schools/<%= school.id %>/edit">수정</a>
 
-              <p>
-                slug:
+                <form action="/admin/schools/<%= school.id %>/toggle" method="POST">
+                    <button type="submit">
+                    <% if (school.is_active) { %>
+                        비활성화
+                    <% } else { %>
+                        활성화
+                    <% } %>
+                    </button>
+                </form>
+                </div>
+            </div>
+
+            <h2><%= school.name %></h2>
+
+            <div class="school-admin-info">
+                <div>
+                <span>slug</span>
                 <strong><%= school.slug %></strong>
-              </p>
+                </div>
 
-              <p>
-                게시글 <%= school.posts_count %>개 /
-                공지 <%= school.notices_count %>개 /
-                분실물 <%= school.lost_items_count %>개
-              </p>
+                <div>
+                <span>게시글</span>
+                <strong><%= school.posts_count %>개</strong>
+                </div>
 
-              <small>
+                <div>
+                <span>공지</span>
+                <strong><%= school.notices_count %>개</strong>
+                </div>
+
+                <div>
+                <span>분실물</span>
+                <strong><%= school.lost_items_count %>개</strong>
+                </div>
+            </div>
+
+            <div class="school-admin-date">
+                <span>
                 생성일:
                 <%= new Date(school.created_at).toLocaleString("ko-KR") %>
-              </small>
+                </span>
 
-              <% if (school.updated_at) { %>
-                <br />
-                <small>
-                  수정일:
-                  <%= new Date(school.updated_at).toLocaleString("ko-KR") %>
-                </small>
-              <% } %>
+                <% if (school.updated_at) { %>
+                <span>
+                    수정일:
+                    <%= new Date(school.updated_at).toLocaleString("ko-KR") %>
+                </span>
+                <% } %>
             </div>
-
-            <div class="notice-admin-actions school-admin-actions">
-              <a href="/admin/schools/<%= school.id %>/edit">수정</a>
-
-              <form action="/admin/schools/<%= school.id %>/toggle" method="POST">
-                <button type="submit" class="toggle-button">
-                  <% if (school.is_active) { %>
-                    비활성화
-                  <% } else { %>
-                    활성화
-                  <% } %>
-                </button>
-              </form>
-            </div>
-          </article>
+            </article>
         <% }) %>
-      </div>
+        </div>
     <% } %>
-  </main>
-  <%- include("../partials/admin-footer") %>
+    </main>
+
+    <%- include("../partials/admin-footer") %>
 </body>
 </html>
