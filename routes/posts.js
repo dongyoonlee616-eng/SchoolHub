@@ -143,8 +143,14 @@ router.get("/schools/:slug/posts/:id", async (req, res) => {
       [id, school.id]
     );
 
-    if (postResult.rows.length === 0) {
-      return res.status(404).send("존재하지 않는 게시글입니다.");
+    if (result.rows.length === 0) {
+        return res.status(404).render("404", {
+            school,
+            title: "게시글을 찾을 수 없습니다.",
+            message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+            backLabel: "게시판으로 돌아가기",
+            backUrl: `/schools/${school.slug}/posts`,
+        });
     }
 
     const commentsResult = await pool.query(
@@ -194,8 +200,14 @@ router.post("/schools/:slug/posts/:id/comments", async (req, res) => {
       [id, school.id]
     );
 
-    if (postResult.rows.length === 0) {
-      return res.status(404).send("존재하지 않는 게시글입니다.");
+    if (result.rows.length === 0) {
+        return res.status(404).render("404", {
+            school,
+            title: "게시글을 찾을 수 없습니다.",
+            message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+            backLabel: "게시판으로 돌아가기",
+            backUrl: `/schools/${school.slug}/posts`,
+        });
     }
 
     if (!content || content.trim().length === 0) {
@@ -288,7 +300,13 @@ router.post("/schools/:slug/posts/:id/edit", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("존재하지 않는 게시글입니다.");
+        return res.status(404).render("404", {
+            school,
+            title: "게시글을 찾을 수 없습니다.",
+            message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+            backLabel: "게시판으로 돌아가기",
+            backUrl: `/schools/${school.slug}/posts`,
+        });
     }
 
     const post = result.rows[0];
@@ -362,7 +380,13 @@ router.get("/schools/:slug/posts/:id/delete", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("존재하지 않는 게시글입니다.");
+        return res.status(404).render("404", {
+            school,
+            title: "게시글을 찾을 수 없습니다.",
+            message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+            backLabel: "게시판으로 돌아가기",
+            backUrl: `/schools/${school.slug}/posts`,
+        });
     }
 
     res.render("post-delete", {
@@ -400,7 +424,13 @@ router.post("/schools/:slug/posts/:id/delete", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("존재하지 않는 게시글입니다.");
+        return res.status(404).render("404", {
+            school,
+            title: "게시글을 찾을 수 없습니다.",
+            message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+            backLabel: "게시판으로 돌아가기",
+            backUrl: `/schools/${school.slug}/posts`,
+        });
     }
 
     const post = result.rows[0];
