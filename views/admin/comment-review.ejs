@@ -39,11 +39,11 @@
         <p><%= item.content %></p>
 
         <div class="review-actions">
-          <form action="/admin/comments/<%= item.id %>/approve" method="POST">
+          <form action="/admin/schools/<%= school.slug %>/comments/<%= item.id %>/approve" method="POST">
             <button type="submit" class="approve-button">댓글 승인</button>
           </form>
 
-          <form action="/admin/comments/<%= item.id %>/delete" method="POST">
+          <form action="/admin/schools/<%= school.slug %>/comments/<%= item.id %>/delete" method="POST">
             <button type="submit" class="delete-button">댓글 삭제</button>
           </form>
         </div>

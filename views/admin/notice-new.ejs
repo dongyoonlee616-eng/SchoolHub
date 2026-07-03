@@ -20,16 +20,7 @@
       </div>
     <% } %>
 
-    <form action="/admin/notices" method="POST" class="notice-form">
-      <label>
-        학교
-        <select name="school_id" required>
-          <% schools.forEach(school => { %>
-            <option value="<%= school.id %>"><%= school.name %></option>
-          <% }) %>
-        </select>
-      </label>
-
+    <form action="/admin/schools/<%= school.slug %>/notices" method="POST" class="notice-form">
       <label>
         제목
         <input type="text" name="title" maxlength="200" required />

@@ -21,7 +21,7 @@
     <% } else { %>
       <div class="admin-board-list">
         <% items.forEach(item => { %>
-          <a href="/admin/lost-items/pending/<%= item.id %>" class="admin-board-row">
+          <a href="/admin/schools/<%= school.slug %>/lost-items/pending/<%= item.id %>" class="admin-board-row">
             <div>
               <div class="admin-board-row-meta">
                 <span><%= item.school_name %></span>

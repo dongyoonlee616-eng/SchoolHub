@@ -29,7 +29,7 @@
         <span class="filter-chip active">전체 분실물</span>
       </div>
 
-      <form class="lost-search-form" action="/schools/<%= school.slug %>/lost-items" method="GET">
+      <form action="/admin/schools/<%= school.slug %>/lost-items" method="GET" class="lost-search-form">
         <input 
           type="text" 
           name="q" 
@@ -61,7 +61,7 @@
     <% } else { %>
       <div class="lost-list">
         <% items.forEach(item => { %>
-          <a href="/schools/<%= school.slug %>/lost-items/<%= item.id %>" class="lost-row">
+          <a href="/admin/schools/<%= school.slug %>/lost-items/<%= item.id %>" class="lost-row">
             <div>
               <div class="lost-row-meta">
                 <% if (item.found_place) { %>

@@ -20,29 +20,20 @@
 
     <section class="admin-board-tools">
       <div class="category-filter">
-        <a 
-          href="/admin/board<%= searchQuery ? '?q=' + encodeURIComponent(searchQuery) : '' %>"
-          class="filter-chip <%= !selectedStatus ? 'active' : '' %>"
-        >
+        <a href="/admin/schools/<%= school.slug %>/board" class="filter-chip">
           전체
         </a>
 
-        <a 
-          href="/admin/board?status=approved<%= searchQuery ? '&q=' + encodeURIComponent(searchQuery) : '' %>"
-          class="filter-chip <%= selectedStatus === 'approved' ? 'active' : '' %>"
-        >
+        <a href="/admin/schools/<%= school.slug %>/board?status=approved" class="filter-chip">
           승인됨
         </a>
 
-        <a 
-          href="/admin/board?status=pending<%= searchQuery ? '&q=' + encodeURIComponent(searchQuery) : '' %>"
-          class="filter-chip <%= selectedStatus === 'pending' ? 'active' : '' %>"
-        >
+        <a href="/admin/schools/<%= school.slug %>/board?status=pending" class="filter-chip">
           승인 대기
         </a>
       </div>
 
-      <form class="admin-board-search" action="/admin/board" method="GET">
+      <form class="admin-board-search" action="/admin/schools/<%= school.slug %>/board" method="GET" class="admin-board-search">
         <% if (selectedStatus) { %>
           <input type="hidden" name="status" value="<%= selectedStatus %>" />
         <% } %>
@@ -70,7 +61,7 @@
     <% } else { %>
       <div class="admin-board-list">
         <% posts.forEach(post => { %>
-          <a href="/admin/board/posts/<%= post.id %>" class="admin-board-row">
+          <a href="/admin/schools/<%= school.slug %>/board/posts/<%= post.id %>" class="admin-board-row">
             <div>
               <div class="admin-board-row-meta">
                 <span><%= post.school_name %></span>

@@ -17,7 +17,7 @@
         <p>학교 커뮤니티 메인 화면에 표시될 공지를 관리합니다.</p>
       </div>
 
-      <a href="/admin/notices/new" class="admin-write-button">
+      <a href="/admin/schools/<%= school.slug %>/notices/new" class="admin-write-button">
         공지 작성
       </a>
     </div>
@@ -49,9 +49,9 @@
             </div>
 
             <div class="notice-admin-actions">
-              <a href="/admin/notices/<%= notice.id %>/edit">수정</a>
+              <a href="/admin/schools/<%= school.slug %>/notices/<%= notice.id %>/edit">수정</a>
 
-              <form action="/admin/notices/<%= notice.id %>/delete" method="POST">
+              <form action="/admin/schools/<%= school.slug %>/notices/<%= notice.id %>/delete" method="POST">
                 <button type="submit">삭제</button>
               </form>
             </div>

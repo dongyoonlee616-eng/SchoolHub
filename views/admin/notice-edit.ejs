@@ -20,18 +20,7 @@
       </div>
     <% } %>
 
-    <form action="/admin/notices/<%= notice.id %>/edit" method="POST" class="notice-form">
-      <label>
-        학교
-        <select name="school_id" required>
-          <% schools.forEach(school => { %>
-            <option value="<%= school.id %>" <%= school.id === notice.school_id ? "selected" : "" %>>
-              <%= school.name %>
-            </option>
-          <% }) %>
-        </select>
-      </label>
-
+    <form action="/admin/schools/<%= school.slug %>/notices/<%= notice.id %>/edit" method="POST" class="notice-form">
       <label>
         제목
         <input type="text" name="title" maxlength="200" value="<%= notice.title %>" required />

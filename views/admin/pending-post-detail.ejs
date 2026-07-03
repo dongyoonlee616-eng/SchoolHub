@@ -30,11 +30,11 @@
       </section>
 
       <div class="review-actions">
-        <form action="/admin/posts/<%= post.id %>/approve" method="POST">
+        <form action="/admin/schools/<%= school.slug %>/posts/<%= post.id %>/approve" method="POST">
           <button type="submit" class="approve-button">승인</button>
         </form>
 
-        <form action="/admin/posts/<%= post.id %>/delete" method="POST">
+        <form action="/admin/schools/<%= school.slug %>/posts/<%= post.id %>/delete" method="POST">
           <button type="submit" class="delete-button">삭제</button>
         </form>
       </div>

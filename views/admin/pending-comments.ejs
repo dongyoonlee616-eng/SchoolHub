@@ -21,10 +21,7 @@
     <% } else { %>
       <div class="pending-comment-list">
         <% comments.forEach(comment => { %>
-          <a 
-            href="/admin/comments/pending/<%= comment.id %>" 
-            class="pending-comment-row"
-          >
+          <a href="/admin/schools/<%= school.slug %>/comments/pending/<%= comment.id %>" class="pending-comment-row">
             <div>
               <h2><%= comment.post_title %></h2>
               <p><%= comment.content %></p>
