@@ -11,6 +11,24 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+async function getSchoolBySlug(slug) {
+  const result = await pool.query(
+    "SELECT * FROM schools WHERE slug = $1",
+    [slug]
+  );
+
+  return result.rows[0];
+}
+
+function renderAdminSchoolNotFound(res) {
+  return res.status(404).render("404", {
+    title: "학교를 찾을 수 없습니다.",
+    message: "존재하지 않는 학교입니다.",
+    backLabel: "관리자 메인으로 돌아가기",
+    backUrl: "/admin",
+  });
+}
+
 // 관리자 로그인 페이지
 router.get("/admin/login", (req, res) => {
   res.render("admin/login", {
@@ -69,30 +87,108 @@ router.post("/admin/logout", requireAdmin, (req, res) => {
   });
 });
 
-// 관리자 대시보드
+// 관리자 메인 - 학교 선택 페이지
 router.get("/admin", requireAdmin, async (req, res) => {
   try {
-    const pendingPostsResult = await pool.query(
-      "SELECT COUNT(*) FROM posts WHERE status = 'pending'"
-    );
-
-    const pendingCommentsResult = await pool.query(
-      "SELECT COUNT(*) FROM comments WHERE status = 'pending'"
-    );
-
-    const pendingLostItemsResult = await pool.query(
-      "SELECT COUNT(*) FROM lost_items WHERE status = 'pending'"
-    );
+    const result = await pool.query(`
+      SELECT
+        schools.*,
+        (SELECT COUNT(*) FROM posts WHERE posts.school_id = schools.id) AS posts_count,
+        (SELECT COUNT(*) FROM comments WHERE comments.school_id = schools.id) AS comments_count,
+        (SELECT COUNT(*) FROM notices WHERE notices.school_id = schools.id) AS notices_count,
+        (SELECT COUNT(*) FROM lost_items WHERE lost_items.school_id = schools.id) AS lost_items_count
+      FROM schools
+      ORDER BY schools.id ASC
+    `);
 
     res.render("admin/dashboard", {
       admin: req.session.admin,
-      pendingPostsCount: pendingPostsResult.rows[0].count,
-      pendingCommentsCount: pendingCommentsResult.rows[0].count,
-      pendingLostItemsCount: pendingLostItemsResult.rows[0].count,
+      schools: result.rows,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("관리자 페이지를 불러오는 중 오류가 발생했습니다.");
+    res.status(500).send("관리자 메인 페이지를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 학교별 관리자 대시보드
+router.get("/admin/schools/:slug/dashboard", requireAdmin, async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const school = await getSchoolBySlug(slug);
+
+    if (!school) {
+      return renderAdminSchoolNotFound(res);
+    }
+
+    const pendingPostsResult = await pool.query(
+      `
+      SELECT COUNT(*)
+      FROM posts
+      WHERE school_id = $1 AND status = 'pending'
+      `,
+      [school.id]
+    );
+
+    const pendingCommentsResult = await pool.query(
+      `
+      SELECT COUNT(*)
+      FROM comments
+      WHERE school_id = $1 AND status = 'pending'
+      `,
+      [school.id]
+    );
+
+    const pendingLostItemsResult = await pool.query(
+      `
+      SELECT COUNT(*)
+      FROM lost_items
+      WHERE school_id = $1 AND status = 'pending'
+      `,
+      [school.id]
+    );
+
+    const approvedPostsResult = await pool.query(
+      `
+      SELECT COUNT(*)
+      FROM posts
+      WHERE school_id = $1 AND status = 'approved'
+      `,
+      [school.id]
+    );
+
+    const noticesResult = await pool.query(
+      `
+      SELECT COUNT(*)
+      FROM notices
+      WHERE school_id = $1
+      `,
+      [school.id]
+    );
+
+    const lostItemsResult = await pool.query(
+      `
+      SELECT COUNT(*)
+      FROM lost_items
+      WHERE school_id = $1
+      `,
+      [school.id]
+    );
+
+    res.render("admin/school-dashboard", {
+      admin: req.session.admin,
+      school,
+      pendingPostsCount: pendingPostsResult.rows[0].count,
+      pendingCommentsCount: pendingCommentsResult.rows[0].count,
+      pendingLostItemsCount: pendingLostItemsResult.rows[0].count,
+      approvedPostsCount: approvedPostsResult.rows[0].count,
+      noticesCount: noticesResult.rows[0].count,
+      lostItemsCount: lostItemsResult.rows[0].count,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("학교별 관리자 대시보드를 불러오는 중 오류가 발생했습니다.");
   }
 });
 

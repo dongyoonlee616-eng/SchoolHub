@@ -2,73 +2,148 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>관리자 대시보드 - SchoolHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>관리자 메인 - SchoolHub</title>
+
   <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/index.css" />
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
   <%- include("../partials/admin-header") %>
-  <main class="container">
-    <header class="admin-header">
-      <div>
-        <h1>관리자 대시보드</h1>
-        <p><%= admin.username %> 관리자님, 환영합니다.</p>
+
+  <main class="home-container">
+    <section class="hero-section">
+      <div class="hero-text">
+        <span class="hero-badge">ADMIN</span>
+        <h1>SchoolHub Admin</h1>
+
+        <p>
+          관리할 학교를 선택하세요. 학교별로 게시글, 댓글, 공지사항, 분실물을 따로 관리할 수 있습니다.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#adminSchoolList" class="primary-action">학교 선택하기</a>
+          <a href="/admin/schools" class="secondary-action">학교 관리</a>
+        </div>
       </div>
-    </header>
 
-    <section class="admin-card-grid">
-      <a href="/admin/posts/pending" class="admin-card">
-        <h2>승인 대기 게시글</h2>
-        <p><%= pendingPostsCount %>개</p>
-      </a>
+      <div class="hero-card">
+        <div class="hero-card-top">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
 
-      <a href="/admin/comments/pending" class="admin-card">
-        <h2>승인 대기 댓글</h2>
-        <p><%= pendingCommentsCount %>개</p>
-      </a>
+        <h2>학교별 관리 모드</h2>
+        <p>
+          v1.1.0부터는 학교를 먼저 선택한 뒤 해당 학교의 관리자 기능으로 이동합니다.
+        </p>
 
-      <a href="/admin/lost-items/pending" class="admin-card">
-        <h2>승인 대기 분실물</h2>
-        <p><%= pendingLostItemsCount %>개</p>
-      </a>
+        <div class="hero-mini-grid">
+          <div>
+            <strong>학교 선택</strong>
+            <span>관리 대상 선택</span>
+          </div>
 
-      <a href="/admin/notices" class="admin-card">
-        <h2>공지사항 관리</h2>
-        <p>작성 / 수정 / 삭제</p>
-      </a>
+          <div>
+            <strong>분리 관리</strong>
+            <span>학교별 대시보드</span>
+          </div>
 
-      <a href="/admin/suggestions" class="admin-card">
-        <h2>건의사항 관리</h2>
-        <p>의견 확인</p>
-      </a>
-
-      <a href="/admin/schools" class="admin-card">
-        <h2>학교 관리</h2>
-        <p>추가 / 수정 / 삭제</p>
-      </a>
+          <div>
+            <strong>운영 안정화</strong>
+            <span>관리 혼동 방지</span>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="admin-service-section">
-    <div class="admin-service-header">
-        <h2>관리자 전용 페이지</h2>
-        <p>사용자 화면과 비슷한 형태로 게시판과 기능을 관리합니다.</p>
-    </div>
+    <section class="school-section" id="adminSchoolList">
+      <div class="section-header">
+        <div>
+          <span class="section-label">SELECT SCHOOL</span>
+          <h2>학교 선택</h2>
+          <p>관리할 학교의 관리자 대시보드로 이동하세요.</p>
+        </div>
 
-    <div class="admin-service-grid">
-        <a href="/admin/board" class="admin-service-card">
-        <span>MANAGE</span>
-        <h3>게시판</h3>
-        <p>모든 게시물과 댓글을 확인하고 삭제할 수 있습니다.</p>
-        </a>
+        <div class="search-box">
+          <input
+            type="text"
+            id="schoolSearchInput"
+            placeholder="학교 이름 검색"
+          />
+        </div>
+      </div>
 
-        <a href="/admin/lost-items" class="admin-service-card">
-            <span>MANAGE</span>
-            <h3>분실물</h3>
-            <p>분실물 등록글을 승인하고 상태를 관리할 수 있습니다.</p>
-        </a>
-    </div>
+      <% if (schools.length === 0) { %>
+        <div class="no-result" style="display:block;">
+          등록된 학교가 없습니다. 학교 관리에서 학교를 추가하세요.
+        </div>
+      <% } else { %>
+        <div class="school-list" id="schoolList">
+          <% schools.forEach(school => { %>
+            <a
+              href="/admin/schools/<%= school.slug %>/dashboard"
+              class="school-card"
+              data-school-name="<%= school.name %>"
+            >
+              <div>
+                <% if (school.is_active) { %>
+                  <span class="school-badge">활성</span>
+                <% } else { %>
+                  <span class="school-badge">비활성</span>
+                <% } %>
+
+                <h3><%= school.name %></h3>
+
+                <p>
+                  게시글 <%= school.posts_count %>개 /
+                  댓글 <%= school.comments_count %>개 /
+                  공지 <%= school.notices_count %>개 /
+                  분실물 <%= school.lost_items_count %>개
+                </p>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+
+        <div class="no-result" id="schoolNoResult">
+          검색 결과가 없습니다.
+        </div>
+      <% } %>
     </section>
   </main>
+
   <%- include("../partials/admin-footer") %>
+
+  <script>
+    const searchInput = document.getElementById("schoolSearchInput");
+    const schoolCards = document.querySelectorAll(".school-card");
+    const noResult = document.getElementById("schoolNoResult");
+
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        const keyword = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        schoolCards.forEach((card) => {
+          const schoolName = card.dataset.schoolName.toLowerCase();
+
+          if (schoolName.includes(keyword)) {
+            card.style.display = "block";
+            visibleCount += 1;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        if (noResult) {
+          noResult.style.display = visibleCount === 0 ? "block" : "none";
+        }
+      });
+    }
+  </script>
 </body>
 </html>

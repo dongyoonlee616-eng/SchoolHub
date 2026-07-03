@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title><%= school.name %> 관리자 대시보드 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header", { school }) %>
+
+  <main class="container">
+    <a href="/admin">← 학교 선택으로 돌아가기</a>
+
+    <section class="admin-page-header">
+      <div>
+        <h1><%= school.name %> 관리자 대시보드</h1>
+        <p>
+          이 페이지에서는 <strong><%= school.name %></strong>의 게시글, 댓글, 공지사항, 분실물을 관리합니다.
+        </p>
+      </div>
+
+      <% if (school.is_active) { %>
+        <span class="notice-school status-approved">활성</span>
+      <% } else { %>
+        <span class="notice-school status-pending">비활성</span>
+      <% } %>
+    </section>
+
+    <div class="admin-card-grid">
+      <a href="/admin/schools/<%= school.slug %>/posts/pending" class="admin-card">
+        <h2>승인 대기 게시글</h2>
+        <p><%= pendingPostsCount %>개</p>
+      </a>
+
+      <a href="/admin/schools/<%= school.slug %>/comments/pending" class="admin-card">
+        <h2>승인 대기 댓글</h2>
+        <p><%= pendingCommentsCount %>개</p>
+      </a>
+
+      <a href="/admin/schools/<%= school.slug %>/lost-items/pending" class="admin-card">
+        <h2>승인 대기 분실물</h2>
+        <p><%= pendingLostItemsCount %>개</p>
+      </a>
+
+      <a href="/admin/schools/<%= school.slug %>/notices" class="admin-card">
+        <h2>공지사항</h2>
+        <p><%= noticesCount %>개</p>
+      </a>
+    </div>
+
+    <section class="admin-service-section">
+      <div class="admin-service-header">
+        <h2>학교 전용 관리 페이지</h2>
+        <p>선택한 학교의 데이터만 따로 관리합니다.</p>
+      </div>
+
+      <div class="admin-service-grid">
+        <a href="/admin/schools/<%= school.slug %>/board" class="admin-service-card">
+          <span>MANAGE</span>
+          <h3>게시판 관리</h3>
+          <p>
+            <%= school.name %>의 게시글과 댓글을 확인하고 관리합니다.
+            현재 공개 게시글은 <strong><%= approvedPostsCount %>개</strong>입니다.
+          </p>
+        </a>
+
+        <a href="/admin/schools/<%= school.slug %>/lost-items" class="admin-service-card">
+          <span>MANAGE</span>
+          <h3>분실물 관리</h3>
+          <p>
+            <%= school.name %>의 분실물 등록글을 확인하고 관리합니다.
+            전체 분실물은 <strong><%= lostItemsCount %>개</strong>입니다.
+          </p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>
