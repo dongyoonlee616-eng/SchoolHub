@@ -2,37 +2,63 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>승인 대기 게시글 - SchoolHub</title>
+
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
   <%- include("../partials/admin-header") %>
-  <main class="container">
-  <a href="/admin/schools/<%= school.slug %>/dashboard" class="back-link">← 학교 대시보드로 돌아가기</a>
 
-    <h1>승인 대기 게시글</h1>
-    <p>게시글을 클릭해서 내용을 검토하세요.</p>
+  <main class="container">
+    <a href="/admin/schools/<%= school.slug %>/dashboard" class="back-link">
+      ← 학교 대시보드로 돌아가기
+    </a>
+
+    <section class="admin-page-header">
+      <div>
+        <h1>승인 대기 게시글</h1>
+        <p><%= school.name %>에 제출된 게시글을 클릭해서 내용을 검토하세요.</p>
+      </div>
+    </section>
 
     <% if (posts.length === 0) { %>
-      <div class="empty-box">
-        승인 대기 중인 게시글이 없습니다.
+      <div class="pending-list">
+        <div class="pending-row disabled">
+          <div>
+            <h2>승인 대기 중인 게시글이 없습니다.</h2>
+            <p>새로 제출된 게시글이 있으면 이곳에 표시됩니다.</p>
+          </div>
+        </div>
       </div>
     <% } else { %>
       <div class="pending-list">
         <% posts.forEach(post => { %>
-          <a href="/admin/schools/<%= school.slug %>/posts/pending/<%= post.id %>">
+          <a
+            href="/admin/schools/<%= school.slug %>/posts/pending/<%= post.id %>"
+            class="pending-row"
+          >
             <div>
               <h2><%= post.title %></h2>
-              <p>작성자: <%= post.nickname %></p>
+
+              <p>
+                작성자: <%= post.nickname %>
+                <% if (post.category) { %>
+                  · 카테고리: <%= post.category %>
+                <% } %>
+                · <%= new Date(post.created_at).toLocaleString("ko-KR") %>
+              </p>
             </div>
 
-            <span><%= post.school_name %></span>
+            <span>검토</span>
           </a>
         <% }) %>
       </div>
     <% } %>
   </main>
+
   <%- include("../partials/admin-footer") %>
 </body>
 </html>
