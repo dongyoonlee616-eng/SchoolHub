@@ -98,7 +98,7 @@ router.get("/admin", requireAdmin, async (req, res) => {
         (SELECT COUNT(*) FROM notices WHERE notices.school_id = schools.id) AS notices_count,
         (SELECT COUNT(*) FROM lost_items WHERE lost_items.school_id = schools.id) AS lost_items_count
       FROM schools
-      ORDER BY schools.id ASC
+      ORDER BY name ASC, id ASC
     `);
 
     res.render("admin/dashboard", {

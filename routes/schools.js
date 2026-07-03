@@ -23,7 +23,12 @@ async function getActiveSchoolBySlug(slug) {
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM schools WHERE is_active = true ORDER BY id ASC"
+        `
+        SELECT *
+        FROM schools
+        WHERE is_active = true
+        ORDER BY name ASC, id ASC
+        `
     );
 
     res.render("index", {
