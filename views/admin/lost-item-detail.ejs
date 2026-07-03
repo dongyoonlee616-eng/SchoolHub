@@ -9,7 +9,7 @@
 <body>
   <%- include("../partials/admin-header") %>
   <main class="container">
-    <a href="/admin/lost-items" class="back-link">← 분실물 관리로 돌아가기</a>
+    <a href="/admin/schools/<%= school.slug %>/lost-items">← 분실물 관리 목록으로 돌아가기</a>
 
     <article class="admin-board-detail-card">
       <header class="admin-board-detail-header">
@@ -43,7 +43,7 @@
       </section>
 
       <div class="review-actions">
-        <form action="/admin/lost-items/<%= item.id %>/delete" method="POST">
+        <form action="/admin/schools/<%= school.slug %>/lost-items/<%= item.id %>/delete" method="POST">
             <button type="submit" class="delete-button">삭제</button>
         </form>
       </div>

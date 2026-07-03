@@ -9,9 +9,7 @@
 <body>
   <%- include("../partials/admin-header") %>
   <main class="container">
-    <a href="/admin/posts/pending" class="back-link">
-      ← 승인 대기 목록으로 돌아가기
-    </a>
+    <a href="/admin/schools/<%= school.slug %>/posts/pending">← 승인 대기 목록으로 돌아가기</a>
 
     <article class="review-detail-card">
       <header class="review-detail-header">
