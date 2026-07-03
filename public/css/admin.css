@@ -1083,6 +1083,21 @@
   text-align: right;
 }
 
+/* 학교 관리 페이지 보조 스타일 */
+.school-admin-actions .toggle-button {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.school-admin-actions .toggle-button:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.notice-admin-card strong {
+  color: var(--primary);
+}
+
 @media (max-width: 950px) {
   .admin-site-header-inner {
     grid-template-columns: 1fr auto;
