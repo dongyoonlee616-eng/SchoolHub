@@ -148,13 +148,23 @@ async function createBaseTables() {
 }
 
 async function seedDefaultSchool() {
-  await pool.query(`
-    INSERT INTO schools (name, slug)
-    SELECT '근명중학교', 'geunmyeong-middle'
-    WHERE NOT EXISTS (
-      SELECT 1 FROM schools WHERE slug = 'geunmyeong-middle'
-    );
-  `);
+  const result = await pool.query("SELECT COUNT(*) FROM schools");
+  const schoolCount = Number(result.rows[0].count);
+
+  if (schoolCount > 0) {
+    console.log("기존 학교 데이터가 있어서 기본 학교 생성은 건너뜀");
+    return;
+  }
+
+  await pool.query(
+    `
+    INSERT INTO schools (name, slug, is_active)
+    VALUES ($1, $2, true)
+    `,
+    ["근명중학교", "geunmyeong-middle"]
+  );
+
+  console.log("기본 학교 데이터 생성 완료");
 }
 
 async function seedAdmin() {

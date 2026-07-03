@@ -873,6 +873,7 @@ router.get("/admin/schools", requireAdmin, async (req, res) => {
       SELECT
         schools.*,
         (SELECT COUNT(*) FROM posts WHERE posts.school_id = schools.id) AS posts_count,
+        (SELECT COUNT(*) FROM comments WHERE comments.school_id = schools.id) AS comments_count,
         (SELECT COUNT(*) FROM notices WHERE notices.school_id = schools.id) AS notices_count,
         (SELECT COUNT(*) FROM lost_items WHERE lost_items.school_id = schools.id) AS lost_items_count
       FROM schools
@@ -1056,6 +1057,48 @@ router.post("/admin/schools/:id/toggle", requireAdmin, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("학교 상태를 변경하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 학교 삭제 처리 - 연결된 데이터가 없을 때만 가능
+router.post("/admin/schools/:id/delete", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const countResult = await pool.query(
+      `
+      SELECT
+        (SELECT COUNT(*) FROM posts WHERE school_id = $1) AS posts_count,
+        (SELECT COUNT(*) FROM comments WHERE school_id = $1) AS comments_count,
+        (SELECT COUNT(*) FROM notices WHERE school_id = $1) AS notices_count,
+        (SELECT COUNT(*) FROM lost_items WHERE school_id = $1) AS lost_items_count
+      `,
+      [id]
+    );
+
+    const counts = countResult.rows[0];
+
+    const total =
+      Number(counts.posts_count) +
+      Number(counts.comments_count) +
+      Number(counts.notices_count) +
+      Number(counts.lost_items_count);
+
+    if (total > 0) {
+      return res.redirect(
+        "/admin/schools?error=" +
+          encodeURIComponent(
+            "게시글, 댓글, 공지, 분실물이 있는 학교는 삭제할 수 없습니다. 대신 비활성화를 사용하세요."
+          )
+      );
+    }
+
+    await pool.query("DELETE FROM schools WHERE id = $1", [id]);
+
+    res.redirect("/admin/schools");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("학교를 삭제하는 중 오류가 발생했습니다.");
   }
 });
 

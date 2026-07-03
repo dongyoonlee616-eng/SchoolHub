@@ -13,52 +13,67 @@
   <%- include("../partials/admin-header") %>
 
     <main class="container">
-    <a href="/admin">← 관리자 대시보드로 돌아가기</a>
+        <a href="/admin">← 관리자 대시보드로 돌아가기</a>
 
-    <section class="admin-page-header">
-        <div>
-        <h1>학교 관리</h1>
-        <p>SchoolHub에 등록된 학교를 추가, 수정, 비활성화할 수 있습니다.</p>
-        </div>
+        <section class="admin-page-header">
+            <div>
+            <h1>학교 관리</h1>
+            <p>SchoolHub에 등록된 학교를 추가, 수정, 비활성화할 수 있습니다.</p>
+            </div>
 
-        <a href="/admin/schools/new" class="admin-write-button">학교 추가</a>
-    </section>
+            <a href="/admin/schools/new" class="admin-write-button">학교 추가</a>
+        </section>
 
-    <% if (error) { %>
-        <div class="error-box"><%= error %></div>
-    <% } %>
+        <% if (error) { %>
+            <div class="error-box"><%= error %></div>
+        <% } %>
 
-    <% if (schools.length === 0) { %>
-        <div class="school-admin-empty">
-        등록된 학교가 없습니다.
-        </div>
-    <% } else { %>
+        <% if (schools.length === 0) { %>
+            <div class="school-admin-empty">
+            등록된 학교가 없습니다.
+            </div>
+        <% } else { %>
         <div class="school-admin-list">
-        <% schools.forEach(school => { %>
-            <article class="school-admin-card">
-            <div class="school-admin-card-top">
-                <span class="school-status-badge <%= school.is_active ? "active" : "inactive" %>">
-                <% if (school.is_active) { %>
-                    활성
-                <% } else { %>
-                    비활성
-                <% } %>
-                </span>
-
-                <div class="school-admin-actions">
-                <a href="/admin/schools/<%= school.id %>/edit">수정</a>
-
-                <form action="/admin/schools/<%= school.id %>/toggle" method="POST">
-                    <button type="submit">
+            <% schools.forEach(school => { %>
+                <article class="school-admin-card">
+                <div class="school-admin-card-top">
+                    <span class="school-status-badge <%= school.is_active ? "active" : "inactive" %>">
                     <% if (school.is_active) { %>
-                        비활성화
+                        활성
                     <% } else { %>
-                        활성화
+                        비활성
                     <% } %>
-                    </button>
-                </form>
+                    </span>
+
+                    <div class="school-admin-actions">
+                        <a href="/admin/schools/<%= school.id %>/edit">수정</a>
+
+                        <form action="/admin/schools/<%= school.id %>/toggle" method="POST">
+                            <button type="submit">
+                            <% if (school.is_active) { %>
+                                비활성화
+                            <% } else { %>
+                                활성화
+                            <% } %>
+                            </button>
+                        </form>
+
+                        <% 
+                            const totalContentCount =
+                            Number(school.posts_count) +
+                            Number(school.comments_count) +
+                            Number(school.notices_count) +
+                            Number(school.lost_items_count);
+                        %>
+
+                        <% if (totalContentCount === 0) { %>
+                            <form action="/admin/schools/<%= school.id %>/delete" method="POST">
+                            <button type="submit" class="delete-school-button">삭제</button>
+                            </form>
+                        <% } %>
                 </div>
             </div>
+        </div>
 
             <h2><%= school.name %></h2>
 
@@ -71,6 +86,11 @@
                 <div>
                 <span>게시글</span>
                 <strong><%= school.posts_count %>개</strong>
+                </div>
+
+                <div>
+                <span>댓글</span>
+                <strong><%= school.comments_count %>개</strong>
                 </div>
 
                 <div>
@@ -102,7 +122,7 @@
         </div>
     <% } %>
     </main>
-
+    <script src="/js/confirm-delete.js"></script>
     <%- include("../partials/admin-footer") %>
 </body>
 </html>

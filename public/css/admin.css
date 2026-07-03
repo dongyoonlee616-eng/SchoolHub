@@ -1234,6 +1234,16 @@
   box-shadow: var(--shadow);
 }
 
+.delete-school-button {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+.delete-school-button:hover {
+  background: #dc2626 !important;
+  color: white !important;
+}
+
 @media (max-width: 1000px) {
   .school-admin-list {
     grid-template-columns: 1fr;
