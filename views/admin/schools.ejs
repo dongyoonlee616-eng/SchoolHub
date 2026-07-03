@@ -12,117 +12,108 @@
 <body>
   <%- include("../partials/admin-header") %>
 
-    <main class="container">
-        <a href="/admin">← 관리자 대시보드로 돌아가기</a>
+  <main class="container">
+    <a href="/admin">← 관리자 대시보드로 돌아가기</a>
 
-        <section class="admin-page-header">
-            <div>
-            <h1>학교 관리</h1>
-            <p>SchoolHub에 등록된 학교를 추가, 수정, 비활성화할 수 있습니다.</p>
+    <section class="admin-page-header">
+      <div>
+        <h1>학교 관리</h1>
+        <p>SchoolHub에 등록된 학교를 추가, 수정, 비활성화할 수 있습니다.</p>
+      </div>
+
+      <a href="/admin/schools/new" class="admin-write-button">학교 추가</a>
+    </section>
+
+    <% if (error) { %>
+      <div class="error-box"><%= error %></div>
+    <% } %>
+
+    <% if (schools.length === 0) { %>
+      <div class="school-admin-empty">
+        등록된 학교가 없습니다.
+      </div>
+    <% } else { %>
+      <div class="school-admin-list">
+        <% schools.forEach(school => { %>
+          <%
+            const postsCount = Number(school.posts_count || 0);
+            const commentsCount = Number(school.comments_count || 0);
+            const noticesCount = Number(school.notices_count || 0);
+            const lostItemsCount = Number(school.lost_items_count || 0);
+            const totalContentCount = postsCount + commentsCount + noticesCount + lostItemsCount;
+          %>
+
+          <article class="school-admin-card">
+            <div class="school-admin-card-top">
+              <span class="school-status-badge <%= school.is_active ? 'active' : 'inactive' %>">
+                <%= school.is_active ? "활성" : "비활성" %>
+              </span>
+
+              <div class="school-admin-actions">
+                <a href="/admin/schools/<%= school.id %>/edit">수정</a>
+
+                <form action="/admin/schools/<%= school.id %>/toggle" method="POST">
+                  <button type="submit">
+                    <%= school.is_active ? "비활성화" : "활성화" %>
+                  </button>
+                </form>
+
+                <% if (totalContentCount === 0) { %>
+                  <form action="/admin/schools/<%= school.id %>/delete" method="POST">
+                    <button type="submit" class="delete-school-button">삭제</button>
+                  </form>
+                <% } %>
+              </div>
             </div>
-
-            <a href="/admin/schools/new" class="admin-write-button">학교 추가</a>
-        </section>
-
-        <% if (error) { %>
-            <div class="error-box"><%= error %></div>
-        <% } %>
-
-        <% if (schools.length === 0) { %>
-            <div class="school-admin-empty">
-            등록된 학교가 없습니다.
-            </div>
-        <% } else { %>
-        <div class="school-admin-list">
-            <% schools.forEach(school => { %>
-                <article class="school-admin-card">
-                <div class="school-admin-card-top">
-                    <span class="school-status-badge <%= school.is_active ? "active" : "inactive" %>">
-                    <% if (school.is_active) { %>
-                        활성
-                    <% } else { %>
-                        비활성
-                    <% } %>
-                    </span>
-
-                    <div class="school-admin-actions">
-                        <a href="/admin/schools/<%= school.id %>/edit">수정</a>
-
-                        <form action="/admin/schools/<%= school.id %>/toggle" method="POST">
-                            <button type="submit">
-                            <% if (school.is_active) { %>
-                                비활성화
-                            <% } else { %>
-                                활성화
-                            <% } %>
-                            </button>
-                        </form>
-
-                        <% 
-                            const totalContentCount =
-                            Number(school.posts_count) +
-                            Number(school.comments_count) +
-                            Number(school.notices_count) +
-                            Number(school.lost_items_count);
-                        %>
-
-                        <% if (totalContentCount === 0) { %>
-                            <form action="/admin/schools/<%= school.id %>/delete" method="POST">
-                            <button type="submit" class="delete-school-button">삭제</button>
-                            </form>
-                        <% } %>
-                </div>
-            </div>
-        </div>
 
             <h2><%= school.name %></h2>
 
             <div class="school-admin-info">
-                <div>
+              <div>
                 <span>slug</span>
                 <strong><%= school.slug %></strong>
-                </div>
+              </div>
 
-                <div>
+              <div>
                 <span>게시글</span>
-                <strong><%= school.posts_count %>개</strong>
-                </div>
+                <strong><%= postsCount %>개</strong>
+              </div>
 
-                <div>
+              <div>
                 <span>댓글</span>
-                <strong><%= school.comments_count %>개</strong>
-                </div>
+                <strong><%= commentsCount %>개</strong>
+              </div>
 
-                <div>
+              <div>
                 <span>공지</span>
-                <strong><%= school.notices_count %>개</strong>
-                </div>
+                <strong><%= noticesCount %>개</strong>
+              </div>
 
-                <div>
+              <div>
                 <span>분실물</span>
-                <strong><%= school.lost_items_count %>개</strong>
-                </div>
+                <strong><%= lostItemsCount %>개</strong>
+              </div>
             </div>
 
             <div class="school-admin-date">
-                <span>
+              <span>
                 생성일:
                 <%= new Date(school.created_at).toLocaleString("ko-KR") %>
-                </span>
+              </span>
 
-                <% if (school.updated_at) { %>
+              <% if (school.updated_at) { %>
                 <span>
-                    수정일:
-                    <%= new Date(school.updated_at).toLocaleString("ko-KR") %>
+                  수정일:
+                  <%= new Date(school.updated_at).toLocaleString("ko-KR") %>
                 </span>
-                <% } %>
+              <% } %>
             </div>
-            </article>
+          </article>
         <% }) %>
-        </div>
+      </div>
     <% } %>
-    </main>
-    <script src="/js/confirm-delete.js"></script>
-    <%- include("../partials/admin-footer") %>
+  </main>
+  <%- include("../partials/admin-footer") %>
+  <script src="/js/confirm-delete.js"></script>
 </body>
 </html>
