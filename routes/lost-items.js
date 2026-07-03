@@ -5,11 +5,20 @@ const pool = require("../db");
 
 async function getSchoolBySlug(slug) {
   const result = await pool.query(
-    "SELECT * FROM schools WHERE slug = $1",
+    "SELECT * FROM schools WHERE slug = $1 AND is_active = true",
     [slug]
   );
 
   return result.rows[0];
+}
+
+function renderSchoolNotFound(res) {
+  return res.status(404).render("404", {
+    title: "학교를 찾을 수 없습니다.",
+    message: "존재하지 않거나 현재 비활성화된 학교입니다.",
+    backLabel: "메인 화면으로 돌아가기",
+    backUrl: "/",
+  });
 }
 
 // 분실물 목록
@@ -21,7 +30,7 @@ router.get("/schools/:slug/lost-items", async (req, res) => {
     const school = await getSchoolBySlug(slug);
 
     if (!school) {
-      return res.status(404).send("존재하지 않는 학교입니다.");
+      return renderSchoolNotFound(res);
     }
 
     const conditions = [
@@ -77,7 +86,7 @@ router.get("/schools/:slug/lost-items/new", async (req, res) => {
     const school = await getSchoolBySlug(slug);
 
     if (!school) {
-      return res.status(404).send("존재하지 않는 학교입니다.");
+      return renderSchoolNotFound(res);
     }
 
     res.render("lost-item-new", {
@@ -99,7 +108,7 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
     const school = await getSchoolBySlug(slug);
 
     if (!school) {
-      return res.status(404).send("존재하지 않는 학교입니다.");
+      return renderSchoolNotFound(res);
     }
 
     if (!title || !content || !password) {
@@ -156,7 +165,7 @@ router.get("/schools/:slug/lost-items/:id", async (req, res) => {
     const school = await getSchoolBySlug(slug);
 
     if (!school) {
-      return res.status(404).send("존재하지 않는 학교입니다.");
+      return renderSchoolNotFound(res);
     }
 
     const result = await pool.query(
