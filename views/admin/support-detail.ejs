@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>문의 상세 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+
+  <main class="container">
+    <a href="/admin/support" class="back-link">
+      ← 문의 확인으로 돌아가기
+    </a>
+
+    <section class="admin-board-detail-card">
+      <div class="admin-board-detail-header">
+        <div>
+          <div class="admin-board-row-meta">
+            <% if (ticket.status === "resolved") { %>
+              <span class="status-approved">처리 완료</span>
+            <% } else if (ticket.status === "processing") { %>
+              <span class="status-pending">처리 중</span>
+            <% } else { %>
+              <span class="status-pending">접수됨</span>
+            <% } %>
+
+            <span><%= supportTypes[ticket.ticket_type] %></span>
+          </div>
+
+          <h1><%= ticket.title %></h1>
+
+          <div class="post-detail-meta">
+            <span>작성자: <%= ticket.nickname %></span>
+
+            <% if (ticket.contact) { %>
+              <span>연락처: <%= ticket.contact %></span>
+            <% } %>
+
+            <span>접수일: <%= new Date(ticket.created_at).toLocaleString("ko-KR") %></span>
+          </div>
+        </div>
+
+        <form
+          action="/admin/support/<%= ticket.id %>/delete"
+          method="POST"
+          onsubmit="return confirm('이 문의를 삭제하시겠습니까?');"
+        >
+          <button type="submit" class="danger-admin-button">
+            삭제
+          </button>
+        </form>
+      </div>
+
+      <div class="admin-board-detail-content">
+        <h2>내용</h2>
+        <p><%= ticket.content %></p>
+      </div>
+    </section>
+
+    <section class="admin-comment-manage-section">
+      <h2>처리 상태 변경</h2>
+
+      <form
+        action="/admin/support/<%= ticket.id %>/status"
+        method="POST"
+        class="notice-form"
+      >
+        <label>
+          상태
+          <select name="status" required>
+            <% Object.keys(supportStatuses).forEach(status => { %>
+              <option
+                value="<%= status %>"
+                <%= ticket.status === status ? "selected" : "" %>
+              >
+                <%= supportStatuses[status] %>
+              </option>
+            <% }) %>
+          </select>
+        </label>
+
+        <label>
+          관리자 메모
+          <textarea
+            name="admin_memo"
+            placeholder="처리 내용이나 내부 메모를 남길 수 있습니다."
+          ><%= ticket.admin_memo || "" %></textarea>
+        </label>
+
+        <button type="submit" data-loading-text="저장 중...">
+          저장
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

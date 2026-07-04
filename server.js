@@ -6,8 +6,8 @@ require("dotenv").config();
 const schoolRoutes = require("./routes/schools");
 const postRoutes = require("./routes/posts");
 const adminRoutes = require("./routes/admin");
-const suggestionRoutes = require("./routes/suggestions");
 const lostItemRoutes = require("./routes/lost-items");
+const supportRoutes = require("./routes/support");
 
 const app = express();
 
@@ -29,8 +29,8 @@ app.use(
 app.use("/", schoolRoutes);
 app.use("/", postRoutes);
 app.use("/", adminRoutes);
-app.use("/", suggestionRoutes);
 app.use("/", lostItemRoutes);
+app.use("/", supportRoutes);
 
 app.get('/privacy', (req, res) => {
   res.render('privacy', {

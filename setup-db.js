@@ -106,6 +106,30 @@ const migrations = [
       ON comment_reports (post_id);
     `,
   },
+  {
+    name: "20260704_04_create_support_tickets",
+    sql: `
+      CREATE TABLE IF NOT EXISTS support_tickets (
+        id SERIAL PRIMARY KEY,
+        ticket_type VARCHAR(20) NOT NULL,
+        nickname VARCHAR(50) NOT NULL,
+        contact VARCHAR(100),
+        title VARCHAR(150) NOT NULL,
+        content TEXT NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending',
+        admin_memo TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        resolved_at TIMESTAMP
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_support_tickets_type_status_created
+      ON support_tickets (ticket_type, status, created_at DESC);
+
+      CREATE INDEX IF NOT EXISTS idx_support_tickets_status_created
+      ON support_tickets (status, created_at DESC);
+    `,
+  },
 ];
 
 async function createBaseTables() {
@@ -212,12 +236,26 @@ async function createBaseTables() {
     resolved_at TIMESTAMP
   );
 
-    CREATE TABLE IF NOT EXISTS schema_migrations (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(200) UNIQUE NOT NULL,
-      run_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
+  CREATE TABLE IF NOT EXISTS support_tickets (
+    id SERIAL PRIMARY KEY,
+    ticket_type VARCHAR(20) NOT NULL,
+    nickname VARCHAR(50) NOT NULL,
+    contact VARCHAR(100),
+    title VARCHAR(150) NOT NULL,
+    content TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    admin_memo TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS schema_migrations (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) UNIQUE NOT NULL,
+    run_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
 }
 
 async function seedDefaultSchool() {

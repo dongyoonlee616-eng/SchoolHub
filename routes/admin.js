@@ -41,6 +41,26 @@ const DEFAULT_BOARD_NOTICE_CONTENT = `SchoolHub 게시판은 학생들이 자유
 
 서로 예의를 지키며 모두가 편하게 이용할 수 있는 게시판을 만들어 주세요.`;
 
+const SUPPORT_TYPES = {
+  suggestion: "건의 사항",
+  inquiry: "문의 사항",
+  bug: "버그 제보",
+};
+
+const SUPPORT_STATUSES = {
+  pending: "접수됨",
+  processing: "처리 중",
+  resolved: "처리 완료",
+};
+
+function isValidSupportType(type) {
+  return Object.prototype.hasOwnProperty.call(SUPPORT_TYPES, type);
+}
+
+function isValidSupportStatus(status) {
+  return Object.prototype.hasOwnProperty.call(SUPPORT_STATUSES, status);
+}
+
 // 관리자 로그인 페이지
 router.get("/admin/login", (req, res) => {
   res.render("admin/login", {
@@ -614,65 +634,6 @@ router.post("/admin/schools/:slug/notices/:id/delete", requireAdmin, async (req,
   } catch (error) {
     console.error(error);
     res.status(500).send("공지사항을 삭제하는 중 오류가 발생했습니다.");
-  }
-});
-
-// 건의사항 목록
-router.get("/admin/suggestions", requireAdmin, async (req, res) => {
-  try {
-    const result = await pool.query(
-      `
-      SELECT *
-      FROM suggestions
-      ORDER BY created_at DESC
-      `
-    );
-
-    res.render("admin/suggestions", {
-      admin: req.session.admin,
-      suggestions: result.rows,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("건의사항 목록을 불러오는 중 오류가 발생했습니다.");
-  }
-});
-
-// 건의사항 확인 처리
-router.post("/admin/suggestions/:id/read", requireAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    await pool.query(
-      `
-      UPDATE suggestions
-      SET status = 'read'
-      WHERE id = $1
-      `,
-      [id]
-    );
-
-    res.redirect("/admin/suggestions");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("건의사항 확인 처리 중 오류가 발생했습니다.");
-  }
-});
-
-// 건의사항 삭제
-router.post("/admin/suggestions/:id/delete", requireAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    await pool.query(
-      "DELETE FROM suggestions WHERE id = $1",
-      [id]
-    );
-
-    res.redirect("/admin/suggestions");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("건의사항 삭제 중 오류가 발생했습니다.");
   }
 });
 
@@ -1841,6 +1802,167 @@ router.post("/admin/schools/:slug/reports/comment/:id/delete-comment", requireAd
   } catch (error) {
     console.error(error);
     res.status(500).send("신고된 댓글을 삭제하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 전체 문의 확인
+router.get("/admin/support", requireAdmin, async (req, res) => {
+  try {
+    const { type, status, q } = req.query;
+
+    const values = [];
+    const conditions = [];
+
+    let selectedType = "";
+    let selectedStatus = "";
+    const searchQuery = q ? q.trim() : "";
+
+    if (type && isValidSupportType(type)) {
+      values.push(type);
+      conditions.push(`ticket_type = $${values.length}`);
+      selectedType = type;
+    }
+
+    if (status && isValidSupportStatus(status)) {
+      values.push(status);
+      conditions.push(`status = $${values.length}`);
+      selectedStatus = status;
+    }
+
+    if (searchQuery) {
+      values.push(`%${searchQuery}%`);
+      conditions.push(`
+        (
+          title ILIKE $${values.length}
+          OR content ILIKE $${values.length}
+          OR nickname ILIKE $${values.length}
+          OR contact ILIKE $${values.length}
+        )
+      `);
+    }
+
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM support_tickets
+      ${whereClause}
+      ORDER BY
+        CASE
+          WHEN status = 'pending' THEN 0
+          WHEN status = 'processing' THEN 1
+          ELSE 2
+        END,
+        created_at DESC
+      `,
+      values
+    );
+
+    res.render("admin/support", {
+      admin: req.session.admin,
+      tickets: result.rows,
+      supportTypes: SUPPORT_TYPES,
+      supportStatuses: SUPPORT_STATUSES,
+      selectedType,
+      selectedStatus,
+      searchQuery,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("문의 확인 페이지를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 전체 문의 상세
+router.get("/admin/support/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM support_tickets
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).render("404", {
+        title: "문의를 찾을 수 없습니다.",
+        message: "존재하지 않는 문의입니다.",
+        backLabel: "문의 확인으로 돌아가기",
+        backUrl: "/admin/support",
+      });
+    }
+
+    res.render("admin/support-detail", {
+      admin: req.session.admin,
+      ticket: result.rows[0],
+      supportTypes: SUPPORT_TYPES,
+      supportStatuses: SUPPORT_STATUSES,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("문의 상세를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 문의 상태 변경
+router.post("/admin/support/:id/status", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, admin_memo } = req.body;
+
+    if (!isValidSupportStatus(status)) {
+      return res.status(400).send("올바르지 않은 처리 상태입니다.");
+    }
+
+    await pool.query(
+      `
+      UPDATE support_tickets
+      SET status = $1,
+          admin_memo = $2,
+          updated_at = CURRENT_TIMESTAMP,
+          resolved_at = CASE
+            WHEN $1 = 'resolved' THEN CURRENT_TIMESTAMP
+            ELSE resolved_at
+          END
+      WHERE id = $3
+      `,
+      [
+        status,
+        admin_memo && admin_memo.trim() ? admin_memo.trim() : null,
+        id,
+      ]
+    );
+
+    res.redirect(`/admin/support/${id}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("문의 상태를 변경하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 문의 삭제
+router.post("/admin/support/:id/delete", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query(
+      `
+      DELETE FROM support_tickets
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    res.redirect("/admin/support");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("문의를 삭제하는 중 오류가 발생했습니다.");
   }
 });
 

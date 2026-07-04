@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>문의센터 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/index.css" />
+  <link rel="stylesheet" href="/css/post-new.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: null }) %>
+
+  <main class="home-container">
+    <section class="hero-section">
+      <div class="hero-text">
+        <span class="hero-badge">SUPPORT</span>
+        <h1>문의센터</h1>
+
+        <p>
+          SchoolHub 이용 중 불편한 점, 궁금한 점, 개선 아이디어가 있다면 문의를 남겨주세요.
+        </p>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-card-top">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <h2>무엇을 도와드릴까요?</h2>
+        <p>
+          건의 사항, 문의 사항, 버그 제보를 한 곳에서 접수할 수 있습니다.
+        </p>
+      </div>
+    </section>
+
+    <section class="school-section">
+      <div class="section-header">
+        <div>
+          <span class="section-label">SUPPORT TYPE</span>
+          <h2>문의 유형</h2>
+          <p>문의하려는 유형을 선택한 뒤 내용을 작성하세요.</p>
+        </div>
+      </div>
+
+      <div class="school-list">
+        <a href="/support?type=suggestion" class="school-card">
+          <div>
+            <span class="school-badge">SUGGESTION</span>
+            <h3>건의 사항</h3>
+            <p>SchoolHub에 추가되었으면 하는 기능이나 개선 의견을 남길 수 있습니다.</p>
+          </div>
+        </a>
+
+        <a href="/support?type=inquiry" class="school-card">
+          <div>
+            <span class="school-badge">INQUIRY</span>
+            <h3>문의 사항</h3>
+            <p>서비스 이용 중 궁금한 점이나 확인이 필요한 내용을 문의할 수 있습니다.</p>
+          </div>
+        </a>
+
+        <a href="/support?type=bug" class="school-card">
+          <div>
+            <span class="school-badge">BUG</span>
+            <h3>버그 제보</h3>
+            <p>오류, 화면 깨짐, 작동하지 않는 기능 등을 제보할 수 있습니다.</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="post-form-section">
+      <div class="post-form-header">
+        <h2>문의 작성</h2>
+        <p>접수된 내용은 관리자가 확인합니다.</p>
+      </div>
+
+      <% if (submitted) { %>
+        <div class="success-box">
+          문의가 접수되었습니다. 관리자가 확인 후 처리합니다.
+        </div>
+      <% } %>
+
+      <% if (error) { %>
+        <div class="error-box">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/support" method="POST" class="post-form">
+        <label>
+          문의 유형
+          <select name="ticket_type" required>
+            <option value="">문의 유형을 선택하세요</option>
+
+            <% Object.keys(supportTypes).forEach(type => { %>
+              <option
+                value="<%= type %>"
+                <%= selectedType === type ? "selected" : "" %>
+              >
+                <%= supportTypes[type] %>
+              </option>
+            <% }) %>
+          </select>
+        </label>
+
+        <label>
+          닉네임
+          <input
+            type="text"
+            name="nickname"
+            placeholder="비워두면 익명으로 접수됩니다."
+          />
+        </label>
+
+        <label>
+          연락처 또는 이메일
+          <input
+            type="text"
+            name="contact"
+            placeholder="답변이 필요한 경우 입력해주세요. 선택 사항입니다."
+          />
+        </label>
+
+        <label>
+          제목
+          <input
+            type="text"
+            name="title"
+            placeholder="제목을 입력하세요."
+            required
+          />
+        </label>
+
+        <label>
+          내용
+          <textarea
+            name="content"
+            placeholder="내용을 자세히 입력해주세요."
+            required
+          ></textarea>
+        </label>
+
+        <button type="submit" data-loading-text="접수 중...">
+          문의 제출
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <%- include("partials/footer") %>
+</body>
+</html>

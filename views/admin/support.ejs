@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>문의 확인 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header") %>
+
+  <main class="container">
+    <a href="/admin" class="back-link">
+      ← 관리자 메인으로 돌아가기
+    </a>
+
+    <section class="admin-page-header">
+      <div>
+        <h1>문의 확인</h1>
+        <p>건의 사항, 문의 사항, 버그 제보를 한 곳에서 확인합니다.</p>
+      </div>
+    </section>
+
+    <section class="admin-board-tools">
+      <div class="category-filter">
+        <a
+          href="/admin/support"
+          class="filter-chip <%= !selectedType && !selectedStatus ? 'active' : '' %>"
+        >
+          전체
+        </a>
+
+        <% Object.keys(supportTypes).forEach(type => { %>
+          <a
+            href="/admin/support?type=<%= type %>"
+            class="filter-chip <%= selectedType === type ? 'active' : '' %>"
+          >
+            <%= supportTypes[type] %>
+          </a>
+        <% }) %>
+      </div>
+
+      <form
+        class="admin-board-search"
+        action="/admin/support"
+        method="GET"
+        data-allow-multiple-submit="true"
+      >
+        <% if (selectedType) { %>
+          <input type="hidden" name="type" value="<%= selectedType %>" />
+        <% } %>
+
+        <select name="status">
+          <option value="">전체 상태</option>
+
+          <% Object.keys(supportStatuses).forEach(status => { %>
+            <option
+              value="<%= status %>"
+              <%= selectedStatus === status ? "selected" : "" %>
+            >
+              <%= supportStatuses[status] %>
+            </option>
+          <% }) %>
+        </select>
+
+        <input
+          type="text"
+          name="q"
+          value="<%= searchQuery %>"
+          placeholder="제목, 내용, 닉네임 검색"
+          autocomplete="off"
+        />
+
+        <button type="submit">검색</button>
+
+        <% if (selectedType || selectedStatus || searchQuery) { %>
+          <a href="/admin/support" class="reset-search">
+            초기화
+          </a>
+        <% } %>
+      </form>
+    </section>
+
+    <% if (tickets.length === 0) { %>
+      <div class="empty-box">
+        조건에 맞는 문의가 없습니다.
+      </div>
+    <% } else { %>
+      <div class="admin-board-list">
+        <% tickets.forEach(ticket => { %>
+          <a
+            href="/admin/support/<%= ticket.id %>"
+            class="admin-board-row"
+          >
+            <div>
+              <div class="admin-board-row-meta">
+                <% if (ticket.status === "resolved") { %>
+                  <span class="status-approved">처리 완료</span>
+                <% } else if (ticket.status === "processing") { %>
+                  <span class="status-pending">처리 중</span>
+                <% } else { %>
+                  <span class="status-pending">접수됨</span>
+                <% } %>
+
+                <span><%= supportTypes[ticket.ticket_type] %></span>
+              </div>
+
+              <h2><%= ticket.title %></h2>
+
+              <p>
+                작성자: <%= ticket.nickname %> ·
+                <%= new Date(ticket.created_at).toLocaleString("ko-KR") %>
+              </p>
+            </div>
+
+            <strong>확인</strong>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>
