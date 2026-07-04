@@ -12,12 +12,14 @@
   margin: 0 0 8px;
   font-size: clamp(30px, 5vw, 46px);
   color: #172554;
+  line-height: 1.1;
 }
 
 .admin-page-header p,
 .admin-form-desc {
   margin: 0;
   color: var(--muted);
+  line-height: 1.7;
 }
 
 .admin-write-button {
@@ -39,7 +41,6 @@
   transform: translateY(-2px);
   background: var(--primary-dark);
 }
-
 
 .admin-site-header {
   position: sticky;
@@ -75,6 +76,11 @@
   gap: 8px;
   overflow-x: auto;
   padding: 8px 0;
+  scrollbar-width: none;
+}
+
+.admin-site-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-site-nav a {
@@ -134,11 +140,13 @@
   margin: 6px 0 0;
   color: #d1d5db;
   font-size: 14px;
+  line-height: 1.6;
 }
 
 .admin-footer-copy {
   text-align: right;
 }
+
 @media (max-width: 950px) {
   .admin-site-header-inner {
     grid-template-columns: 1fr auto;
@@ -152,32 +160,72 @@
   }
 }
 
+@media (max-width: 700px) {
+  .admin-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .admin-page-header h1,
+  .admin-form-title {
+    font-size: clamp(30px, 10vw, 42px);
+  }
+
+  .admin-page-header p,
+  .admin-form-desc {
+    font-size: 15px;
+  }
+
+  .admin-write-button {
+    width: 100%;
+    min-height: 48px;
+  }
+}
+
 @media (max-width: 650px) {
   .admin-site-header-inner {
+    width: min(100% - 28px, 1280px);
+    min-height: auto;
     grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px 0;
+  }
+
+  .admin-site-logo {
+    font-size: 21px;
+  }
+
+  .admin-site-nav {
+    width: 100%;
+    padding: 4px 0;
+  }
+
+  .admin-site-nav a {
+    padding: 9px 11px;
+    font-size: 13px;
+  }
+
+  .admin-header-logout {
+    width: 100%;
   }
 
   .admin-header-logout button {
     width: 100%;
+    min-height: 42px;
+  }
+
+  .admin-site-footer {
+    padding: 28px 0;
   }
 
   .admin-site-footer-inner {
+    width: min(100% - 28px, 1280px);
     flex-direction: column;
     align-items: flex-start;
   }
 
   .admin-footer-copy {
     text-align: left;
-  }
-}
-
-@media (max-width: 700px) {
-  .admin-page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .admin-write-button {
-    width: 100%;
   }
 }

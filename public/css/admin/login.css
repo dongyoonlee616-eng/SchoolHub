@@ -19,11 +19,13 @@
   margin: 0 0 8px;
   font-size: 32px;
   color: #172554;
+  line-height: 1.1;
 }
 
 .admin-login-box p {
   margin: 0;
   color: var(--muted);
+  line-height: 1.7;
 }
 
 .admin-form {
@@ -43,7 +45,7 @@
   padding: 14px 15px;
   border: 1px solid #d1d5db;
   border-radius: 14px;
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
 }
 
@@ -54,6 +56,7 @@
 
 .admin-form button {
   width: 100%;
+  min-height: 50px;
   padding: 15px;
   background: #111827;
   color: white;
@@ -71,4 +74,21 @@
   border-radius: 14px;
   color: #b91c1c;
   font-weight: 800;
+}
+
+@media (max-width: 520px) {
+  .admin-login-container {
+    padding: 22px;
+    align-items: flex-start;
+    padding-top: 54px;
+  }
+
+  .admin-login-box {
+    padding: 26px;
+    border-radius: 24px;
+  }
+
+  .admin-login-box h1 {
+    font-size: 30px;
+  }
 }
