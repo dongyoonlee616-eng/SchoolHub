@@ -12,12 +12,14 @@
   font-size: clamp(42px, 6vw, 68px);
   color: #172554;
   letter-spacing: -0.06em;
+  line-height: 1.05;
 }
 
 .school-header p {
   margin-top: 14px;
   font-size: 18px;
   color: var(--muted);
+  line-height: 1.7;
 }
 
 .school-dashboard {
@@ -68,11 +70,6 @@
   font-weight: 900;
 }
 
-.board-card::after {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
 .menu-card:hover {
   transform: translateY(-6px);
   border-color: #a5b4fc;
@@ -87,6 +84,11 @@
 
 .board-card:hover {
   box-shadow: 0 28px 62px rgba(59, 91, 219, 0.34);
+}
+
+.board-card::after {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 .card-badge {
@@ -112,6 +114,7 @@
   margin: 0 0 10px;
   font-size: 36px;
   letter-spacing: -0.04em;
+  line-height: 1.15;
 }
 
 .menu-card p {
@@ -219,6 +222,9 @@
   font-weight: 700;
 }
 
+/* ==============================
+   Tablet
+============================== */
 @media (max-width: 1100px) {
   .school-dashboard {
     grid-template-columns: 1fr;
@@ -229,50 +235,124 @@
   }
 }
 
-@media (max-width: 700px) {
+/* ==============================
+   Mobile
+============================== */
+@media (max-width: 760px) {
   .container {
-    margin: 28px auto;
+    width: min(100% - 28px, 1280px);
+    margin: 30px auto;
+  }
+
+  .school-header {
+    margin-bottom: 24px;
   }
 
   .school-header h1 {
-    font-size: 38px;
+    font-size: clamp(34px, 11vw, 48px);
+    line-height: 1.05;
   }
 
   .school-header p {
+    margin-top: 12px;
     font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .school-dashboard {
+    grid-template-columns: 1fr;
+    gap: 22px;
   }
 
   .menu-grid.two-cards {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 14px;
   }
 
   .menu-card {
-    min-height: 170px;
-    padding: 22px;
+    min-height: auto;
+    padding: 24px;
+    border-radius: 24px;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "badge"
+      "title"
+      "desc"
+      "arrow";
+    align-items: start;
   }
 
   .menu-card::after {
+    grid-area: arrow;
     width: 46px;
     height: 46px;
+    margin-top: 20px;
+    border-radius: 16px;
     font-size: 22px;
   }
 
-  .menu-card h2 {
-    font-size: 30px;
+  .card-badge {
+    margin-bottom: 18px;
+    padding: 7px 10px;
+    font-size: 12px;
   }
 
   .menu-card h2 {
-    font-size: 28px;
-    margin: 18px 0 8px;
+    margin: 0 0 10px;
+    font-size: 30px;
+    line-height: 1.15;
+  }
+
+  .menu-card p {
+    font-size: 15px;
+    line-height: 1.7;
   }
 
   .notice-panel {
-    height: 360px;
-    padding: 22px;
+    height: auto;
+    max-height: none;
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .notice-panel-header {
+    padding-bottom: 16px;
   }
 
   .notice-panel-header h2 {
     font-size: 28px;
+  }
+
+  .notice-list {
+    max-height: 320px;
+    padding-right: 0;
+  }
+
+  .notice-title-link {
+    padding: 15px 16px;
+    border-radius: 15px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    width: min(100% - 22px, 1280px);
+    margin: 26px auto;
+  }
+
+  .school-header h1 {
+    font-size: 36px;
+  }
+
+  .menu-card {
+    padding: 22px;
+  }
+
+  .menu-card h2 {
+    font-size: 28px;
+  }
+
+  .notice-panel {
+    padding: 22px;
   }
 }
