@@ -65,16 +65,6 @@ SchoolHub/
 └─ PATCH_NOTES.md
 ```
 
-## v1.0.0 기준 DB 테이블
-
-- schools
-- posts
-- comments
-- admins
-- notices
-- suggestions
-- lost_items
-
 ## 주요 페이지
 
 ### 사용자 페이지
@@ -100,7 +90,7 @@ SchoolHub/
 
 ## 버전
 
-현재 버전: `v1.2.0`
+현재 버전: `v1.2.1`
 
 ## 개발자
 
