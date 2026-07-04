@@ -130,6 +130,23 @@ const migrations = [
       ON support_tickets (status, created_at DESC);
     `,
   },
+  {
+    name: "20260704_06_stabilize_support_tickets_columns",
+    sql: `
+      ALTER TABLE support_tickets
+      ADD COLUMN IF NOT EXISTS admin_memo TEXT;
+
+      ALTER TABLE support_tickets
+      ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+      ALTER TABLE support_tickets
+      ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMP;
+
+      UPDATE support_tickets
+      SET status = 'pending'
+      WHERE status NOT IN ('pending', 'resolved');
+    `,
+  },
 ];
 
 async function createBaseTables() {

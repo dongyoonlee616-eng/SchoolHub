@@ -1927,8 +1927,8 @@ router.post("/admin/support/:id/status", requireAdmin, async (req, res) => {
           admin_memo = $2,
           updated_at = CURRENT_TIMESTAMP,
           resolved_at = CASE
-            WHEN $1 = 'resolved' THEN CURRENT_TIMESTAMP
-            ELSE resolved_at
+            WHEN $1::text = 'resolved' THEN CURRENT_TIMESTAMP
+            ELSE NULL
           END
       WHERE id = $3
       `,
