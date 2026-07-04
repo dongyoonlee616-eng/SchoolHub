@@ -61,6 +61,12 @@
         </div>
       <% } %>
 
+      <% if (commentReportSubmitted) { %>
+        <div class="success-box">
+          댓글 신고가 제출되었습니다. 관리자가 확인 후 처리합니다.
+        </div>
+      <% } %>
+
       <form 
         class="comment-form" 
         action="/schools/<%= school.slug %>/posts/<%= post.id %>/comments" 
@@ -95,6 +101,10 @@
                 <strong><%= comment.nickname %></strong>
                 <span><%= new Date(comment.created_at).toLocaleString("ko-KR") %></span>
               </div>
+
+              <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/comments/<%= comment.id %>/report" class="comment-report-link">
+                신고
+              </a>
 
               <p><%= comment.content %></p>
             </article>

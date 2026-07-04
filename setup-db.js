@@ -80,6 +80,32 @@ const migrations = [
       ON post_reports (post_id);
     `,
   },  
+  {
+    name: "20260704_02_create_comment_reports",
+    sql: `
+      CREATE TABLE IF NOT EXISTS comment_reports (
+        id SERIAL PRIMARY KEY,
+        school_id INTEGER REFERENCES schools(id) ON DELETE CASCADE,
+        post_id INTEGER REFERENCES posts(id) ON DELETE SET NULL,
+        comment_id INTEGER REFERENCES comments(id) ON DELETE SET NULL,
+        reporter_nickname VARCHAR(50) NOT NULL,
+        reason VARCHAR(50) NOT NULL,
+        content TEXT NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        resolved_at TIMESTAMP
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_comment_reports_school_status_created
+      ON comment_reports (school_id, status, created_at DESC);
+
+      CREATE INDEX IF NOT EXISTS idx_comment_reports_comment_id
+      ON comment_reports (comment_id);
+
+      CREATE INDEX IF NOT EXISTS idx_comment_reports_post_id
+      ON comment_reports (post_id);
+    `,
+  },
 ];
 
 async function createBaseTables() {
@@ -172,6 +198,19 @@ async function createBaseTables() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       resolved_at TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS comment_reports (
+    id SERIAL PRIMARY KEY,
+    school_id INTEGER REFERENCES schools(id) ON DELETE CASCADE,
+    post_id INTEGER REFERENCES posts(id) ON DELETE SET NULL,
+    comment_id INTEGER REFERENCES comments(id) ON DELETE SET NULL,
+    reporter_nickname VARCHAR(50) NOT NULL,
+    reason VARCHAR(50) NOT NULL,
+    content TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP
+  );
 
     CREATE TABLE IF NOT EXISTS schema_migrations (
       id SERIAL PRIMARY KEY,

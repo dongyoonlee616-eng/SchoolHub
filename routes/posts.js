@@ -180,6 +180,7 @@ router.get("/schools/:slug/posts/:id", async (req, res) => {
       comments: commentsResult.rows,
       commentSubmitted: req.query.commentSubmitted === "1",
       reportSubmitted: req.query.reportSubmitted === "1",
+      commentReportSubmitted: req.query.commentReportSubmitted === "1",
     });
   } catch (error) {
     console.error(error);
@@ -322,6 +323,158 @@ router.post("/schools/:slug/posts/:id/report", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("신고를 저장하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 댓글 신고 페이지
+router.get("/schools/:slug/posts/:postId/comments/:commentId/report", async (req, res) => {
+  try {
+    const { slug, postId, commentId } = req.params;
+
+    const school = await getSchoolBySlug(slug);
+
+    if (!school) {
+      return renderSchoolNotFound(res);
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+        comments.*,
+        posts.title AS post_title,
+        posts.id AS post_id
+      FROM comments
+      JOIN posts ON comments.post_id = posts.id
+      WHERE comments.id = $1
+        AND comments.post_id = $2
+        AND posts.school_id = $3
+        AND comments.status = 'approved'
+        AND posts.status = 'approved'
+      `,
+      [commentId, postId, school.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).render("404", {
+        school,
+        title: "댓글을 찾을 수 없습니다.",
+        message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 댓글입니다.",
+        backLabel: "게시글로 돌아가기",
+        backUrl: `/schools/${school.slug}/posts/${postId}`,
+      });
+    }
+
+    res.render("comment-report", {
+      school,
+      comment: result.rows[0],
+      error: null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("댓글 신고 페이지를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 댓글 신고 처리
+router.post("/schools/:slug/posts/:postId/comments/:commentId/report", async (req, res) => {
+  try {
+    const { slug, postId, commentId } = req.params;
+    const { reporter_nickname, reason, content } = req.body;
+
+    const allowedReasons = [
+      "욕설/비방",
+      "개인정보 노출",
+      "허위사실",
+      "도배/스팸",
+      "기타",
+    ];
+
+    const school = await getSchoolBySlug(slug);
+
+    if (!school) {
+      return renderSchoolNotFound(res);
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+        comments.*,
+        posts.title AS post_title,
+        posts.id AS post_id
+      FROM comments
+      JOIN posts ON comments.post_id = posts.id
+      WHERE comments.id = $1
+        AND comments.post_id = $2
+        AND posts.school_id = $3
+        AND comments.status = 'approved'
+        AND posts.status = 'approved'
+      `,
+      [commentId, postId, school.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).render("404", {
+        school,
+        title: "댓글을 찾을 수 없습니다.",
+        message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 댓글입니다.",
+        backLabel: "게시글로 돌아가기",
+        backUrl: `/schools/${school.slug}/posts/${postId}`,
+      });
+    }
+
+    const comment = result.rows[0];
+
+    const reporterNicknameValue =
+      reporter_nickname && reporter_nickname.trim()
+        ? reporter_nickname.trim()
+        : "익명";
+
+    const reasonValue = reason?.trim();
+    const contentValue = content?.trim();
+
+    if (!reasonValue || !contentValue) {
+      return res.render("comment-report", {
+        school,
+        comment,
+        error: "신고 사유와 상세 내용을 입력해주세요.",
+      });
+    }
+
+    if (!allowedReasons.includes(reasonValue)) {
+      return res.render("comment-report", {
+        school,
+        comment,
+        error: "올바르지 않은 신고 사유입니다.",
+      });
+    }
+
+    await pool.query(
+      `
+      INSERT INTO comment_reports (
+        school_id,
+        post_id,
+        comment_id,
+        reporter_nickname,
+        reason,
+        content,
+        status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+      `,
+      [
+        school.id,
+        postId,
+        commentId,
+        reporterNicknameValue,
+        reasonValue,
+        contentValue,
+      ]
+    );
+
+    res.redirect(`/schools/${school.slug}/posts/${postId}?commentReportSubmitted=1`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("댓글 신고를 저장하는 중 오류가 발생했습니다.");
   }
 });
 

@@ -214,6 +214,26 @@
   font-weight: 800;
 }
 
+.comment-actions {
+  margin-top: 10px;
+}
+
+.comment-report-link {
+  display: inline-flex;
+  padding: 7px 10px;
+  background: #f3f4f6;
+  color: #6b7280;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.comment-report-link:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 @media (max-width: 700px) {
   .post-detail-card,
   .comment-section {

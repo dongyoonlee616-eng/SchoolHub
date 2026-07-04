@@ -165,13 +165,25 @@ router.get("/admin/schools/:slug/dashboard", requireAdmin, async (req, res) => {
 
     const reportsCountResult = await pool.query(
       `
-      SELECT COUNT(*) AS count
-      FROM post_reports
-      WHERE school_id = $1
-        AND status = 'pending'
+      SELECT
+        (
+          SELECT COUNT(*)
+          FROM post_reports
+          WHERE school_id = $1
+            AND status = 'pending'
+        )
+        +
+        (
+          SELECT COUNT(*)
+          FROM comment_reports
+          WHERE school_id = $1
+            AND status = 'pending'
+        ) AS count
       `,
       [school.id]
     );
+
+const reportsCount = Number(reportsCountResult.rows[0].count);
 
 const reportsCount = Number(reportsCountResult.rows[0].count);
 
@@ -1384,7 +1396,7 @@ router.post("/admin/schools/:id/delete", requireAdmin, async (req, res) => {
   }
 });
 
-// 학교별 게시글 신고 관리
+// 학교별 신고 관리
 router.get("/admin/schools/:slug/reports", requireAdmin, async (req, res) => {
   try {
     const { slug } = req.params;
@@ -1397,29 +1409,67 @@ router.get("/admin/schools/:slug/reports", requireAdmin, async (req, res) => {
     }
 
     const allowedStatuses = ["pending", "resolved"];
-    const conditions = ["post_reports.school_id = $1"];
+    let selectedStatus = "";
     const values = [school.id];
 
-    let selectedStatus = "";
+    let postStatusFilter = "";
+    let commentStatusFilter = "";
 
     if (status && allowedStatuses.includes(status)) {
-      values.push(status);
-      conditions.push(`post_reports.status = $${values.length}`);
       selectedStatus = status;
+      values.push(status);
+      postStatusFilter = `AND post_reports.status = $2`;
+      commentStatusFilter = `AND comment_reports.status = $2`;
     }
 
     const result = await pool.query(
       `
-      SELECT
-        post_reports.*,
-        posts.title AS post_title,
-        posts.nickname AS post_nickname
-      FROM post_reports
-      LEFT JOIN posts ON post_reports.post_id = posts.id
-      WHERE ${conditions.join(" AND ")}
+      SELECT *
+      FROM (
+        SELECT
+          'post' AS report_type,
+          post_reports.id,
+          post_reports.school_id,
+          post_reports.post_id,
+          NULL::integer AS comment_id,
+          post_reports.reporter_nickname,
+          post_reports.reason,
+          post_reports.content,
+          post_reports.status,
+          post_reports.created_at,
+          posts.title AS target_title,
+          posts.nickname AS target_nickname,
+          NULL::text AS comment_preview
+        FROM post_reports
+        LEFT JOIN posts ON post_reports.post_id = posts.id
+        WHERE post_reports.school_id = $1
+        ${postStatusFilter}
+
+        UNION ALL
+
+        SELECT
+          'comment' AS report_type,
+          comment_reports.id,
+          comment_reports.school_id,
+          comment_reports.post_id,
+          comment_reports.comment_id,
+          comment_reports.reporter_nickname,
+          comment_reports.reason,
+          comment_reports.content,
+          comment_reports.status,
+          comment_reports.created_at,
+          posts.title AS target_title,
+          comments.nickname AS target_nickname,
+          comments.content AS comment_preview
+        FROM comment_reports
+        LEFT JOIN posts ON comment_reports.post_id = posts.id
+        LEFT JOIN comments ON comment_reports.comment_id = comments.id
+        WHERE comment_reports.school_id = $1
+        ${commentStatusFilter}
+      ) AS reports
       ORDER BY
-        CASE WHEN post_reports.status = 'pending' THEN 0 ELSE 1 END,
-        post_reports.created_at DESC
+        CASE WHEN reports.status = 'pending' THEN 0 ELSE 1 END,
+        reports.created_at DESC
       `,
       values
     );
@@ -1432,7 +1482,7 @@ router.get("/admin/schools/:slug/reports", requireAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("게시글 신고 목록을 불러오는 중 오류가 발생했습니다.");
+    res.status(500).send("신고 목록을 불러오는 중 오류가 발생했습니다.");
   }
 });
 
@@ -1565,6 +1615,144 @@ router.post("/admin/schools/:slug/reports/:id/delete-post", requireAdmin, async 
   } catch (error) {
     console.error(error);
     res.status(500).send("신고된 게시글을 삭제하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 댓글 신고 상세
+router.get("/admin/schools/:slug/reports/comment/:id", requireAdmin, async (req, res) => {
+  try {
+    const { slug, id } = req.params;
+
+    const school = await getAdminSchoolBySlug(slug);
+
+    if (!school) {
+      return renderAdminSchoolNotFound(res);
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+        comment_reports.*,
+        posts.title AS post_title,
+        posts.content AS post_content,
+        posts.nickname AS post_nickname,
+        comments.content AS comment_content,
+        comments.nickname AS comment_nickname,
+        comments.created_at AS comment_created_at
+      FROM comment_reports
+      LEFT JOIN posts ON comment_reports.post_id = posts.id
+      LEFT JOIN comments ON comment_reports.comment_id = comments.id
+      WHERE comment_reports.id = $1
+        AND comment_reports.school_id = $2
+      `,
+      [id, school.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).render("404", {
+        title: "신고를 찾을 수 없습니다.",
+        message: "존재하지 않는 댓글 신고입니다.",
+        backLabel: "신고 관리로 돌아가기",
+        backUrl: `/admin/schools/${school.slug}/reports`,
+      });
+    }
+
+    res.render("admin/comment-report-detail", {
+      admin: req.session.admin,
+      school,
+      report: result.rows[0],
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("댓글 신고 상세를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+router.post("/admin/schools/:slug/reports/comment/:id/resolve", requireAdmin, async (req, res) => {
+  try {
+    const { slug, id } = req.params;
+
+    const school = await getAdminSchoolBySlug(slug);
+
+    if (!school) {
+      return renderAdminSchoolNotFound(res);
+    }
+
+    await pool.query(
+      `
+      UPDATE comment_reports
+      SET status = 'resolved',
+          resolved_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+        AND school_id = $2
+      `,
+      [id, school.id]
+    );
+
+    res.redirect(`/admin/schools/${school.slug}/reports/comment/${id}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("댓글 신고를 처리하는 중 오류가 발생했습니다.");
+  }
+});
+
+router.post("/admin/schools/:slug/reports/comment/:id/delete-comment", requireAdmin, async (req, res) => {
+  try {
+    const { slug, id } = req.params;
+
+    const school = await getAdminSchoolBySlug(slug);
+
+    if (!school) {
+      return renderAdminSchoolNotFound(res);
+    }
+
+    const reportResult = await pool.query(
+      `
+      SELECT *
+      FROM comment_reports
+      WHERE id = $1
+        AND school_id = $2
+      `,
+      [id, school.id]
+    );
+
+    if (reportResult.rows.length === 0) {
+      return res.status(404).render("404", {
+        title: "신고를 찾을 수 없습니다.",
+        message: "존재하지 않는 댓글 신고입니다.",
+        backLabel: "신고 관리로 돌아가기",
+        backUrl: `/admin/schools/${school.slug}/reports`,
+      });
+    }
+
+    const report = reportResult.rows[0];
+
+    if (report.comment_id && report.post_id) {
+      await pool.query(
+        `
+        DELETE FROM comments
+        WHERE id = $1
+          AND post_id = $2
+        `,
+        [report.comment_id, report.post_id]
+      );
+    }
+
+    await pool.query(
+      `
+      UPDATE comment_reports
+      SET status = 'resolved',
+          resolved_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+        AND school_id = $2
+      `,
+      [id, school.id]
+    );
+
+    res.redirect(`/admin/schools/${school.slug}/reports`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("신고된 댓글을 삭제하는 중 오류가 발생했습니다.");
   }
 });
 

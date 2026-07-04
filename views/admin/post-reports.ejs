@@ -55,23 +55,32 @@
       <div class="admin-board-list">
         <% reports.forEach(report => { %>
           <a
-            href="/admin/schools/<%= school.slug %>/reports/<%= report.id %>"
-            class="admin-board-row"
+          href="/admin/schools/<%= school.slug %>/reports/<%= report.report_type === 'comment' ? 'comment/' : '' %><%= report.id %>"
+          class="admin-board-row"
           >
             <div>
-              <div class="admin-board-row-meta">
+                <div class="admin-board-row-meta">
                 <span class="<%= report.status === 'resolved' ? 'status-approved' : 'status-pending' %>">
-                  <%= report.status === 'resolved' ? '처리 완료' : '처리 대기' %>
+                    <%= report.status === 'resolved' ? '처리 완료' : '처리 대기' %>
                 </span>
+
+                <span>
+                    <%= report.report_type === 'comment' ? '댓글 신고' : '게시글 신고' %>
+                </span>
+
                 <span><%= report.reason %></span>
-              </div>
+                </div>
 
-              <h2><%= report.post_title || "삭제된 게시글" %></h2>
+                <h2><%= report.target_title || "삭제된 게시글" %></h2>
 
-              <p>
+                <% if (report.report_type === "comment" && report.comment_preview) { %>
+                <p>댓글 내용: <%= report.comment_preview %></p>
+                <% } %>
+
+                <p>
                 신고자: <%= report.reporter_nickname %> ·
                 <%= new Date(report.created_at).toLocaleString("ko-KR") %>
-              </p>
+                </p>
             </div>
 
             <strong>확인</strong>
