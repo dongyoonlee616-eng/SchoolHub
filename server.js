@@ -32,6 +32,18 @@ app.use("/", adminRoutes);
 app.use("/", suggestionRoutes);
 app.use("/", lostItemRoutes);
 
+app.get('/privacy', (req, res) => {
+  res.render('privacy', {
+    title: '개인정보 처리방침'
+  });
+});
+
+app.get('/terms', (req, res) => {
+  res.render('terms', {
+    title: '이용약관'
+  });
+});
+
 app.use((req, res) => {
   res.status(404).render("404", {
     school: null,
