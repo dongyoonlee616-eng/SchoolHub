@@ -356,3 +356,74 @@
     padding: 22px;
   }
 }
+
+/* ==============================
+   v1.2.1 Mobile School Redesign
+============================== */
+@media (max-width: 760px) {
+  .school-header {
+    margin-bottom: 20px;
+  }
+
+  .school-header h1 {
+    font-size: clamp(32px, 10vw, 42px);
+  }
+
+  .school-header p {
+    font-size: 15px;
+    color: #64748b;
+  }
+
+  .school-dashboard {
+    gap: 18px;
+  }
+
+  .menu-card {
+    padding: 20px;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.045);
+    border-color: #e5e7eb;
+  }
+
+  .menu-card:hover {
+    transform: none;
+  }
+
+  .board-card {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+  }
+
+  .card-badge {
+    margin-bottom: 14px;
+  }
+
+  .menu-card h2 {
+    font-size: 26px;
+  }
+
+  .menu-card::after {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    margin-top: 18px;
+  }
+
+  .notice-panel {
+    padding: 20px;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.045);
+  }
+
+  .notice-panel-header h2 {
+    font-size: 25px;
+  }
+
+  .notice-title-link {
+    padding: 14px 15px;
+    border-radius: 14px;
+    background: #f8faff;
+  }
+}

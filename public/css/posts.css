@@ -371,3 +371,69 @@
     padding: 16px;
   }
 }
+
+/* ==============================
+   v1.2.1 Mobile Posts Redesign
+============================== */
+@media (max-width: 650px) {
+  .page-header {
+    padding-bottom: 18px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(30px, 10vw, 38px);
+  }
+
+  .write-button {
+    box-shadow: none;
+    border-radius: 16px;
+    background: #2563eb;
+  }
+
+  .post-tools {
+    padding: 14px;
+    border-radius: 18px;
+    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.045);
+  }
+
+  .filter-chip {
+    background: white;
+    border: 1px solid #e5e7eb;
+  }
+
+  .filter-chip.active {
+    border-color: var(--primary);
+  }
+
+  .post-search-form select,
+  .post-search-form input,
+  .post-search-form button,
+  .reset-search {
+    border-radius: 15px;
+  }
+
+  .post-row {
+    padding: 16px;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+  }
+
+  .post-row:hover {
+    transform: none;
+  }
+
+  .post-row h2 {
+    font-size: 17px;
+  }
+
+  .post-row p {
+    background: #f8faff;
+    color: #64748b;
+  }
+
+  .board-guide-row {
+    border-radius: 17px;
+    box-shadow: 0 7px 18px rgba(59, 91, 219, 0.06);
+  }
+}

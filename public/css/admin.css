@@ -6,3 +6,103 @@
 @import url("/css/admin/suggestions.css");
 @import url("/css/admin/reviews.css");
 @import url("/css/admin/board.css");
+
+
+/* ==============================
+   v1.2.1 Admin Mobile Redesign
+============================== */
+@media (max-width: 760px) {
+  .admin-site-header {
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid rgba(199, 210, 254, 0.75);
+    backdrop-filter: blur(18px);
+  }
+
+  .admin-site-logo {
+    color: #172554;
+  }
+
+  .admin-site-nav a {
+    background: #f3f4f6;
+    color: #475569;
+    border: 1px solid #e5e7eb;
+  }
+
+  .admin-site-nav a:hover {
+    background: #111827;
+    color: white;
+    border-color: #111827;
+  }
+
+  .admin-header-logout button {
+    background: #111827;
+    color: white;
+    border-radius: 15px;
+  }
+
+  .admin-page-header h1,
+  .admin-header h1,
+  .admin-form-title {
+    font-size: clamp(30px, 10vw, 38px);
+  }
+
+  .admin-card,
+  .admin-service-card,
+  .admin-board-tools,
+  .admin-board-row,
+  .admin-board-detail-card,
+  .admin-comment-manage-section,
+  .notice-admin-card,
+  .notice-form,
+  .pending-row,
+  .pending-comment-row,
+  .review-detail-card,
+  .review-post-card,
+  .review-comment-card,
+  .school-admin-card {
+    border-radius: 18px !important;
+    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.045) !important;
+  }
+
+  .admin-write-button,
+  .logout-button,
+  .admin-board-search button,
+  .danger-admin-button,
+  .danger-small-button,
+  .review-actions button,
+  .notice-form button,
+  .school-admin-actions a,
+  .school-admin-actions button {
+    border-radius: 15px !important;
+    box-shadow: none !important;
+  }
+
+  .admin-board-row:hover,
+  .admin-card:hover,
+  .admin-service-card:hover,
+  .pending-row:hover,
+  .pending-comment-row:hover,
+  .school-admin-card:hover {
+    transform: none;
+  }
+
+  .admin-board-search input,
+  .admin-board-search select,
+  .admin-school-filter,
+  .notice-form input,
+  .notice-form select,
+  .notice-form textarea,
+  .admin-form input {
+    border-radius: 15px !important;
+    background: white;
+  }
+
+  .filter-chip {
+    background: white;
+    border: 1px solid #e5e7eb;
+  }
+
+  .filter-chip.active {
+    border-color: var(--primary);
+  }
+}

@@ -411,3 +411,56 @@
     padding: 20px;
   }
 }
+
+/* ==============================
+   v1.2.1 Mobile Lost Items Redesign
+============================== */
+@media (max-width: 650px) {
+  .lost-header h1,
+  .lost-form-title {
+    font-size: clamp(30px, 10vw, 38px);
+  }
+
+  .lost-write-button {
+    background: #2563eb;
+    box-shadow: none;
+    border-radius: 16px;
+  }
+
+  .lost-tools {
+    padding: 14px;
+    border-radius: 18px;
+    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.045);
+  }
+
+  .filter-chip {
+    background: white;
+    border: 1px solid #e5e7eb;
+  }
+
+  .filter-chip.active {
+    border-color: var(--primary);
+  }
+
+  .lost-row,
+  .lost-form,
+  .lost-detail-card {
+    border-radius: 18px;
+    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.045);
+  }
+
+  .lost-row:hover {
+    transform: none;
+  }
+
+  .lost-form input,
+  .lost-form textarea,
+  .lost-form button {
+    border-radius: 15px;
+  }
+
+  .lost-form button {
+    background: #2563eb;
+    box-shadow: none;
+  }
+}

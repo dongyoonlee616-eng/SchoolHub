@@ -655,3 +655,69 @@ p {
     padding: 22px;
   }
 }
+
+/* ==============================
+   v1.2.1 Mobile App-like Polish
+============================== */
+@media (max-width: 760px) {
+  :root {
+    --shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    --radius: 18px;
+  }
+
+  body {
+    background:
+      linear-gradient(180deg, #f8faff 0%, #f4f6fb 48%, #eef2ff 100%);
+  }
+
+  .site-header {
+    background: rgba(1, 1, 34, 0.932);
+    border-bottom: 1px solid rgba(199, 210, 254, 0.75);
+    backdrop-filter: blur(18px);
+  }
+
+  .site-logo {
+    color: #ffffff;
+  }
+
+  .site-nav {
+    gap: 7px;
+  }
+
+  .site-nav a {
+    background: #efefff;
+    color: #475569;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.03);
+  }
+
+  .site-nav a:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  .container {
+    margin-top: 24px;
+  }
+
+  .back-link {
+    padding: 8px 11px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    box-shadow: 0 5px 14px rgba(15, 23, 42, 0.04);
+  }
+
+  .empty-box,
+  .notice-box,
+  .not-found-card,
+  .policy-container {
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}

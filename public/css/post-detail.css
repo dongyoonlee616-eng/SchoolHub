@@ -337,3 +337,140 @@
     padding: 16px;
   }
 }
+
+/* ==============================
+   v1.2.1 Mobile Detail Redesign
+============================== */
+@media (max-width: 700px) {
+  .post-detail-card,
+  .comment-section {
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.045);
+  }
+
+  .post-detail-header h1 {
+    font-size: clamp(29px, 9vw, 38px);
+  }
+
+  .post-detail-meta span {
+    background: #eef2ff;
+  }
+
+  .post-detail-actions {
+    gap: 8px;
+  }
+
+  .post-detail-actions a {
+    border-radius: 14px;
+    box-shadow: none;
+  }
+
+  .comment-header h2 {
+    font-size: 25px;
+  }
+
+  .comment-card {
+    background: #f8faff;
+    border-radius: 16px;
+  }
+
+  .comment-form input,
+  .comment-form textarea,
+  .comment-form button {
+    border-radius: 15px;
+  }
+}
+
+/* ==============================
+   Mobile post detail compact header - fixed
+============================== */
+@media (max-width: 700px) {
+  .post-detail-card {
+    padding: 20px;
+  }
+
+  .post-detail-header {
+    position: relative;
+    padding-bottom: 18px;
+  }
+
+  .post-top-row {
+    display: block;
+  }
+
+  .post-detail-header h1 {
+    margin: 0 0 10px;
+    padding-right: 116px;
+    font-size: clamp(28px, 8vw, 34px);
+    line-height: 1.2;
+  }
+
+  .top-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: auto;
+  }
+
+  .post-detail-actions {
+    display: flex !important;
+    justify-content: flex-end;
+    gap: 5px;
+    width: auto !important;
+  }
+
+  .post-detail-actions a {
+    width: auto !important;
+    flex: none !important;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 900;
+    border-radius: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .post-detail-meta {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 3px;
+    margin-top: 0;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .post-detail-meta::-webkit-scrollbar {
+    display: none;
+  }
+
+  .post-detail-meta span {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 999px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .post-detail-content {
+    margin-top: 22px;
+  }
+
+  .comment-section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 430px) {
+  .post-detail-header h1 {
+    padding-right: 104px;
+  }
+
+  .post-detail-actions a {
+    padding: 5px 7px;
+    font-size: 10px;
+  }
+}

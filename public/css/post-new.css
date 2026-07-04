@@ -160,3 +160,33 @@ h1 {
     padding: 20px;
   }
 }
+
+/* ==============================
+   v1.2.1 Mobile Form Redesign
+============================== */
+@media (max-width: 600px) {
+  h1,
+  .post-form-header h1,
+  .post-form-header h2 {
+    font-size: clamp(29px, 9vw, 38px);
+  }
+
+  .post-form {
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.045);
+  }
+
+  .post-form input,
+  .post-form select,
+  .post-form textarea {
+    border-radius: 15px;
+    background: white;
+  }
+
+  .post-form button {
+    border-radius: 16px;
+    box-shadow: none;
+    background: #2563eb;
+  }
+}
