@@ -96,11 +96,9 @@
             <div>
               <div class="admin-board-row-meta">
                 <% if (ticket.status === "resolved") { %>
-                  <span class="status-approved">처리 완료</span>
-                <% } else if (ticket.status === "processing") { %>
-                  <span class="status-pending">처리 중</span>
+                    <span class="status-approved">접수완료</span>
                 <% } else { %>
-                  <span class="status-pending">접수됨</span>
+                    <span class="status-pending">미접수</span>
                 <% } %>
 
                 <span><%= supportTypes[ticket.ticket_type] %></span>

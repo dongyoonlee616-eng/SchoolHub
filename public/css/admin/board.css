@@ -258,6 +258,48 @@
 .admin-board-detail-card {
   overflow: hidden;
 }
+
+.admin-board-search select {
+  min-width: 130px;
+  height: 46px;
+  padding: 0 42px 0 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 15px;
+  background-color: white;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #6b7280 50%),
+    linear-gradient(135deg, #6b7280 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 19px,
+    calc(100% - 12px) 19px;
+  background-size:
+    6px 6px,
+    6px 6px;
+  background-repeat: no-repeat;
+  transition: 0.18s;
+}
+
+.admin-board-search select:hover {
+  border-color: #a5b4fc;
+}
+
+.admin-board-search select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(59, 91, 219, 0.12);
+}
+
+@media (max-width: 520px) {
+  .admin-board-search select {
+    width: 100%;
+  }
+}
+
 @media (max-width: 700px) {
   .post-detail-meta {
     flex-direction: column;

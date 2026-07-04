@@ -49,9 +49,8 @@ const SUPPORT_TYPES = {
 };
 
 const SUPPORT_STATUSES = {
-  pending: "접수됨",
-  processing: "처리 중",
-  resolved: "처리 완료",
+  pending: "미접수",
+  resolved: "접수완료",
 };
 
 function isValidSupportType(type) {
