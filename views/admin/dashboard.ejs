@@ -68,12 +68,17 @@
           <p>관리할 학교의 관리자 대시보드로 이동하세요.</p>
         </div>
 
-        <div class="search-box">
+        <div class="search-box admin-school-search-box">
           <input
             type="text"
             id="schoolSearchInput"
             placeholder="학교 이름 검색"
           />
+
+          <select id="schoolFilterSelect" class="admin-school-filter">
+            <option value="all">전체 학교</option>
+            <option value="needsReview">승인 대기 있음</option>
+          </select>
         </div>
       </div>
 
@@ -84,16 +89,31 @@
       <% } else { %>
         <div class="school-list" id="schoolList">
           <% schools.forEach(school => { %>
+            <%
+              const pendingPostsCount = Number(school.pending_posts_count || 0);
+              const pendingCommentsCount = Number(school.pending_comments_count || 0);
+              const pendingLostItemsCount = Number(school.pending_lost_items_count || 0);
+              const pendingReviewCount = pendingPostsCount + pendingCommentsCount + pendingLostItemsCount;
+            %>
+
             <a
               href="/admin/schools/<%= school.slug %>/dashboard"
               class="school-card"
               data-school-name="<%= school.name %>"
+              data-school-slug="<%= school.slug %>"
+              data-pending-review="<%= pendingReviewCount %>"
             >
               <div>
                 <% if (school.is_active) { %>
                   <span class="school-badge">활성</span>
                 <% } else { %>
                   <span class="school-badge">비활성</span>
+                <% } %>
+
+                <% if (pendingReviewCount > 0) { %>
+                  <span class="school-badge pending-badge">
+                    승인 대기 <%= pendingReviewCount %>개
+                  </span>
                 <% } %>
 
                 <h3><%= school.name %></h3>
@@ -104,13 +124,22 @@
                   공지 <%= school.notices_count %>개 /
                   분실물 <%= school.lost_items_count %>개
                 </p>
+
+                <% if (pendingReviewCount > 0) { %>
+                  <p class="school-pending-summary">
+                    승인 대기:
+                    게시글 <%= pendingPostsCount %>개 /
+                    댓글 <%= pendingCommentsCount %>개 /
+                    분실물 <%= pendingLostItemsCount %>개
+                  </p>
+                <% } %>
               </div>
             </a>
           <% }) %>
         </div>
 
         <div class="no-result" id="schoolNoResult">
-          검색 결과가 없습니다.
+          조건에 맞는 학교가 없습니다.
         </div>
       <% } %>
     </section>
@@ -120,29 +149,52 @@
 
   <script>
     const searchInput = document.getElementById("schoolSearchInput");
+    const filterSelect = document.getElementById("schoolFilterSelect");
     const schoolCards = document.querySelectorAll(".school-card");
     const noResult = document.getElementById("schoolNoResult");
 
-    if (searchInput) {
-      searchInput.addEventListener("input", () => {
-        const keyword = searchInput.value.trim().toLowerCase();
-        let visibleCount = 0;
+    function updateSchoolList() {
+      const keyword = searchInput
+        ? searchInput.value.trim().toLowerCase()
+        : "";
 
-        schoolCards.forEach((card) => {
-          const schoolName = card.dataset.schoolName.toLowerCase();
+      const selectedFilter = filterSelect
+        ? filterSelect.value
+        : "all";
 
-          if (schoolName.includes(keyword)) {
-            card.style.display = "block";
-            visibleCount += 1;
-          } else {
-            card.style.display = "none";
-          }
-        });
+      let visibleCount = 0;
 
-        if (noResult) {
-          noResult.style.display = visibleCount === 0 ? "block" : "none";
+      schoolCards.forEach((card) => {
+        const schoolName = card.dataset.schoolName.toLowerCase();
+        const schoolSlug = card.dataset.schoolSlug.toLowerCase();
+        const pendingReviewCount = Number(card.dataset.pendingReview || 0);
+
+        const matchesKeyword =
+          schoolName.includes(keyword) || schoolSlug.includes(keyword);
+
+        const matchesFilter =
+          selectedFilter === "all" ||
+          (selectedFilter === "needsReview" && pendingReviewCount > 0);
+
+        if (matchesKeyword && matchesFilter) {
+          card.style.display = "";
+          visibleCount += 1;
+        } else {
+          card.style.display = "none";
         }
       });
+
+      if (noResult) {
+        noResult.style.display = visibleCount === 0 ? "block" : "none";
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", updateSchoolList);
+    }
+
+    if (filterSelect) {
+      filterSelect.addEventListener("change", updateSchoolList);
     }
   </script>
 </body>

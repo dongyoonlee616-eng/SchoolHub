@@ -99,23 +99,108 @@ router.post("/admin/logout", requireAdmin, (req, res) => {
   });
 });
 
-// 관리자 메인 - 학교 선택 페이지
+// 관리자 메인 - 학교 선택
 router.get("/admin", requireAdmin, async (req, res) => {
   try {
-    const result = await pool.query(`
+    const { q, filter } = req.query;
+
+    const searchQuery = q ? q.trim() : "";
+    const selectedFilter = filter === "needsReview" ? "needsReview" : "";
+
+    const values = [];
+    const conditions = [];
+
+    if (searchQuery) {
+      values.push(`%${searchQuery}%`);
+      conditions.push(`
+        (
+          schools.name ILIKE $${values.length}
+          OR schools.slug ILIKE $${values.length}
+        )
+      `);
+    }
+
+    if (selectedFilter === "needsReview") {
+      conditions.push(`
+        (
+          COALESCE(pending_posts.count, 0)
+          + COALESCE(pending_comments.count, 0)
+          + COALESCE(pending_lost_items.count, 0)
+        ) > 0
+      `);
+    }
+
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+    const schoolsResult = await pool.query(
+      `
+      (
+        SELECT COUNT(*)
+        FROM posts
+        WHERE posts.school_id = schools.id
+          AND posts.status = 'pending'
+      ) AS pending_posts_count,
+
+      (
+        SELECT COUNT(*)
+        FROM comments
+        JOIN posts ON comments.post_id = posts.id
+        WHERE posts.school_id = schools.id
+          AND comments.status = 'pending'
+      ) AS pending_comments_count,
+
+      (
+        SELECT COUNT(*)
+        FROM lost_items
+        WHERE lost_items.school_id = schools.id
+          AND lost_items.status = 'pending'
+      ) AS pending_lost_items_count,
+
       SELECT
         schools.*,
-        (SELECT COUNT(*) FROM posts WHERE posts.school_id = schools.id) AS posts_count,
-        (SELECT COUNT(*) FROM comments WHERE comments.school_id = schools.id) AS comments_count,
-        (SELECT COUNT(*) FROM notices WHERE notices.school_id = schools.id) AS notices_count,
-        (SELECT COUNT(*) FROM lost_items WHERE lost_items.school_id = schools.id) AS lost_items_count
+        COALESCE(pending_posts.count, 0) AS pending_posts_count,
+        COALESCE(pending_comments.count, 0) AS pending_comments_count,
+        COALESCE(pending_lost_items.count, 0) AS pending_lost_items_count
       FROM schools
-      ORDER BY name ASC, id ASC
-    `);
+
+      LEFT JOIN (
+        SELECT school_id, COUNT(*) AS count
+        FROM posts
+        WHERE status = 'pending'
+        GROUP BY school_id
+      ) AS pending_posts
+      ON schools.id = pending_posts.school_id
+
+      LEFT JOIN (
+        SELECT posts.school_id, COUNT(*) AS count
+        FROM comments
+        JOIN posts ON comments.post_id = posts.id
+        WHERE comments.status = 'pending'
+        GROUP BY posts.school_id
+      ) AS pending_comments
+      ON schools.id = pending_comments.school_id
+
+      LEFT JOIN (
+        SELECT school_id, COUNT(*) AS count
+        FROM lost_items
+        WHERE status = 'pending'
+        GROUP BY school_id
+      ) AS pending_lost_items
+      ON schools.id = pending_lost_items.school_id
+
+      ${whereClause}
+
+      ORDER BY schools.name ASC, schools.id ASC
+      `,
+      values
+    );
 
     res.render("admin/dashboard", {
       admin: req.session.admin,
-      schools: result.rows,
+      schools: schoolsResult.rows,
+      searchQuery,
+      selectedFilter,
     });
   } catch (error) {
     console.error(error);
