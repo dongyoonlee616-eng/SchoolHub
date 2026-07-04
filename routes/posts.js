@@ -298,6 +298,31 @@ router.post("/schools/:slug/posts/:id/report", async (req, res) => {
       });
     }
 
+    const duplicateReportResult = await pool.query(
+      `
+      SELECT id
+      FROM post_reports
+      WHERE school_id = $1
+        AND post_id = $2
+        AND reporter_nickname = $3
+        AND reason = $4
+        AND content = $5
+        AND created_at > NOW() - INTERVAL '30 seconds'
+      LIMIT 1
+      `,
+      [
+        school.id,
+        post.id,
+        reporterNicknameValue,
+        reasonValue,
+        contentValue,
+      ]
+    );
+
+    if (duplicateReportResult.rows.length > 0) {
+      return res.redirect(`/schools/${school.slug}/posts/${post.id}?reportSubmitted=1`);
+    }
+
     await pool.query(
       `
       INSERT INTO post_reports (
@@ -446,6 +471,33 @@ router.post("/schools/:slug/posts/:postId/comments/:commentId/report", async (re
         comment,
         error: "올바르지 않은 신고 사유입니다.",
       });
+    }
+
+    const duplicateCommentReportResult = await pool.query(
+      `
+      SELECT id
+      FROM comment_reports
+      WHERE school_id = $1
+        AND post_id = $2
+        AND comment_id = $3
+        AND reporter_nickname = $4
+        AND reason = $5
+        AND content = $6
+        AND created_at > NOW() - INTERVAL '30 seconds'
+      LIMIT 1
+      `,
+      [
+        school.id,
+        comment.post_id,
+        comment.id,
+        reporterNicknameValue,
+        reasonValue,
+        contentValue,
+      ]
+    );
+
+    if (duplicateCommentReportResult.rows.length > 0) {
+      return res.redirect(`/schools/${school.slug}/posts/${comment.post_id}?commentReportSubmitted=1`);
     }
 
     await pool.query(

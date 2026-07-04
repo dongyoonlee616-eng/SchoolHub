@@ -72,11 +72,23 @@
           ></textarea>
         </label>
 
-        <button type="submit">신고 제출</button>
+        <button type="submit" id="reportSubmitButton">신고 제출</button>
       </form>
     </section>
   </main>
 
   <%- include("partials/footer") %>
+
+  <script>
+    const reportForm = document.querySelector(".post-form");
+    const reportSubmitButton = document.getElementById("reportSubmitButton");
+
+    if (reportForm && reportSubmitButton) {
+        reportForm.addEventListener("submit", () => {
+        reportSubmitButton.disabled = true;
+        reportSubmitButton.textContent = "제출 중...";
+        });
+    }
+    </script>
 </body>
 </html>
