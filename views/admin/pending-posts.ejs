@@ -3,26 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>승인 대기 게시글 - SchoolHub</title>
-
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
   <%- include("../partials/admin-header") %>
-
   <main class="container">
-    <a href="/admin/schools/<%= school.slug %>/dashboard" class="back-link">
-      ← 학교 대시보드로 돌아가기
-    </a>
+    <a href="/admin/schools/<%= school.slug %>/dashboard" class="back-link">← 학교 대시보드로 돌아가기</a>
 
-    <section class="admin-page-header">
-      <div>
-        <h1>승인 대기 게시글</h1>
-        <p><%= school.name %>에 제출된 게시글을 클릭해서 내용을 검토하세요.</p>
-      </div>
-    </section>
+    <h1>승인 대기 게시글</h1>
+    <p>학생들이 제출한 게시글을 검토하고 승인할 수 있습니다.</p>
 
     <% if (posts.length === 0) { %>
       <div class="pending-list">
