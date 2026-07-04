@@ -215,18 +215,23 @@
 }
 
 .comment-actions {
+  display: flex;
+  justify-content: flex-end;
   margin-top: 10px;
 }
 
 .comment-report-link {
   display: inline-flex;
-  padding: 7px 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
   background: #f3f4f6;
   color: #6b7280;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
+  transition: 0.18s;
 }
 
 .comment-report-link:hover {
