@@ -14,9 +14,14 @@
     <h1>승인 대기 분실물</h1>
     <p>학생들이 제출한 분실물을 검토하고 승인할 수 있습니다.</p>
 
-    <% if (items.length === 0) { %>
-      <div class="empty-box">
-        승인 대기 중인 분실물이 없습니다.
+    <% if (posts.length === 0) { %>
+      <div class="pending-list">
+        <div class="pending-row disabled">
+          <div>
+            <h2>승인 대기 중인 분실물이 없습니다.</h2>
+            <p>새로 제출된 분실물이 있으면 이곳에 표시됩니다.</p>
+          </div>
+        </div>
       </div>
     <% } else { %>
       <div class="admin-board-list">
