@@ -183,9 +183,7 @@ router.get("/admin/schools/:slug/dashboard", requireAdmin, async (req, res) => {
       [school.id]
     );
 
-const reportsCount = Number(reportsCountResult.rows[0].count);
-
-const reportsCount = Number(reportsCountResult.rows[0].count);
+    const reportsCount = Number(reportsCountResult.rows[0].count);
 
     res.render("admin/school-dashboard", {
       admin: req.session.admin,
