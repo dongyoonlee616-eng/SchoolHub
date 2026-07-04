@@ -7,6 +7,7 @@ const SUPPORT_TYPES = {
   suggestion: "건의 사항",
   inquiry: "문의 사항",
   bug: "버그 제보",
+  other: "기타 문의",
 };
 
 function isValidSupportType(type) {
