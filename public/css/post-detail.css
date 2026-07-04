@@ -78,6 +78,11 @@
   color: #dc2626;
 }
 
+.report-link {
+  background: #fff7ed;
+  color: #ff0505;
+}
+
 .post-detail-actions a:hover {
   transform: translateY(-2px);
 }
