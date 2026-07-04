@@ -16,6 +16,7 @@
   font-size: clamp(28px, 5vw, 44px);
   color: #172554;
   line-height: 1.25;
+  letter-spacing: -0.04em;
 }
 
 .notice-detail-meta {
@@ -47,8 +48,38 @@
   font-size: 17px;
 }
 
+/* ==============================
+   Mobile
+============================== */
 @media (max-width: 600px) {
   .notice-detail-card {
     padding: 24px;
+    border-radius: 22px;
+  }
+
+  .notice-detail-header {
+    padding-bottom: 18px;
+  }
+
+  .notice-detail-header h1 {
+    font-size: clamp(30px, 10vw, 40px);
+    line-height: 1.2;
+  }
+
+  .notice-detail-meta span {
+    border-radius: 13px;
+    line-height: 1.4;
+  }
+
+  .notice-detail-content {
+    margin-top: 22px;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+}
+
+@media (max-width: 430px) {
+  .notice-detail-card {
+    padding: 20px;
   }
 }

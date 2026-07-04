@@ -2,11 +2,32 @@ h1 {
   margin: 0 0 8px;
   font-size: clamp(30px, 5vw, 46px);
   color: #172554;
+  line-height: 1.1;
 }
 
 .container > p {
   margin: 0;
   color: var(--muted);
+  line-height: 1.7;
+}
+
+.post-form-section {
+  margin-top: 0;
+}
+
+.post-form-header h1,
+.post-form-header h2 {
+  margin: 0 0 8px;
+  font-size: clamp(30px, 5vw, 46px);
+  color: #172554;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.post-form-header p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
 }
 
 .post-form {
@@ -33,11 +54,15 @@ h1 {
   padding: 14px 15px;
   border: 1px solid #d1d5db;
   border-radius: 14px;
-  font-size: 15px;
+  font-size: 16px;
   background: #fbfdff;
   color: var(--text);
   outline: none;
   transition: 0.18s;
+}
+
+.post-form select {
+  cursor: pointer;
 }
 
 .post-form input:focus,
@@ -51,10 +76,12 @@ h1 {
 .post-form textarea {
   resize: vertical;
   min-height: 210px;
+  line-height: 1.7;
 }
 
 .post-form button {
   width: 100%;
+  min-height: 50px;
   padding: 15px;
   background: var(--primary);
   color: white;
@@ -80,8 +107,56 @@ h1 {
   font-weight: 800;
 }
 
+.success-box {
+  margin-top: 20px;
+  padding: 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  color: #15803d;
+  font-weight: 800;
+}
+
+/* ==============================
+   Mobile
+============================== */
 @media (max-width: 600px) {
+  h1,
+  .post-form-header h1,
+  .post-form-header h2 {
+    font-size: clamp(30px, 10vw, 40px);
+  }
+
+  .container > p,
+  .post-form-header p {
+    font-size: 15px;
+  }
+
   .post-form {
-    padding: 22px;
+    margin-top: 24px;
+    padding: 24px;
+    border-radius: 22px;
+  }
+
+  .post-form label {
+    margin-bottom: 20px;
+    font-size: 15px;
+  }
+
+  .post-form input,
+  .post-form select,
+  .post-form textarea {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .post-form textarea {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 430px) {
+  .post-form {
+    padding: 20px;
   }
 }

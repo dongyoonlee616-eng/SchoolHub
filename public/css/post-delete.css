@@ -24,11 +24,13 @@
   font-size: clamp(34px, 5vw, 52px);
   color: #172554;
   letter-spacing: -0.06em;
+  line-height: 1.1;
 }
 
 .delete-card p {
   margin: 0;
   color: var(--muted);
+  line-height: 1.7;
 }
 
 .delete-target {
@@ -44,6 +46,8 @@
 .delete-target strong {
   font-size: 20px;
   color: #1f2937;
+  line-height: 1.4;
+  word-break: break-word;
 }
 
 .delete-target span {
@@ -68,7 +72,7 @@
   padding: 14px 15px;
   border: 1px solid #d1d5db;
   border-radius: 14px;
-  font-size: 15px;
+  font-size: 16px;
   background: #fbfdff;
   outline: none;
 }
@@ -81,6 +85,7 @@
 
 .delete-form button {
   width: 100%;
+  min-height: 50px;
   padding: 15px;
   background: #dc2626;
   color: white;
@@ -103,4 +108,34 @@
   border-radius: 14px;
   color: #b91c1c;
   font-weight: 800;
+}
+
+/* ==============================
+   Mobile
+============================== */
+@media (max-width: 600px) {
+  .delete-card {
+    max-width: 100%;
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .delete-card h1 {
+    font-size: clamp(30px, 10vw, 42px);
+  }
+
+  .delete-target {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .delete-target strong {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 430px) {
+  .delete-card {
+    padding: 20px;
+  }
 }
