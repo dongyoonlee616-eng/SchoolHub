@@ -33,7 +33,7 @@
         </a>
       </div>
 
-      <form class="admin-board-search" action="/admin/schools/<%= school.slug %>/board" method="GET" class="admin-board-search">
+      <form class="admin-board-search" action="/admin/schools/<%= school.slug %>/board" method="GET" class="admin-board-search" data-allow-multiple-submit="true">
         <% if (selectedStatus) { %>
           <input type="hidden" name="status" value="<%= selectedStatus %>" />
         <% } %>
