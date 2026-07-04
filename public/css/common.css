@@ -274,9 +274,9 @@ button:hover {
   width: 100%;
   margin-top: 60px;
   padding: 28px 16px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
-  color: #374151;
+  border-top: 1px solid #000000;
+  background: #374151;
+  color: #f9fafb;
 }
 
 .sh-footer-inner {
@@ -294,13 +294,13 @@ button:hover {
   display: block;
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: #ffffff;
 }
 
 .sh-footer-brand p {
   margin: 4px 0 0;
   font-size: 13px;
-  color: #6b7280;
+  color: #e0e1e2;
 }
 
 .sh-footer-links {
@@ -312,12 +312,12 @@ button:hover {
 }
 
 .sh-footer-links a {
-  color: #374151;
+  color: #cacaca;
   text-decoration: none;
 }
 
 .sh-footer-links a:hover {
-  color: #2563eb;
+  color: #4479eb;
   text-decoration: underline;
 }
 
@@ -328,7 +328,7 @@ button:hover {
 .sh-footer-copy {
   margin: 0;
   font-size: 13px;
-  color: #6b7280;
+  color: #dadada;
 }
 
 @media (max-width: 600px) {
