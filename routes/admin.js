@@ -1920,21 +1920,25 @@ router.post("/admin/support/:id/status", requireAdmin, async (req, res) => {
       return res.status(400).send("올바르지 않은 처리 상태입니다.");
     }
 
+    const adminMemoValue =
+      admin_memo && admin_memo.trim() ? admin_memo.trim() : null;
+
+    const resolvedAtValue =
+      status === "resolved" ? new Date() : null;
+
     await pool.query(
       `
       UPDATE support_tickets
       SET status = $1,
           admin_memo = $2,
-          updated_at = CURRENT_TIMESTAMP,
-          resolved_at = CASE
-            WHEN $1::text = 'resolved' THEN CURRENT_TIMESTAMP
-            ELSE NULL
-          END
-      WHERE id = $3
+          resolved_at = $3,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $4
       `,
       [
         status,
-        admin_memo && admin_memo.trim() ? admin_memo.trim() : null,
+        adminMemoValue,
+        resolvedAtValue,
         id,
       ]
     );
