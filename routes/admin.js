@@ -135,33 +135,38 @@ router.get("/admin", requireAdmin, async (req, res) => {
 
     const schoolsResult = await pool.query(
       `
-      (
-        SELECT COUNT(*)
-        FROM posts
-        WHERE posts.school_id = schools.id
-          AND posts.status = 'pending'
-      ) AS pending_posts_count,
-
-      (
-        SELECT COUNT(*)
-        FROM comments
-        JOIN posts ON comments.post_id = posts.id
-        WHERE posts.school_id = schools.id
-          AND comments.status = 'pending'
-      ) AS pending_comments_count,
-
-      (
-        SELECT COUNT(*)
-        FROM lost_items
-        WHERE lost_items.school_id = schools.id
-          AND lost_items.status = 'pending'
-      ) AS pending_lost_items_count,
-
       SELECT
         schools.*,
+
+        (
+          SELECT COUNT(*)
+          FROM posts
+          WHERE posts.school_id = schools.id
+        ) AS posts_count,
+
+        (
+          SELECT COUNT(*)
+          FROM comments
+          JOIN posts ON comments.post_id = posts.id
+          WHERE posts.school_id = schools.id
+        ) AS comments_count,
+
+        (
+          SELECT COUNT(*)
+          FROM notices
+          WHERE notices.school_id = schools.id
+        ) AS notices_count,
+
+        (
+          SELECT COUNT(*)
+          FROM lost_items
+          WHERE lost_items.school_id = schools.id
+        ) AS lost_items_count,
+
         COALESCE(pending_posts.count, 0) AS pending_posts_count,
         COALESCE(pending_comments.count, 0) AS pending_comments_count,
         COALESCE(pending_lost_items.count, 0) AS pending_lost_items_count
+
       FROM schools
 
       LEFT JOIN (
