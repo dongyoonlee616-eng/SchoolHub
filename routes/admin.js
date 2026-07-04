@@ -163,6 +163,18 @@ router.get("/admin/schools/:slug/dashboard", requireAdmin, async (req, res) => {
       [school.id]
     );
 
+    const reportsCountResult = await pool.query(
+      `
+      SELECT COUNT(*) AS count
+      FROM post_reports
+      WHERE school_id = $1
+        AND status = 'pending'
+      `,
+      [school.id]
+    );
+
+const reportsCount = Number(reportsCountResult.rows[0].count);
+
     res.render("admin/school-dashboard", {
       admin: req.session.admin,
       school,
@@ -172,6 +184,7 @@ router.get("/admin/schools/:slug/dashboard", requireAdmin, async (req, res) => {
       approvedPostsCount: approvedPostsResult.rows[0].count,
       noticesCount: noticesResult.rows[0].count,
       lostItemsCount: lostItemsResult.rows[0].count,
+      reportsCount,
     });
   } catch (error) {
     console.error(error);
