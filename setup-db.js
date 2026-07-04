@@ -58,6 +58,28 @@ const migrations = [
       ON schools (slug);
     `,
   },
+  {
+    name: "20260704_01_create_post_reports",
+    sql: `
+      CREATE TABLE IF NOT EXISTS post_reports (
+        id SERIAL PRIMARY KEY,
+        school_id INTEGER REFERENCES schools(id) ON DELETE CASCADE,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        reporter_nickname VARCHAR(50) NOT NULL,
+        reason VARCHAR(50) NOT NULL,
+        content TEXT NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        resolved_at TIMESTAMP
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_post_reports_school_status_created
+      ON post_reports (school_id, status, created_at DESC);
+
+      CREATE INDEX IF NOT EXISTS idx_post_reports_post_id
+      ON post_reports (post_id);
+    `,
+  },  
 ];
 
 async function createBaseTables() {
@@ -137,6 +159,18 @@ async function createBaseTables() {
       found_status VARCHAR(20) DEFAULT 'lost',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       approved_at TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS post_reports (
+      id SERIAL PRIMARY KEY,
+      school_id INTEGER REFERENCES schools(id) ON DELETE CASCADE,
+      post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+      reporter_nickname VARCHAR(50) NOT NULL,
+      reason VARCHAR(50) NOT NULL,
+      content TEXT NOT NULL,
+      status VARCHAR(20) DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      resolved_at TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS schema_migrations (

@@ -179,10 +179,149 @@ router.get("/schools/:slug/posts/:id", async (req, res) => {
       post: postResult.rows[0],
       comments: commentsResult.rows,
       commentSubmitted: req.query.commentSubmitted === "1",
+      reportSubmitted: req.query.reportSubmitted === "1",
     });
   } catch (error) {
     console.error(error);
     res.status(500).send("게시글 상세 페이지를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 게시글 신고 페이지
+router.get("/schools/:slug/posts/:id/report", async (req, res) => {
+  try {
+    const { slug, id } = req.params;
+
+    const school = await getSchoolBySlug(slug);
+
+    if (!school) {
+      return res.status(404).send("존재하지 않는 학교입니다.");
+    }
+
+    const postResult = await pool.query(
+      `
+      SELECT *
+      FROM posts
+      WHERE id = $1
+        AND school_id = $2
+        AND status = 'approved'
+      `,
+      [id, school.id]
+    );
+
+    if (postResult.rows.length === 0) {
+      return res.status(404).render("404", {
+        school,
+        title: "게시글을 찾을 수 없습니다.",
+        message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+        backLabel: "게시판으로 돌아가기",
+        backUrl: `/schools/${school.slug}/posts`,
+      });
+    }
+
+    res.render("post-report", {
+      school,
+      post: postResult.rows[0],
+      error: null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("신고 페이지를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 게시글 신고 처리
+router.post("/schools/:slug/posts/:id/report", async (req, res) => {
+  try {
+    const { slug, id } = req.params;
+    const { reporter_nickname, reason, content } = req.body;
+
+    const allowedReasons = [
+      "욕설/비방",
+      "개인정보 노출",
+      "허위사실",
+      "도배/스팸",
+      "기타",
+    ];
+
+    const school = await getSchoolBySlug(slug);
+
+    if (!school) {
+      return res.status(404).send("존재하지 않는 학교입니다.");
+    }
+
+    const postResult = await pool.query(
+      `
+      SELECT *
+      FROM posts
+      WHERE id = $1
+        AND school_id = $2
+        AND status = 'approved'
+      `,
+      [id, school.id]
+    );
+
+    if (postResult.rows.length === 0) {
+      return res.status(404).render("404", {
+        school,
+        title: "게시글을 찾을 수 없습니다.",
+        message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+        backLabel: "게시판으로 돌아가기",
+        backUrl: `/schools/${school.slug}/posts`,
+      });
+    }
+
+    const post = postResult.rows[0];
+
+    const reporterNicknameValue =
+      reporter_nickname && reporter_nickname.trim()
+        ? reporter_nickname.trim()
+        : "익명";
+
+    const reasonValue = reason?.trim();
+    const contentValue = content?.trim();
+
+    if (!reasonValue || !contentValue) {
+      return res.render("post-report", {
+        school,
+        post,
+        error: "신고 사유와 상세 내용을 입력해주세요.",
+      });
+    }
+
+    if (!allowedReasons.includes(reasonValue)) {
+      return res.render("post-report", {
+        school,
+        post,
+        error: "올바르지 않은 신고 사유입니다.",
+      });
+    }
+
+    await pool.query(
+      `
+      INSERT INTO post_reports (
+        school_id,
+        post_id,
+        reporter_nickname,
+        reason,
+        content,
+        status
+      )
+      VALUES ($1, $2, $3, $4, $5, 'pending')
+      `,
+      [
+        school.id,
+        post.id,
+        reporterNicknameValue,
+        reasonValue,
+        contentValue,
+      ]
+    );
+
+    res.redirect(`/schools/${school.slug}/posts/${post.id}?reportSubmitted=1`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("신고를 저장하는 중 오류가 발생했습니다.");
   }
 });
 

@@ -1371,4 +1371,188 @@ router.post("/admin/schools/:id/delete", requireAdmin, async (req, res) => {
   }
 });
 
+// 학교별 게시글 신고 관리
+router.get("/admin/schools/:slug/reports", requireAdmin, async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { status } = req.query;
+
+    const school = await getAdminSchoolBySlug(slug);
+
+    if (!school) {
+      return renderAdminSchoolNotFound(res);
+    }
+
+    const allowedStatuses = ["pending", "resolved"];
+    const conditions = ["post_reports.school_id = $1"];
+    const values = [school.id];
+
+    let selectedStatus = "";
+
+    if (status && allowedStatuses.includes(status)) {
+      values.push(status);
+      conditions.push(`post_reports.status = $${values.length}`);
+      selectedStatus = status;
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+        post_reports.*,
+        posts.title AS post_title,
+        posts.nickname AS post_nickname
+      FROM post_reports
+      LEFT JOIN posts ON post_reports.post_id = posts.id
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY
+        CASE WHEN post_reports.status = 'pending' THEN 0 ELSE 1 END,
+        post_reports.created_at DESC
+      `,
+      values
+    );
+
+    res.render("admin/post-reports", {
+      admin: req.session.admin,
+      school,
+      reports: result.rows,
+      selectedStatus,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("게시글 신고 목록을 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 학교별 게시글 신고 상세
+router.get("/admin/schools/:slug/reports/:id", requireAdmin, async (req, res) => {
+  try {
+    const { slug, id } = req.params;
+
+    const school = await getAdminSchoolBySlug(slug);
+
+    if (!school) {
+      return renderAdminSchoolNotFound(res);
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+        post_reports.*,
+        posts.title AS post_title,
+        posts.content AS post_content,
+        posts.nickname AS post_nickname,
+        posts.category AS post_category,
+        posts.created_at AS post_created_at
+      FROM post_reports
+      LEFT JOIN posts ON post_reports.post_id = posts.id
+      WHERE post_reports.id = $1
+        AND post_reports.school_id = $2
+      `,
+      [id, school.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).render("404", {
+        title: "신고를 찾을 수 없습니다.",
+        message: "존재하지 않는 신고입니다.",
+        backLabel: "신고 관리로 돌아가기",
+        backUrl: `/admin/schools/${school.slug}/reports`,
+      });
+    }
+
+    res.render("admin/post-report-detail", {
+      admin: req.session.admin,
+      school,
+      report: result.rows[0],
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("게시글 신고 상세를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+// 게시글 신고 처리 완료
+router.post("/admin/schools/:slug/reports/:id/resolve", requireAdmin, async (req, res) => {
+  try {
+    const { slug, id } = req.params;
+
+    const school = await getAdminSchoolBySlug(slug);
+
+    if (!school) {
+      return renderAdminSchoolNotFound(res);
+    }
+
+    await pool.query(
+      `
+      UPDATE post_reports
+      SET status = 'resolved',
+          resolved_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+        AND school_id = $2
+      `,
+      [id, school.id]
+    );
+
+    res.redirect(`/admin/schools/${school.slug}/reports/${id}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("신고를 처리하는 중 오류가 발생했습니다.");
+  }
+});
+
+// 신고된 게시글 삭제
+router.post("/admin/schools/:slug/reports/:id/delete-post", requireAdmin, async (req, res) => {
+  try {
+    const { slug, id } = req.params;
+
+    const school = await getAdminSchoolBySlug(slug);
+
+    if (!school) {
+      return renderAdminSchoolNotFound(res);
+    }
+
+    const reportResult = await pool.query(
+      `
+      SELECT *
+      FROM post_reports
+      WHERE id = $1
+        AND school_id = $2
+      `,
+      [id, school.id]
+    );
+
+    if (reportResult.rows.length === 0) {
+      return res.status(404).render("404", {
+        title: "신고를 찾을 수 없습니다.",
+        message: "존재하지 않는 신고입니다.",
+        backLabel: "신고 관리로 돌아가기",
+        backUrl: `/admin/schools/${school.slug}/reports`,
+      });
+    }
+
+    const report = reportResult.rows[0];
+
+    await pool.query(
+      "DELETE FROM posts WHERE id = $1 AND school_id = $2",
+      [report.post_id, school.id]
+    );
+
+    await pool.query(
+      `
+      UPDATE post_reports
+      SET status = 'resolved',
+          resolved_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+        AND school_id = $2
+      `,
+      [id, school.id]
+    );
+
+    res.redirect(`/admin/schools/${school.slug}/reports`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("신고된 게시글을 삭제하는 중 오류가 발생했습니다.");
+  }
+});
+
 module.exports = router;

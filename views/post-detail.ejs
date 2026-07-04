@@ -27,13 +27,9 @@
           </div>
 
           <div class="post-detail-actions top-actions">
-            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/edit" class="edit-link">
-              수정
-            </a>
-
-            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/delete" class="delete-link">
-              삭제
-            </a>
+            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/edit">수정</a>
+            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/delete">삭제</a>
+            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/report">신고</a>
           </div>
         </div>
       </header>
@@ -56,6 +52,12 @@
       <% if (commentSubmitted) { %>
         <div class="notice-box">
           댓글이 제출되었습니다. 관리자 승인 후 공개됩니다.
+        </div>
+      <% } %>
+
+      <% if (reportSubmitted) { %>
+        <div class="success-box">
+          신고가 제출되었습니다. 관리자가 확인 후 처리합니다.
         </div>
       <% } %>
 

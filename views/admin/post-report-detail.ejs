@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시글 신고 상세 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header", { school }) %>
+
+  <main class="container">
+    <a href="/admin/schools/<%= school.slug %>/reports" class="back-link">
+      ← 신고 관리로 돌아가기
+    </a>
+
+    <section class="admin-board-detail-card">
+      <div class="admin-board-detail-header">
+        <div>
+          <div class="admin-board-row-meta">
+            <span class="<%= report.status === 'resolved' ? 'status-approved' : 'status-pending' %>">
+              <%= report.status === 'resolved' ? '처리 완료' : '처리 대기' %>
+            </span>
+            <span><%= report.reason %></span>
+          </div>
+
+          <h1>게시글 신고 상세</h1>
+
+          <div class="post-detail-meta">
+            <span>신고자: <%= report.reporter_nickname %></span>
+            <span>신고일: <%= new Date(report.created_at).toLocaleString("ko-KR") %></span>
+          </div>
+        </div>
+
+        <div class="review-actions">
+          <% if (report.status !== "resolved") { %>
+            <form
+              action="/admin/schools/<%= school.slug %>/reports/<%= report.id %>/resolve"
+              method="POST"
+            >
+              <button type="submit" class="approve-button">처리 완료</button>
+            </form>
+          <% } %>
+
+          <% if (report.post_title) { %>
+            <form
+              action="/admin/schools/<%= school.slug %>/reports/<%= report.id %>/delete-post"
+              method="POST"
+              onsubmit="return confirm('신고된 게시글을 삭제하시겠습니까?');"
+            >
+              <button type="submit" class="delete-button">게시글 삭제</button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="admin-board-detail-content">
+        <h2>신고 내용</h2>
+        <p><%= report.content %></p>
+      </div>
+    </section>
+
+    <section class="admin-comment-manage-section">
+      <h2>신고 대상 게시글</h2>
+
+      <% if (!report.post_title) { %>
+        <div class="empty-box">
+          이미 삭제된 게시글입니다.
+        </div>
+      <% } else { %>
+        <div class="admin-board-row-meta">
+          <span>작성자: <%= report.post_nickname %></span>
+          <span>카테고리: <%= report.post_category %></span>
+          <span>작성일: <%= new Date(report.post_created_at).toLocaleString("ko-KR") %></span>
+        </div>
+
+        <h2><%= report.post_title %></h2>
+
+        <div class="admin-board-detail-content">
+          <%= report.post_content %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

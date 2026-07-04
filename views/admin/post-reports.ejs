@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시글 신고 관리 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/admin-header", { school }) %>
+
+  <main class="container">
+    <a href="/admin/schools/<%= school.slug %>/dashboard" class="back-link">
+      ← 학교 대시보드로 돌아가기
+    </a>
+
+    <section class="admin-page-header">
+      <div>
+        <h1>게시글 신고 관리</h1>
+        <p><%= school.name %>에 접수된 게시글 신고를 확인하고 처리합니다.</p>
+      </div>
+    </section>
+
+    <section class="admin-board-tools">
+      <div class="category-filter">
+        <a
+          href="/admin/schools/<%= school.slug %>/reports"
+          class="filter-chip <%= !selectedStatus ? 'active' : '' %>"
+        >
+          전체
+        </a>
+
+        <a
+          href="/admin/schools/<%= school.slug %>/reports?status=pending"
+          class="filter-chip <%= selectedStatus === 'pending' ? 'active' : '' %>"
+        >
+          처리 대기
+        </a>
+
+        <a
+          href="/admin/schools/<%= school.slug %>/reports?status=resolved"
+          class="filter-chip <%= selectedStatus === 'resolved' ? 'active' : '' %>"
+        >
+          처리 완료
+        </a>
+      </div>
+    </section>
+
+    <% if (reports.length === 0) { %>
+      <div class="empty-box">
+        접수된 게시글 신고가 없습니다.
+      </div>
+    <% } else { %>
+      <div class="admin-board-list">
+        <% reports.forEach(report => { %>
+          <a
+            href="/admin/schools/<%= school.slug %>/reports/<%= report.id %>"
+            class="admin-board-row"
+          >
+            <div>
+              <div class="admin-board-row-meta">
+                <span class="<%= report.status === 'resolved' ? 'status-approved' : 'status-pending' %>">
+                  <%= report.status === 'resolved' ? '처리 완료' : '처리 대기' %>
+                </span>
+                <span><%= report.reason %></span>
+              </div>
+
+              <h2><%= report.post_title || "삭제된 게시글" %></h2>
+
+              <p>
+                신고자: <%= report.reporter_nickname %> ·
+                <%= new Date(report.created_at).toLocaleString("ko-KR") %>
+              </p>
+            </div>
+
+            <strong>확인</strong>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>
