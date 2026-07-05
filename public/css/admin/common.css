@@ -147,6 +147,33 @@
   text-align: right;
 }
 
+/* ==============================
+   Admin Header Logo
+============================== */
+.admin-site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.admin-site-logo img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.admin-site-logo span {
+  line-height: 1;
+}
+
+@media (max-width: 650px) {
+  .admin-site-logo img {
+    width: 26px;
+    height: 26px;
+  }
+}
+
 @media (max-width: 950px) {
   .admin-site-header-inner {
     grid-template-columns: 1fr auto;

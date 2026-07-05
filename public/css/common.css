@@ -383,6 +383,33 @@ p {
 }
 
 /* ==============================
+   Header Logo
+============================== */
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.site-logo img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.site-logo span {
+  line-height: 1;
+}
+
+@media (max-width: 760px) {
+  .site-logo img {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* ==============================
    Mobile Common
 ============================== */
 @media (max-width: 760px) {
