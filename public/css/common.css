@@ -388,24 +388,43 @@ p {
 .site-logo {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 12px;
 }
 
-.site-logo img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
+.site-logo-mark {
+  width: 50px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(199, 210, 254, 0.8);
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
 }
 
-.site-logo span {
+.site-logo-mark img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  transform: scale(2.09);
+}
+
+.site-logo span:last-child {
   line-height: 1;
 }
 
 @media (max-width: 760px) {
-  .site-logo img {
-    width: 26px;
-    height: 26px;
+  .site-logo-mark {
+    width: 50px;
+    height: 50px;
+  }
+
+  .site-logo-mark img {
+    width: 33px;
+    height: 35px;
   }
 }
 
