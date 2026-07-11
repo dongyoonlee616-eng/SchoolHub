@@ -383,6 +383,46 @@ p {
 }
 
 /* ==============================
+   User Auth Header
+============================== */
+.site-user-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.site-logout-form {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.site-logout-form button {
+  padding: 9px 12px;
+  background: #111827;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .site-user-badge,
+  .site-logout-form button {
+    font-size: 13px;
+  }
+}
+
+/* ==============================
    Header Logo
 ============================== */
 .site-logo {

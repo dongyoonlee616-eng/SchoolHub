@@ -73,12 +73,18 @@
         action="/schools/<%= school.slug %>/posts/<%= post.id %>/comments" 
         method="POST"
       >
-        <input 
-          type="text" 
-          name="nickname" 
-          maxlength="50" 
-          placeholder="닉네임을 입력하지 않으면 익명으로 저장됩니다."
-        />
+        <% if (currentUser) { %>
+          <div class="notice-box">
+            <strong><%= currentUser.nickname %></strong> 님의 이름으로 댓글이 작성됩니다.
+            로그인 상태에서는 익명 댓글 작성이 불가능합니다.
+          </div>
+        <% } else { %>
+          <input
+            type="text"
+            name="nickname"
+            placeholder="닉네임, 비워두면 익명"
+          />
+        <% } %>
 
         <textarea 
           name="content" 

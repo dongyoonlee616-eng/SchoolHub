@@ -535,6 +535,7 @@ router.post("/schools/:slug/posts/:id/comments", async (req, res) => {
   try {
     const { slug, id } = req.params;
     const { nickname, content } = req.body;
+    const currentUser = req.session.user || null;
 
     const school = await getSchoolBySlug(slug);
 
@@ -567,15 +568,20 @@ router.post("/schools/:slug/posts/:id/comments", async (req, res) => {
       return res.status(400).send("댓글 내용을 입력해주세요.");
     }
 
-    const displayNickname = nickname && nickname.trim() ? nickname.trim() : "익명";
+    const displayNickname = currentUser
+      ? currentUser.nickname
+      : nickname && nickname.trim()
+        ? nickname.trim()
+        : "익명";
+
+    const userId = currentUser ? currentUser.id : null;
 
     await pool.query(
       `
-      INSERT INTO comments
-      (post_id, school_id, content, nickname, status)
-      VALUES ($1, $2, $3, $4, 'pending')
+      INSERT INTO comments (post_id, school_id, user_id, content, nickname, status)
+      VALUES ($1, $2, $3, $4, $5, 'pending')
       `,
-      [id, school.id, content.trim(), displayNickname]
+      [id, school.id, userId, content.trim(), displayNickname]
     );
 
     res.redirect(`/schools/${school.slug}/posts/${id}?commentSubmitted=1`);
@@ -823,8 +829,8 @@ router.post("/schools/:slug/posts", async (req, res) => {
   try {
     const { slug } = req.params;
     const { category, title, content, nickname, password } = req.body;
-
     const allowedCategories = ["자유", "질문", "건의"];
+    const currentUser = req.session.user || null;
 
     const school = await getSchoolBySlug(slug);
 
@@ -841,15 +847,38 @@ router.post("/schools/:slug/posts", async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const displayNickname = nickname && nickname.trim() ? nickname.trim() : "익명";
+
+    const displayNickname = currentUser
+      ? currentUser.nickname
+      : nickname && nickname.trim()
+        ? nickname.trim()
+        : "익명";
+
+    const userId = currentUser ? currentUser.id : null;
 
     await pool.query(
       `
-      INSERT INTO posts
-      (school_id, category, title, content, nickname, password_hash, status)
-      VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+      INSERT INTO posts (
+        school_id,
+        user_id,
+        category,
+        title,
+        content,
+        nickname,
+        password_hash,
+        status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')
       `,
-      [school.id, category, title, content, displayNickname, passwordHash]
+      [
+        school.id,
+        userId,
+        category,
+        title,
+        content,
+        displayNickname,
+        passwordHash,
+      ]
     );
 
     res.redirect(`/schools/${school.slug}/posts?submitted=1`);

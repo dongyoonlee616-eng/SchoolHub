@@ -104,8 +104,8 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
   try {
     const { slug } = req.params;
     const { title, content, found_place, pickup_place, item_date, nickname, password } = req.body;
-
     const school = await getSchoolBySlug(slug);
+    const currentUser = req.session.user || null;
 
     if (!school) {
       return renderSchoolNotFound(res);
@@ -150,36 +150,43 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
     });
     }
 
-    const displayNickname = nickname && nickname.trim() ? nickname.trim() : "익명";
+    const displayNickname = currentUser
+      ? currentUser.nickname
+      : nickname && nickname.trim()
+        ? nickname.trim()
+        : "익명";
+
+    const userId = currentUser ? currentUser.id : null;
     const passwordHash = await bcrypt.hash(passwordValue, 10);
 
     await pool.query(
-        `
-        INSERT INTO lost_items
-        (
-            school_id,
-            title,
-            content,
-            found_place,
-            pickup_place,
-            item_date,
-            nickname,
-            password_hash,
-            status,
-            found_status
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending', 'lost')
-        `,
-        [
-            school.id,
-            titleValue,
-            contentValue,
-            foundPlaceValue,
-            pickupPlaceValue,
-            itemDateValue,
-            displayNickname,
-            passwordHash,
-        ]
+      `
+      INSERT INTO lost_items (
+        school_id,
+        user_id,
+        title,
+        content,
+        found_place,
+        pickup_place,
+        item_date,
+        nickname,
+        password_hash,
+        status,
+        found_status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'pending', 'lost')
+      `,
+      [
+        school.id,
+        userId,
+        title.trim(),
+        content.trim(),
+        found_place && found_place.trim() ? found_place.trim() : null,
+        pickup_place && pickup_place.trim() ? pickup_place.trim() : null,
+        item_date || null,
+        displayNickname,
+        passwordHash,
+      ]
     );
 
     res.redirect(`/schools/${school.slug}/lost-items?submitted=1`);

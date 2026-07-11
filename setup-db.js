@@ -147,6 +147,32 @@ const migrations = [
       WHERE status NOT IN ('pending', 'resolved');
     `,
   },
+  {
+    name: "20260711_01_add_app_users",
+    sql: `
+      CREATE TABLE IF NOT EXISTS app_users (
+        id SERIAL PRIMARY KEY,
+        nickname VARCHAR(50) UNIQUE NOT NULL,
+        email VARCHAR(120) UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      ALTER TABLE posts
+      ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES app_users(id) ON DELETE SET NULL;
+
+      ALTER TABLE comments
+      ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES app_users(id) ON DELETE SET NULL;
+
+      ALTER TABLE lost_items
+      ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES app_users(id) ON DELETE SET NULL;
+
+      CREATE INDEX IF NOT EXISTS idx_app_users_email ON app_users (email);
+      CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts (user_id);
+      CREATE INDEX IF NOT EXISTS idx_comments_user_id ON comments (user_id);
+      CREATE INDEX IF NOT EXISTS idx_lost_items_user_id ON lost_items (user_id);
+    `,
+  },
 ];
 
 async function createBaseTables() {

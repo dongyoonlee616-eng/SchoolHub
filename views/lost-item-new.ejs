@@ -51,7 +51,21 @@
 
       <label>
         닉네임
-        <input type="text" name="nickname" maxlength="50" placeholder="작성하지 않으면 익명으로 저장됩니다." />
+        <% if (currentUser) { %>
+          <div class="notice-box">
+            <strong><%= currentUser.nickname %></strong> 님의 이름으로 등록됩니다.
+            로그인 상태에서는 익명 등록이 불가능합니다.
+          </div>
+        <% } else { %>
+          <label>
+            닉네임
+            <input
+              type="text"
+              name="nickname"
+              placeholder="비워두면 익명으로 등록됩니다."
+            />
+          </label>
+        <% } %>
       </label>
 
       <label>

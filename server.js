@@ -8,6 +8,7 @@ const postRoutes = require("./routes/posts");
 const adminRoutes = require("./routes/admin");
 const lostItemRoutes = require("./routes/lost-items");
 const supportRoutes = require("./routes/support");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -26,11 +27,17 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.locals.currentUser = req.session.user || null;
+  next();
+});
+
 app.use("/", schoolRoutes);
 app.use("/", postRoutes);
 app.use("/", adminRoutes);
 app.use("/", lostItemRoutes);
 app.use("/", supportRoutes);
+app.use("/", authRoutes);
 
 app.get('/privacy', (req, res) => {
   res.render('privacy', {

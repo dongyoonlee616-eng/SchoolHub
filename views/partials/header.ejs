@@ -17,6 +17,17 @@
       <% } %>
 
       <a href="/support">문의센터</a>
+
+      <% if (currentUser) { %>
+        <span class="site-user-badge"><%= currentUser.nickname %>님</span>
+
+        <form action="/logout" method="POST" class="site-logout-form">
+          <button type="submit">로그아웃</button>
+        </form>
+      <% } else { %>
+        <a href="/login">로그인</a>
+        <a href="/register">회원가입</a>
+      <% } %>
     </nav>
   </div>
 </header>
