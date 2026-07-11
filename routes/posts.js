@@ -829,7 +829,6 @@ router.post("/schools/:slug/posts", async (req, res) => {
     const { category, title, content, nickname } = req.body;
     const currentUser = req.session.user || null;
     const allowedCategories = ["자유", "질문", "건의"];
-    const currentUser = req.session.user || null;
 
     const school = await getSchoolBySlug(slug);
 
