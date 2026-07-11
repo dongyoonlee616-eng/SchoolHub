@@ -21,6 +21,14 @@ function renderSchoolNotFound(res) {
   });
 }
 
+function canManagePost(req, post) {
+  return (
+    req.session.user &&
+    post.user_id &&
+    Number(post.user_id) === Number(req.session.user.id)
+  );
+}
+
 // 게시글 목록
 router.get("/schools/:slug/posts", async (req, res) => {
   try {
@@ -637,7 +645,7 @@ router.get("/schools/:slug/posts/:id/edit", async (req, res) => {
 router.post("/schools/:slug/posts/:id/edit", async (req, res) => {
   try {
     const { slug, id } = req.params;
-    const { category, title, content, password } = req.body;
+    const { category, title, content } = req.body;
 
     const allowedCategories = ["자유", "질문", "건의"];
 
@@ -652,47 +660,41 @@ router.post("/schools/:slug/posts/:id/edit", async (req, res) => {
       SELECT *
       FROM posts
       WHERE id = $1
-      AND school_id = $2
-      AND status = 'approved'
+        AND school_id = $2
+        AND status = 'approved'
       `,
       [id, school.id]
     );
 
-    if (postResult.rows.length === 0) {
-        return res.status(404).render("404", {
-            school,
-            title: "게시글을 찾을 수 없습니다.",
-            message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
-            backLabel: "게시판으로 돌아가기",
-            backUrl: `/schools/${school.slug}/posts`,
-        });
+    if (result.rows.length === 0) {
+      return res.status(404).render("404", {
+        school,
+        title: "게시글을 찾을 수 없습니다.",
+        message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+        backLabel: "게시판으로 돌아가기",
+        backUrl: `/schools/${school.slug}/posts`,
+      });
     }
 
     const post = result.rows[0];
 
-    if (!category || !title || !content || !password) {
-        return res.render("post-edit", {
-            school,
-            post,
-            error: "모든 항목을 입력해주세요.",
-        });
+    if (!canManagePost(req, post)) {
+      return res.status(403).send("본인이 작성한 글만 수정할 수 있습니다.");
     }
 
-    if (!allowedCategories.includes(category)) {
-        return res.render("post-edit", {
-            school,
-            post,
-            error: "올바르지 않은 카테고리입니다.",
-        });
-    }
-
-    const isMatch = await bcrypt.compare(password, post.password_hash);
-
-    if (!isMatch) {
+    if (!category || !title || !content) {
       return res.render("post-edit", {
         school,
         post,
-        error: "글 비밀번호가 올바르지 않습니다.",
+        error: "카테고리, 제목, 내용을 모두 입력해주세요.",
+      });
+    }
+
+    if (!allowedCategories.includes(category)) {
+      return res.render("post-edit", {
+        school,
+        post,
+        error: "올바르지 않은 카테고리입니다.",
       });
     }
 
@@ -706,8 +708,15 @@ router.post("/schools/:slug/posts/:id/edit", async (req, res) => {
           approved_at = NULL,
           updated_at = CURRENT_TIMESTAMP
       WHERE id = $4
+        AND school_id = $5
       `,
-      [category, title, content, id]
+      [
+        category,
+        title.trim(),
+        content.trim(),
+        id,
+        school.id,
+      ]
     );
 
     res.redirect(`/schools/${school.slug}/posts?edited=1`);
@@ -763,7 +772,6 @@ router.get("/schools/:slug/posts/:id/delete", async (req, res) => {
 router.post("/schools/:slug/posts/:id/delete", async (req, res) => {
   try {
     const { slug, id } = req.params;
-    const { password } = req.body;
 
     const school = await getSchoolBySlug(slug);
 
@@ -776,45 +784,35 @@ router.post("/schools/:slug/posts/:id/delete", async (req, res) => {
       SELECT *
       FROM posts
       WHERE id = $1
-      AND school_id = $2
-      AND status = 'approved'
+        AND school_id = $2
+        AND status = 'approved'
       `,
       [id, school.id]
     );
 
     if (result.rows.length === 0) {
-        return res.status(404).render("404", {
-            school,
-            title: "게시글을 찾을 수 없습니다.",
-            message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
-            backLabel: "게시판으로 돌아가기",
-            backUrl: `/schools/${school.slug}/posts`,
-        });
+      return res.status(404).render("404", {
+        school,
+        title: "게시글을 찾을 수 없습니다.",
+        message: "삭제되었거나, 승인되지 않았거나, 존재하지 않는 게시글입니다.",
+        backLabel: "게시판으로 돌아가기",
+        backUrl: `/schools/${school.slug}/posts`,
+      });
     }
 
     const post = result.rows[0];
 
-    if (!password) {
-      return res.render("post-delete", {
-        school,
-        post,
-        error: "글 비밀번호를 입력해주세요.",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, post.password_hash);
-
-    if (!isMatch) {
-      return res.render("post-delete", {
-        school,
-        post,
-        error: "글 비밀번호가 올바르지 않습니다.",
-      });
+    if (!canManagePost(req, post)) {
+      return res.status(403).send("본인이 작성한 글만 삭제할 수 있습니다.");
     }
 
     await pool.query(
-      "DELETE FROM posts WHERE id = $1",
-      [id]
+      `
+      DELETE FROM posts
+      WHERE id = $1
+        AND school_id = $2
+      `,
+      [id, school.id]
     );
 
     res.redirect(`/schools/${school.slug}/posts?deleted=1`);
@@ -828,7 +826,8 @@ router.post("/schools/:slug/posts/:id/delete", async (req, res) => {
 router.post("/schools/:slug/posts", async (req, res) => {
   try {
     const { slug } = req.params;
-    const { category, title, content, nickname, password } = req.body;
+    const { category, title, content, nickname } = req.body;
+    const currentUser = req.session.user || null;
     const allowedCategories = ["자유", "질문", "건의"];
     const currentUser = req.session.user || null;
 
