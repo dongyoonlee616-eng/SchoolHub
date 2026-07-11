@@ -19,4 +19,11 @@ const pool = new Pool(
       }
 );
 
+console.log(
+  "Connected DB:",
+  process.env.DATABASE_URL
+    ? new URL(process.env.DATABASE_URL).hostname
+    : process.env.DB_HOST
+);
+
 module.exports = pool;

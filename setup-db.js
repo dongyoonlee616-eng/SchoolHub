@@ -275,24 +275,72 @@ async function createBaseTables() {
 `);
 }
 
-async function seedDefaultSchool() {
-  const result = await pool.query("SELECT COUNT(*) FROM schools");
-  const schoolCount = Number(result.rows[0].count);
+async function seedDefaultSchools() {
+  const defaultSchools = [
+    ["근명중학교", "keunmyung-middle"],
+    ["신안중학교", "sinan-middle"],
+    ["안양부흥중학교", "anyangbuheung-middle"],
+    ["박달중학교", "bakdal-middle"],
+    ["성문중학교", "sungmoon-middle"],
+    ["신성중학교", "shinsung-middle"],
+    ["안양서중학교", "anyangseo-middle"],
+    ["안양여자중학교", "anyang-girls-middle"],
+    ["연현중학교", "yeonhyeon-middle"],
+    ["관양중학교", "kwanyang-middle"],
+    ["귀인중학교", "gwiin-middle"],
+    ["대안여자중학교", "daean-girls-middle"],
+    ["대안중학교", "daean-middle"],
+    ["범계중학교", "bumgye-middle"],
+    ["부림중학교", "burim-middle"],
+    ["부안중학교", "buan-middle"],
+    ["비산중학교", "bisan-middle"],
+    ["인덕원중학교", "indeogwon-middle"],
+    ["임곡중학교", "imgok-middle"],
+    ["신기중학교", "singi-middle"],
+    ["평촌중학교", "pyongchon-middle"],
+    ["호계중학교", "hogye-middle"],
+    ["호성중학교", "hoseong-middle"],
+  ];
 
-  if (schoolCount > 0) {
-    console.log("기존 학교 데이터가 있어서 기본 학교 생성은 건너뜀");
-    return;
+  await pool.query("BEGIN");
+
+  try {
+    for (const [name, slug] of defaultSchools) {
+      // 같은 이름의 학교가 이미 있으면 slug와 활성 상태를 갱신
+      const updateResult = await pool.query(
+        `
+          UPDATE schools
+          SET slug = $2,
+              is_active = true,
+              updated_at = CURRENT_TIMESTAMP
+          WHERE name = $1
+        `,
+        [name, slug]
+      );
+
+      // 같은 이름의 학교가 없으면 새로 추가
+      if (updateResult.rowCount === 0) {
+        await pool.query(
+          `
+            INSERT INTO schools (name, slug, is_active)
+            VALUES ($1, $2, true)
+            ON CONFLICT (slug)
+            DO UPDATE SET
+              name = EXCLUDED.name,
+              is_active = true,
+              updated_at = CURRENT_TIMESTAMP
+          `,
+          [name, slug]
+        );
+      }
+    }
+
+    await pool.query("COMMIT");
+    console.log(`기본 학교 데이터 확인 완료: ${defaultSchools.length}개`);
+  } catch (error) {
+    await pool.query("ROLLBACK");
+    throw error;
   }
-
-  await pool.query(
-    `
-    INSERT INTO schools (name, slug, is_active)
-    VALUES ($1, $2, true)
-    `,
-    ["근명중학교", "geunmyeong-middle"]
-  );
-
-  console.log("기본 학교 데이터 생성 완료");
 }
 
 async function seedAdmin() {
@@ -356,7 +404,7 @@ async function setup() {
     await runMigrations();
     console.log("DB 마이그레이션 확인 완료");
 
-    await seedDefaultSchool();
+    await seedDefaultSchools();
     console.log("기본 학교 데이터 확인 완료");
 
     await seedAdmin();
