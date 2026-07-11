@@ -1,5 +1,4 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("../db");
 
@@ -103,7 +102,15 @@ router.get("/schools/:slug/lost-items/new", async (req, res) => {
 router.post("/schools/:slug/lost-items", async (req, res) => {
   try {
     const { slug } = req.params;
-    const { title, content, found_place, pickup_place, item_date, nickname, password } = req.body;
+    const {
+      title,
+      content,
+      found_place,
+      pickup_place,
+      item_date,
+      nickname,
+    } = req.body;
+
     const school = await getSchoolBySlug(slug);
     const currentUser = req.session.user || null;
 
@@ -111,43 +118,41 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
       return renderSchoolNotFound(res);
     }
 
-    const titleValue = title?.trim();
-    const contentValue = content?.trim();
-    const foundPlaceValue = found_place?.trim();
-    const pickupPlaceValue = pickup_place?.trim();
-    const itemDateValue = item_date?.trim();
-    const passwordValue = password?.trim();
+    const titleValue = title ? title.trim() : "";
+    const contentValue = content ? content.trim() : "";
+    const foundPlaceValue = found_place ? found_place.trim() : "";
+    const pickupPlaceValue = pickup_place ? pickup_place.trim() : "";
+    const itemDateValue = item_date ? item_date.trim() : "";
 
     if (
-    !titleValue ||
-    !contentValue ||
-    !foundPlaceValue ||
-    !pickupPlaceValue ||
-    !itemDateValue ||
-    !passwordValue
+      !titleValue ||
+      !contentValue ||
+      !foundPlaceValue ||
+      !pickupPlaceValue ||
+      !itemDateValue
     ) {
-    return res.render("lost-item-new", {
+      return res.render("lost-item-new", {
         school,
         error: "닉네임을 제외한 모든 항목을 입력해야 합니다.",
-    });
+      });
     }
 
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     if (!dateRegex.test(itemDateValue)) {
-    return res.render("lost-item-new", {
+      return res.render("lost-item-new", {
         school,
-        error: "날짜는 4자리 연도 형식으로 입력해야 합니다.",
-    });
+        error: "날짜는 YYYY-MM-DD 형식으로 입력해야 합니다.",
+      });
     }
 
     const itemYear = Number(itemDateValue.slice(0, 4));
 
     if (itemYear < 2000 || itemYear > 2099) {
-    return res.render("lost-item-new", {
+      return res.render("lost-item-new", {
         school,
         error: "날짜는 2000년부터 2099년 사이로 입력해야 합니다.",
-    });
+      });
     }
 
     const displayNickname = currentUser
@@ -157,7 +162,6 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
         : "익명";
 
     const userId = currentUser ? currentUser.id : null;
-    const passwordHash = await bcrypt.hash(passwordValue, 10);
 
     await pool.query(
       `
@@ -170,22 +174,20 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
         pickup_place,
         item_date,
         nickname,
-        password_hash,
         status,
         found_status
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'pending', 'lost')
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending', 'lost')
       `,
       [
         school.id,
         userId,
-        title.trim(),
-        content.trim(),
-        found_place && found_place.trim() ? found_place.trim() : null,
-        pickup_place && pickup_place.trim() ? pickup_place.trim() : null,
-        item_date || null,
+        titleValue,
+        contentValue,
+        foundPlaceValue,
+        pickupPlaceValue,
+        itemDateValue,
         displayNickname,
-        passwordHash,
       ]
     );
 
@@ -212,20 +214,20 @@ router.get("/schools/:slug/lost-items/:id", async (req, res) => {
       SELECT *
       FROM lost_items
       WHERE id = $1
-      AND school_id = $2
-      AND status = 'approved'
+        AND school_id = $2
+        AND status = 'approved'
       `,
       [id, school.id]
     );
 
     if (result.rows.length === 0) {
-        return res.status(404).render("404", {
-            school,
-            title: "분실물을 찾을 수 없습니다.",
-            message: "삭제되었거나, 존재하지 않는 분실물입니다.",
-            backLabel: "분실물 목록으로 돌아가기",
-            backUrl: `/schools/${school.slug}/lost-items`,
-        });
+      return res.status(404).render("404", {
+        school,
+        title: "분실물을 찾을 수 없습니다.",
+        message: "삭제되었거나, 존재하지 않는 분실물입니다.",
+        backLabel: "분실물 목록으로 돌아가기",
+        backUrl: `/schools/${school.slug}/lost-items`,
+      });
     }
 
     res.render("lost-item-detail", {

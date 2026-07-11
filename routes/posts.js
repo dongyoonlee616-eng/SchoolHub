@@ -861,7 +861,6 @@ router.post("/schools/:slug/posts", async (req, res) => {
         title,
         content,
         nickname,
-        password_hash,
         status
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')
@@ -873,7 +872,6 @@ router.post("/schools/:slug/posts", async (req, res) => {
         title,
         content,
         displayNickname,
-        passwordHash,
       ]
     );
 

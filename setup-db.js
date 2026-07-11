@@ -173,6 +173,18 @@ const migrations = [
       CREATE INDEX IF NOT EXISTS idx_lost_items_user_id ON lost_items (user_id);
     `,
   },
+  {
+    name: "20260711_03_make_lost_item_password_optional",
+    sql: `
+      ALTER TABLE lost_items
+      ALTER COLUMN password_hash DROP NOT NULL;
+
+      ALTER TABLE lost_items
+      ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES app_users(id) ON DELETE SET NULL;
+
+      CREATE INDEX IF NOT EXISTS idx_lost_items_user_id ON lost_items (user_id);
+    `,
+  },
 ];
 
 async function createBaseTables() {
