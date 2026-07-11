@@ -863,7 +863,7 @@ router.post("/schools/:slug/posts", async (req, res) => {
         nickname,
         status
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')
+      VALUES ($1, $2, $3, $4, $5, $6, 'pending')
       `,
       [
         school.id,
