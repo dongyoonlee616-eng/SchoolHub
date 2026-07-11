@@ -70,8 +70,10 @@
 
       <form 
         class="comment-form" 
-        action="/schools/<%= school.slug %>/posts/<%= post.id %>/comments" 
+        action="/schools/<%= school.slug %>/posts/<%= post.id %>/comments"
         method="POST"
+        class="comment-form"
+        autocomplete="off"
       >
         <% if (currentUser) { %>
           <div class="notice-box">
@@ -83,13 +85,19 @@
             type="text"
             name="nickname"
             placeholder="닉네임, 비워두면 익명"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
           />
         <% } %>
 
-        <textarea 
-          name="content" 
-          rows="4" 
-          placeholder="댓글을 입력하세요." 
+        <textarea
+          name="content"
+          rows="4"
+          placeholder="댓글 내용을 입력하세요"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
           required
         ></textarea>
 

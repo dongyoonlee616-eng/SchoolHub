@@ -17,7 +17,7 @@
     <h1>게시글 작성</h1>
     <p>작성한 게시글은 관리자 승인 후 공개됩니다.</p>
 
-    <form class="post-form" action="/schools/<%= school.slug %>/posts" method="POST">
+    <form class="post-form" action="/schools/<%= school.slug %>/posts" method="POST" autocomplete="off">
       <label>
         카테고리
         <select name="category" required>
@@ -30,7 +30,15 @@
 
       <label>
         제목
-        <input type="text" name="title" maxlength="200" required />
+        <input
+          type="text"
+          name="title"
+          placeholder="제목을 입력하세요"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          required
+        />
       </label>
 
       <label>
@@ -52,6 +60,9 @@
               type="text"
               name="nickname"
               placeholder="비워두면 익명으로 작성됩니다."
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
             />
           </label>
         <% } %>
@@ -59,7 +70,13 @@
 
       <label>
         글 비밀번호
-        <input type="password" name="password" placeholder="나중에 게시글 수정/삭제 시 사용됩니다." required />
+        <input
+          type="password"
+          name="password"
+          placeholder="수정/삭제용 비밀번호"
+          autocomplete="new-password"
+          required
+        />
       </label>
 
       <button type="submit">제출하기</button>
