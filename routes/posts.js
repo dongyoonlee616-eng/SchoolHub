@@ -836,15 +836,13 @@ router.post("/schools/:slug/posts", async (req, res) => {
         return renderSchoolNotFound(res);
     }
 
-    if (!category || !title || !content || !password) {
+    if (!category || !title || !content) {
         return res.status(400).send("카테고리, 제목, 내용, 글 비밀번호를 입력해야 합니다.");
     }
 
     if (!allowedCategories.includes(category)) {
         return res.status(400).send("올바르지 않은 카테고리입니다.");
     }
-
-    const passwordHash = await bcrypt.hash(password, 10);
 
     const displayNickname = currentUser
       ? currentUser.nickname
@@ -863,7 +861,6 @@ router.post("/schools/:slug/posts", async (req, res) => {
         title,
         content,
         nickname,
-        password_hash,
         status
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')
@@ -875,7 +872,6 @@ router.post("/schools/:slug/posts", async (req, res) => {
         title,
         content,
         displayNickname,
-        passwordHash,
       ]
     );
 
