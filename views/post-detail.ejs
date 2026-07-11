@@ -14,6 +14,13 @@
       ← 게시판으로 돌아가기
     </a>
 
+    <%
+      const canManagePost =
+        currentUser &&
+        post.user_id &&
+        Number(post.user_id) === Number(currentUser.id);
+    %>
+
     <article class="post-detail-card">
       <header class="post-detail-header">
         <div class="post-top-row">
@@ -28,9 +35,28 @@
           </div>
 
           <div class="post-detail-actions top-actions">
-            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/edit" class="edit-link">수정</a>
-            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/delete" class="delete-link">삭제</a>
-            <a href="/schools/<%= school.slug %>/posts/<%= post.id %>/report" class="report-link">신고</a>
+            <% if (canManagePost) { %>
+              <a
+                href="/schools/<%= school.slug %>/posts/<%= post.id %>/edit"
+                class="edit-link"
+              >
+                수정
+              </a>
+
+              <a
+                href="/schools/<%= school.slug %>/posts/<%= post.id %>/delete"
+                class="delete-link"
+              >
+                삭제
+              </a>
+            <% } %>
+
+            <a
+              href="/schools/<%= school.slug %>/posts/<%= post.id %>/report"
+              class="report-link"
+            >
+              신고
+            </a>
           </div>
         </div>
       </header>
