@@ -9,6 +9,7 @@ const adminRoutes = require("./routes/admin");
 const lostItemRoutes = require("./routes/lost-items");
 const supportRoutes = require("./routes/support");
 const authRoutes = require("./routes/auth");
+const mypageRoutes = require("./routes/mypage");
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use("/", adminRoutes);
 app.use("/", lostItemRoutes);
 app.use("/", supportRoutes);
 app.use("/", authRoutes);
+app.use("/", mypageRoutes);
 
 app.get('/privacy', (req, res) => {
   res.render('privacy', {

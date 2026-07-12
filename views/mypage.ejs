@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>마이페이지 - SchoolHub</title>
+
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/mypage.css" />
+</head>
+<body>
+  <%- include("partials/header", { school: null }) %>
+
+  <main class="container">
+    <a href="/" class="back-link">← 메인으로 돌아가기</a>
+
+    <section class="mypage-hero">
+      <div>
+        <span class="mypage-label">MY PAGE</span>
+        <h1>마이페이지</h1>
+        <p>내가 작성한 게시글, 댓글, 분실물 등록 내역을 확인할 수 있습니다.</p>
+      </div>
+
+      <div class="mypage-profile-card">
+        <strong><%= user.nickname %></strong>
+        <span><%= user.email %></span>
+
+        <% if (user.role === "admin") { %>
+          <em>관리자 계정</em>
+        <% } else { %>
+          <em>일반 회원</em>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="mypage-stats">
+      <div>
+        <strong><%= posts.length %></strong>
+        <span>내 게시글</span>
+      </div>
+
+      <div>
+        <strong><%= comments.length %></strong>
+        <span>내 댓글</span>
+      </div>
+
+      <div>
+        <strong><%= lostItems.length %></strong>
+        <span>내 분실물</span>
+      </div>
+    </section>
+
+    <section class="mypage-section">
+      <div class="mypage-section-header">
+        <h2>내 게시글</h2>
+        <p>내가 작성한 게시글 목록입니다.</p>
+      </div>
+
+      <% if (posts.length === 0) { %>
+        <div class="mypage-empty">아직 작성한 게시글이 없습니다.</div>
+      <% } else { %>
+        <div class="mypage-list">
+          <% posts.forEach((post) => { %>
+            <article class="mypage-row">
+              <div>
+                <div class="mypage-meta">
+                  <span><%= post.school_name %></span>
+                  <span><%= post.category %></span>
+                  <span class="status-<%= post.status %>">
+                    <%= statusLabels[post.status] || post.status %>
+                  </span>
+                </div>
+
+                <h3><%= post.title %></h3>
+
+                <p>
+                  작성일:
+                  <%= new Date(post.created_at).toLocaleString("ko-KR") %>
+                </p>
+              </div>
+
+              <div class="mypage-actions">
+                <% if (post.status === "approved") { %>
+                  <a href="/schools/<%= post.school_slug %>/posts/<%= post.id %>">
+                    보기
+                  </a>
+
+                  <a href="/schools/<%= post.school_slug %>/posts/<%= post.id %>/edit">
+                    수정
+                  </a>
+
+                  <a
+                    href="/schools/<%= post.school_slug %>/posts/<%= post.id %>/delete"
+                    class="danger-link"
+                  >
+                    삭제
+                  </a>
+                <% } else { %>
+                  <span>승인 후 공개됩니다</span>
+                <% } %>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+    <section class="mypage-section">
+      <div class="mypage-section-header">
+        <h2>내 댓글</h2>
+        <p>내가 작성한 댓글 목록입니다.</p>
+      </div>
+
+      <% if (comments.length === 0) { %>
+        <div class="mypage-empty">아직 작성한 댓글이 없습니다.</div>
+      <% } else { %>
+        <div class="mypage-list">
+          <% comments.forEach((comment) => { %>
+            <article class="mypage-row">
+              <div>
+                <div class="mypage-meta">
+                  <span><%= comment.school_name %></span>
+                  <span class="status-<%= comment.status %>">
+                    <%= statusLabels[comment.status] || comment.status %>
+                  </span>
+                </div>
+
+                <h3><%= comment.post_title %></h3>
+
+                <p class="mypage-content-preview"><%= comment.content %></p>
+
+                <p>
+                  작성일:
+                  <%= new Date(comment.created_at).toLocaleString("ko-KR") %>
+                </p>
+              </div>
+
+              <div class="mypage-actions">
+                <% if (comment.status === "approved" && comment.post_status === "approved") { %>
+                  <a href="/schools/<%= comment.school_slug %>/posts/<%= comment.post_id %>">
+                    게시글 보기
+                  </a>
+                <% } else { %>
+                  <span>승인 후 공개됩니다</span>
+                <% } %>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+    <section class="mypage-section">
+      <div class="mypage-section-header">
+        <h2>내 분실물</h2>
+        <p>내가 등록한 분실물 내역입니다.</p>
+      </div>
+
+      <% if (lostItems.length === 0) { %>
+        <div class="mypage-empty">아직 등록한 분실물이 없습니다.</div>
+      <% } else { %>
+        <div class="mypage-list">
+          <% lostItems.forEach((item) => { %>
+            <article class="mypage-row">
+              <div>
+                <div class="mypage-meta">
+                  <span><%= item.school_name %></span>
+                  <span class="status-<%= item.status %>">
+                    <%= statusLabels[item.status] || item.status %>
+                  </span>
+
+                  <% if (item.found_status) { %>
+                    <span>
+                      <%= lostStatusLabels[item.found_status] || item.found_status %>
+                    </span>
+                  <% } %>
+                </div>
+
+                <h3><%= item.title %></h3>
+
+                <p>습득 장소: <%= item.found_place %></p>
+
+                <p>
+                  작성일:
+                  <%= new Date(item.created_at).toLocaleString("ko-KR") %>
+                </p>
+              </div>
+
+              <div class="mypage-actions">
+                <% if (item.status === "approved") { %>
+                  <a href="/schools/<%= item.school_slug %>/lost-items/<%= item.id %>">
+                    보기
+                  </a>
+                <% } else { %>
+                  <span>승인 후 공개됩니다</span>
+                <% } %>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include("partials/footer") %>
+</body>
+</html>
