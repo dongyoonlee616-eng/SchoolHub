@@ -434,3 +434,73 @@
     grid-column: 1 / -1;
   }
 }
+
+/* ==============================
+   Admin Dropdown Visibility Fix
+============================== */
+.admin-site-header,
+.admin-site-header-inner {
+  overflow: visible;
+}
+
+@media (min-width: 951px) {
+  .admin-site-nav {
+    overflow: visible;
+  }
+}
+
+.admin-nav-dropdown {
+  position: relative;
+  z-index: 200;
+}
+
+.admin-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 999;
+  min-width: 170px;
+  padding: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+}
+
+.admin-nav-dropdown[open] .admin-dropdown-menu {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-dropdown-menu a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 10px 12px;
+  color: #374151;
+  background: transparent;
+  border-radius: 12px;
+}
+
+.admin-dropdown-menu a:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+@media (max-width: 950px) {
+  .admin-site-nav {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .admin-dropdown-menu {
+    position: fixed;
+    top: 82px;
+    left: 14px;
+    right: 14px;
+    min-width: auto;
+    z-index: 9999;
+  }
+}
