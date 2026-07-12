@@ -61,6 +61,10 @@ app.use((req, res) => {
   });
 });
 
+app.get("/debug-session", (req, res) => {
+  res.json(req.session.user || null);
+});
+
 const PORT = process.env.PORT || 3000;
 
 const pool = require("./db");
