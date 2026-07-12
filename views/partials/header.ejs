@@ -19,9 +19,10 @@
       <a href="/support">문의센터</a>
 
       <% if (currentUser) { %>
-        <span class="site-user-badge"><%= currentUser.nickname %>님</span>
 
         <a href="/mypage">마이페이지</a>
+        
+        <span class="site-user-badge"><%= currentUser.nickname %>님</span>
 
         <form action="/logout" method="POST" class="site-logout-form">
           <button type="submit">로그아웃</button>
