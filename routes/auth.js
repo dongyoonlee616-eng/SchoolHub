@@ -191,6 +191,10 @@ router.post("/login", redirectIfLoggedIn, async (req, res) => {
       role: user.role,
     };
 
+    if (user.role === "admin") {
+      return res.redirect("/admin");
+    }
+
     res.redirect("/");
   } catch (error) {
     console.error(error);

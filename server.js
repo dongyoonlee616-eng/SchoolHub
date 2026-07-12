@@ -29,11 +29,13 @@ app.use(
 
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
-  next();
-});
 
-app.get("/debug-session", (req, res) => {
-  res.json(req.session.user || null);
+  res.locals.admin =
+    req.session.user && req.session.user.role === "admin"
+      ? req.session.user
+      : null;
+
+  next();
 });
 
 app.use("/", schoolRoutes);
