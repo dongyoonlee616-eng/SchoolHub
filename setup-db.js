@@ -185,6 +185,12 @@ const migrations = [
       CREATE INDEX IF NOT EXISTS idx_lost_items_user_id ON lost_items (user_id);
     `,
   },
+  {
+    name: "20260711_05_remove_legacy_admin_tables",
+    sql: `
+      DROP TABLE IF EXISTS admins;
+    `,
+  },
 ];
 
 async function createBaseTables() {
