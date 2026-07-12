@@ -8,9 +8,6 @@
     </a>
 
     <nav class="admin-site-nav">
-      <a href="/admin">학교 선택</a>
-      <a href="/admin/schools">학교 관리</a>
-
       <% if (typeof school !== "undefined" && school) { %>
         <a href="/admin/schools/<%= school.slug %>/dashboard">대시보드</a>
 
@@ -56,8 +53,13 @@
       <a href="/admin/support">문의 확인</a>
     </nav>
 
-    <form action="/logout" method="POST" class="admin-header-logout">
-      <button type="submit">로그아웃</button>
-    </form>
+    <div class="admin-header-right">
+      <a href="/admin" class="admin-header-shortcut">학교 선택</a>
+      <a href="/admin/schools" class="admin-header-shortcut">학교 관리</a>
+
+      <form action="/logout" method="POST" class="admin-header-logout">
+        <button type="submit">로그아웃</button>
+      </form>
+    </div>
   </div>
 </header>
