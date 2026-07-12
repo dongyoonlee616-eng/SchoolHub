@@ -32,6 +32,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/debug-session", (req, res) => {
+  res.json(req.session.user || null);
+});
+
 app.use("/", schoolRoutes);
 app.use("/", postRoutes);
 app.use("/", adminRoutes);
@@ -59,10 +63,6 @@ app.use((req, res) => {
     backLabel: "메인 화면으로 돌아가기",
     backUrl: "/",
   });
-});
-
-app.get("/debug-session", (req, res) => {
-  res.json(req.session.user || null);
 });
 
 const PORT = process.env.PORT || 3000;
