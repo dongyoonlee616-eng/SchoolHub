@@ -1,5 +1,4 @@
 const pool = require("./db");
-const bcrypt = require("bcrypt");
 
 const migrations = [
   {
@@ -387,28 +386,6 @@ async function seedDefaultSchools() {
   }
 }
 
-async function seedAdmin() {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-
-  if (!adminPassword) {
-    console.log("ADMIN_PASSWORD가 없어서 관리자 계정 생성은 건너뜀");
-    return;
-  }
-
-  const hash = await bcrypt.hash(adminPassword, 10);
-
-  await pool.query(
-    `
-    INSERT INTO admins (username, password_hash, role)
-    VALUES ($1, $2, 'admin')
-    ON CONFLICT (username) DO NOTHING
-    `,
-    ["admin", hash]
-  );
-
-  console.log("관리자 계정 확인 완료: admin");
-}
-
 async function runMigrations() {
   for (const migration of migrations) {
     const result = await pool.query(
@@ -450,8 +427,6 @@ async function setup() {
 
     await seedDefaultSchools();
     console.log("기본 학교 데이터 확인 완료");
-
-    await seedAdmin();
 
     console.log("✅ DB 세팅 완료");
   } catch (error) {
