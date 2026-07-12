@@ -105,7 +105,7 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
       `
       INSERT INTO app_users (nickname, email, password_hash)
       VALUES ($1, $2, $3)
-      RETURNING id, nickname, email
+      RETURNING id, nickname, email, role
       `,
       [trimmedNickname, trimmedEmail, passwordHash]
     );
@@ -116,6 +116,7 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
       id: user.id,
       nickname: user.nickname,
       email: user.email,
+      role: user.role,
     };
 
     res.redirect("/");
@@ -153,7 +154,7 @@ router.post("/login", redirectIfLoggedIn, async (req, res) => {
 
     const result = await pool.query(
       `
-      SELECT id, nickname, email, password_hash
+      SELECT id, nickname, email, password_hash, role
       FROM app_users
       WHERE email = $1
       `,
@@ -187,6 +188,7 @@ router.post("/login", redirectIfLoggedIn, async (req, res) => {
       id: user.id,
       nickname: user.nickname,
       email: user.email,
+      role: user.role,
     };
 
     res.redirect("/");

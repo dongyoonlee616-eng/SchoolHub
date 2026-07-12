@@ -4,8 +4,8 @@ const router = express.Router();
 const pool = require("../db");
 
 function requireAdmin(req, res, next) {
-  if (!req.session.admin) {
-    return res.redirect("/admin/login");
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.redirect("/login");
   }
 
   next();
@@ -60,7 +60,7 @@ function isValidSupportType(type) {
 function isValidSupportStatus(status) {
   return Object.prototype.hasOwnProperty.call(SUPPORT_STATUSES, status);
 }
-
+/* 관리자 로그인 페이지 삭제
 // 관리자 로그인 페이지
 router.get("/admin/login", (req, res) => {
   res.render("admin/login", {
@@ -111,11 +111,12 @@ router.post("/admin/login", async (req, res) => {
     res.status(500).send("관리자 로그인 중 오류가 발생했습니다.");
   }
 });
+*/
 
 // 관리자 로그아웃
 router.post("/admin/logout", requireAdmin, (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/admin/login");
+    res.redirect("/");
   });
 });
 
