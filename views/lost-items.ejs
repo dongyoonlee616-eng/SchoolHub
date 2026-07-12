@@ -62,7 +62,7 @@
     <% } else { %>
       <div class="lost-list">
         <% items.forEach(item => { %>
-          <a href="/admin/schools/<%= school.slug %>/lost-items/<%= item.id %>" class="lost-row">
+          <a href="/schools/<%= school.slug %>/lost-items/<%= item.id %>" class="lost-row">
             <div>
               <div class="lost-row-meta">
                 <% if (item.found_place) { %>
