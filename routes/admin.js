@@ -223,7 +223,7 @@ router.get("/admin", requireAdmin, async (req, res) => {
     );
 
     res.render("admin/dashboard", {
-      admin: req.session.admin,
+      admin: req.session.user,
       schools: schoolsResult.rows,
       searchQuery,
       selectedFilter,
@@ -297,7 +297,7 @@ router.get("/admin/schools/:slug/dashboard", requireAdmin, async (req, res) => {
     const reportsCount = Number(reportsCountResult.rows[0].count);
 
     res.render("admin/school-dashboard", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       pendingPostsCount: pendingPostsResult.rows[0].count,
       pendingCommentsCount: pendingCommentsResult.rows[0].count,
@@ -335,7 +335,7 @@ router.get("/admin/schools/:slug/posts/pending", requireAdmin, async (req, res) 
     );
 
     res.render("admin/pending-posts", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       posts: result.rows,
     });
@@ -377,7 +377,7 @@ router.get("/admin/schools/:slug/posts/pending/:id", requireAdmin, async (req, r
     }
 
     res.render("admin/pending-post-detail", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       post: result.rows[0],
     });
@@ -458,7 +458,7 @@ router.get("/admin/schools/:slug/notices", requireAdmin, async (req, res) => {
     );
 
     res.render("admin/notices", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       notices: result.rows,
     });
@@ -479,7 +479,7 @@ router.get("/admin/schools/:slug/notices/new", requireAdmin, async (req, res) =>
     }
 
     res.render("admin/notice-new", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       error: null,
     });
@@ -504,7 +504,7 @@ router.post("/admin/schools/:slug/notices", requireAdmin, async (req, res) => {
 
     if (!title || !content) {
       return res.render("admin/notice-new", {
-        admin: req.session.admin,
+        admin: req.session.user,
         school,
         error: "제목과 내용을 모두 입력하세요.",
       });
@@ -550,7 +550,7 @@ router.get("/admin/schools/:slug/notices/:id/edit", requireAdmin, async (req, re
     }
 
     res.render("admin/notice-edit", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       notice: noticeResult.rows[0],
       error: null,
@@ -590,7 +590,7 @@ router.post("/admin/schools/:slug/notices/:id/edit", requireAdmin, async (req, r
 
     if (!title || !content) {
       return res.render("admin/notice-edit", {
-        admin: req.session.admin,
+        admin: req.session.user,
         school,
         notice: noticeResult.rows[0],
         error: "제목과 내용을 모두 입력하세요.",
@@ -666,7 +666,7 @@ router.get("/admin/schools/:slug/comments/pending", requireAdmin, async (req, re
     );
 
     res.render("admin/pending-comments", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       comments: result.rows,
     });
@@ -716,7 +716,7 @@ router.get("/admin/schools/:slug/comments/pending/:id", requireAdmin, async (req
     }
 
     res.render("admin/comment-review", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       item: result.rows[0],
     });
@@ -829,7 +829,7 @@ router.get("/admin/schools/:slug/board", requireAdmin, async (req, res) => {
     );
 
     res.render("admin/board", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       posts: result.rows,
       searchQuery,
@@ -881,7 +881,7 @@ router.get("/admin/schools/:slug/board/posts/:id", requireAdmin, async (req, res
     );
 
     res.render("admin/board-post-detail", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       post: postResult.rows[0],
       comments: commentsResult.rows,
@@ -977,7 +977,7 @@ router.get("/admin/schools/:slug/lost-items/pending", requireAdmin, async (req, 
     );
 
     res.render("admin/pending-lost-items", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       items: result.rows,
     });
@@ -1019,7 +1019,7 @@ router.get("/admin/schools/:slug/lost-items/pending/:id", requireAdmin, async (r
     }
 
     res.render("admin/pending-lost-item-detail", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       item: result.rows[0],
     });
@@ -1106,7 +1106,7 @@ router.get("/admin/schools/:slug/lost-items", requireAdmin, async (req, res) => 
     );
 
     res.render("admin/lost-items", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       items: result.rows,
       searchQuery,
@@ -1148,7 +1148,7 @@ router.get("/admin/schools/:slug/lost-items/:id", requireAdmin, async (req, res)
     }
 
     res.render("admin/lost-item-detail", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       item: result.rows[0],
     });
@@ -1198,7 +1198,7 @@ router.get("/admin/schools", requireAdmin, async (req, res) => {
 
     res.render("admin/schools", {
       pageTitle: "학교 관리 - SchoolHub",
-      admin: req.session.admin,
+      admin: req.session.user,
       schools: result.rows,
       error: errorMessage,
     });
@@ -1212,7 +1212,7 @@ router.get("/admin/schools", requireAdmin, async (req, res) => {
 router.get("/admin/schools/new", requireAdmin, (req, res) => {
   res.render("admin/school-new", {
     pageTitle: "학교 추가 - SchoolHub",
-    admin: req.session.admin,
+    admin: req.session.user,
     error: null,
   });
 });
@@ -1231,7 +1231,7 @@ router.post("/admin/schools", requireAdmin, async (req, res) => {
     if (!name || !slug) {
       return res.render("admin/school-new", {
         pageTitle: "학교 추가 - SchoolHub",
-        admin: req.session.admin,
+        admin: req.session.user,
         error: "학교 이름과 slug를 모두 입력하세요.",
       });
     }
@@ -1239,7 +1239,7 @@ router.post("/admin/schools", requireAdmin, async (req, res) => {
     if (!/^[a-z0-9-]+$/.test(slug)) {
       return res.render("admin/school-new", {
         pageTitle: "학교 추가 - SchoolHub",
-        admin: req.session.admin,
+        admin: req.session.user,
         error: "slug는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.",
       });
     }
@@ -1280,7 +1280,7 @@ router.post("/admin/schools", requireAdmin, async (req, res) => {
     if (error.code === "23505") {
       return res.render("admin/school-new", {
         pageTitle: "학교 추가 - SchoolHub",
-        admin: req.session.admin,
+        admin: req.session.user,
         error: "이미 사용 중인 slug입니다.",
       });
     }
@@ -1304,7 +1304,7 @@ router.get("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
 
     res.render("admin/school-edit", {
       pageTitle: "학교 수정 - SchoolHub",
-      admin: req.session.admin,
+      admin: req.session.user,
       school: result.rows[0],
       error: null,
     });
@@ -1332,7 +1332,7 @@ router.post("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
 
     if (!name || !slug) {
       return res.render("admin/school-edit", {
-        admin: req.session.admin,
+        admin: req.session.user,
         school: schoolResult.rows[0],
         error: "학교 이름과 slug를 모두 입력하세요.",
       });
@@ -1340,7 +1340,7 @@ router.post("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
 
     if (!/^[a-z0-9-]+$/.test(slug)) {
       return res.render("admin/school-edit", {
-        admin: req.session.admin,
+        admin: req.session.user,
         school: {
           ...schoolResult.rows[0],
           name,
@@ -1372,7 +1372,7 @@ router.post("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
       const schoolResult = await pool.query("SELECT * FROM schools WHERE id = $1", [id]);
 
       return res.render("admin/school-edit", {
-        admin: req.session.admin,
+        admin: req.session.user,
         school: schoolResult.rows[0],
         error: "이미 사용 중인 slug입니다.",
       });
@@ -1525,7 +1525,7 @@ router.get("/admin/schools/:slug/reports", requireAdmin, async (req, res) => {
     );
 
     res.render("admin/post-reports", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       reports: result.rows,
       selectedStatus,
@@ -1574,7 +1574,7 @@ router.get("/admin/schools/:slug/reports/:id", requireAdmin, async (req, res) =>
     }
 
     res.render("admin/post-report-detail", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       report: result.rows[0],
     });
@@ -1708,7 +1708,7 @@ router.get("/admin/schools/:slug/reports/comment/:id", requireAdmin, async (req,
     }
 
     res.render("admin/comment-report-detail", {
-      admin: req.session.admin,
+      admin: req.session.user,
       school,
       report: result.rows[0],
     });
@@ -1862,7 +1862,7 @@ router.get("/admin/support", requireAdmin, async (req, res) => {
     );
 
     res.render("admin/support", {
-      admin: req.session.admin,
+      admin: req.session.user,
       tickets: result.rows,
       supportTypes: SUPPORT_TYPES,
       supportStatuses: SUPPORT_STATUSES,
@@ -1900,7 +1900,7 @@ router.get("/admin/support/:id", requireAdmin, async (req, res) => {
     }
 
     res.render("admin/support-detail", {
-      admin: req.session.admin,
+      admin: req.session.user,
       ticket: result.rows[0],
       supportTypes: SUPPORT_TYPES,
       supportStatuses: SUPPORT_STATUSES,
