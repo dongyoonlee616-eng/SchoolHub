@@ -13,13 +13,44 @@
 
       <% if (typeof school !== "undefined" && school) { %>
         <a href="/admin/schools/<%= school.slug %>/dashboard">대시보드</a>
-        <a href="/admin/schools/<%= school.slug %>/posts/pending">게시글 승인</a>
-        <a href="/admin/schools/<%= school.slug %>/comments/pending">댓글 승인</a>
-        <a href="/admin/schools/<%= school.slug %>/lost-items/pending">분실물 승인</a>
+
+        <details class="admin-nav-dropdown">
+          <summary>승인</summary>
+
+          <div class="admin-dropdown-menu">
+            <a href="/admin/schools/<%= school.slug %>/posts/pending">
+              게시글 승인
+            </a>
+
+            <a href="/admin/schools/<%= school.slug %>/comments/pending">
+              댓글 승인
+            </a>
+
+            <a href="/admin/schools/<%= school.slug %>/lost-items/pending">
+              분실물 승인
+            </a>
+          </div>
+        </details>
+
+        <details class="admin-nav-dropdown">
+          <summary>관리</summary>
+
+          <div class="admin-dropdown-menu">
+            <a href="/admin/schools/<%= school.slug %>/board">
+              게시판 관리
+            </a>
+
+            <a href="/admin/schools/<%= school.slug %>/lost-items">
+              분실물 관리
+            </a>
+
+            <a href="/admin/schools/<%= school.slug %>/reports">
+              신고 관리
+            </a>
+          </div>
+        </details>
+
         <a href="/admin/schools/<%= school.slug %>/notices">공지사항</a>
-        <a href="/admin/schools/<%= school.slug %>/reports">신고 관리</a>
-        <a href="/admin/schools/<%= school.slug %>/board">게시판 관리</a>
-        <a href="/admin/schools/<%= school.slug %>/lost-items">분실물 관리</a>
       <% } %>
 
       <a href="/admin/support">문의 확인</a>
