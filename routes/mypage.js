@@ -1,4 +1,5 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("../db");
 
@@ -124,28 +125,132 @@ router.get("/mypage/account", requireLogin, async (req, res) => {
       return res.redirect("/login");
     }
 
-    const account = userResult.rows[0];
-
-    const countsResult = await pool.query(
-      `
-      SELECT
-        (SELECT COUNT(*) FROM posts WHERE user_id = $1) AS posts_count,
-        (SELECT COUNT(*) FROM comments WHERE user_id = $1) AS comments_count,
-        (SELECT COUNT(*) FROM lost_items WHERE user_id = $1) AS lost_items_count,
-        (SELECT COUNT(*) FROM support_tickets WHERE user_id = $1) AS support_count
-      `,
-      [user.id]
-    );
-
     res.render("mypage/account", {
       school: null,
       user,
-      account,
-      counts: countsResult.rows[0],
+      account: userResult.rows[0],
     });
   } catch (error) {
     console.error(error);
     res.status(500).send("계정 정보를 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+router.get("/mypage/password", requireLogin, (req, res) => {
+  res.render("mypage/password", {
+    school: null,
+    user: req.session.user,
+    error: null,
+    success: null,
+  });
+});
+
+router.post("/mypage/password", requireLogin, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, newPasswordConfirm } = req.body;
+    const user = req.session.user;
+
+    if (!currentPassword || !newPassword || !newPasswordConfirm) {
+      return res.render("mypage/password", {
+        school: null,
+        user,
+        error: "현재 비밀번호와 새 비밀번호를 모두 입력해주세요.",
+        success: null,
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.render("mypage/password", {
+        school: null,
+        user,
+        error: "새 비밀번호는 6자 이상이어야 합니다.",
+        success: null,
+      });
+    }
+
+    if (newPassword !== newPasswordConfirm) {
+      return res.render("mypage/password", {
+        school: null,
+        user,
+        error: "새 비밀번호 확인이 일치하지 않습니다.",
+        success: null,
+      });
+    }
+
+    const userResult = await pool.query(
+      `
+      SELECT password_hash
+      FROM app_users
+      WHERE id = $1
+      `,
+      [user.id]
+    );
+
+    if (userResult.rows.length === 0) {
+      req.session.user = null;
+      return res.redirect("/login");
+    }
+
+    const isMatch = await bcrypt.compare(
+      currentPassword,
+      userResult.rows[0].password_hash
+    );
+
+    if (!isMatch) {
+      return res.render("mypage/password", {
+        school: null,
+        user,
+        error: "현재 비밀번호가 올바르지 않습니다.",
+        success: null,
+      });
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    await pool.query(
+      `
+      UPDATE app_users
+      SET password_hash = $1
+      WHERE id = $2
+      `,
+      [newPasswordHash, user.id]
+    );
+
+    res.render("mypage/password", {
+      school: null,
+      user,
+      error: null,
+      success: "비밀번호가 변경되었습니다.",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("비밀번호를 변경하는 중 오류가 발생했습니다.");
+  }
+});
+
+router.post("/mypage/delete", requireLogin, async (req, res) => {
+  try {
+    const user = req.session.user;
+
+    await pool.query(
+      `
+      DELETE FROM app_users
+      WHERE id = $1
+      `,
+      [user.id]
+    );
+
+    req.session.destroy((error) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send("계정 삭제 후 로그아웃하는 중 오류가 발생했습니다.");
+      }
+
+      res.redirect("/");
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("계정을 삭제하는 중 오류가 발생했습니다.");
   }
 });
 

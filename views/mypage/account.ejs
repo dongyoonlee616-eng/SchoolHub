@@ -29,12 +29,6 @@
 
     <%- include("_nav", { activePage: "account" }) %>
 
-    <section class="mypage-stats">
-      <div><strong><%= counts.posts_count %></strong><span>게시글</span></div>
-      <div><strong><%= counts.comments_count %></strong><span>댓글</span></div>
-      <div><strong><%= counts.support_count %></strong><span>문의</span></div>
-    </section>
-
     <section class="mypage-section">
       <div class="mypage-section-header">
         <h2>기본 정보</h2>
@@ -42,11 +36,53 @@
       </div>
 
       <div class="account-info-card">
-        <div><span>닉네임</span><strong><%= account.nickname %></strong></div>
-        <div><span>이메일</span><strong><%= account.email %></strong></div>
-        <div><span>권한</span><strong><%= account.role === "admin" ? "관리자" : "일반 회원" %></strong></div>
-        <div><span>가입일</span><strong><%= new Date(account.created_at).toLocaleString("ko-KR") %></strong></div>
+        <div>
+          <span>닉네임</span>
+          <strong><%= account.nickname %></strong>
+        </div>
+
+        <div>
+          <span>이메일</span>
+          <strong><%= account.email %></strong>
+        </div>
+
+        <div>
+          <span>비밀번호</span>
+
+          <div class="account-password-row">
+            <strong>*****</strong>
+            <a href="/mypage/password" class="account-small-button">
+              비밀번호 재설정
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <span>권한</span>
+          <strong><%= account.role === "admin" ? "관리자" : "일반 회원" %></strong>
+        </div>
+
+        <div>
+          <span>가입일</span>
+          <strong><%= new Date(account.created_at).toLocaleString("ko-KR") %></strong>
+        </div>
       </div>
+    </section>
+
+    <section class="mypage-section">
+      <div class="mypage-section-header">
+        <h2>계정 관리</h2>
+        <p>계정을 삭제하면 다시 복구할 수 없습니다.</p>
+      </div>
+
+      <form
+        action="/mypage/delete"
+        method="POST"
+        class="account-delete-form"
+        onsubmit="return confirm('정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');"
+      >
+        <button type="submit">계정 삭제</button>
+      </form>
     </section>
   </main>
 
