@@ -200,6 +200,22 @@ const migrations = [
       ON support_tickets (user_id);
     `,
   },
+  {
+    name: "20260712_02_add_email_verification",
+    sql: `
+      ALTER TABLE app_users
+      ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT false;
+
+      ALTER TABLE app_users
+      ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMP;
+
+      ALTER TABLE app_users
+      ADD COLUMN IF NOT EXISTS email_verification_token_hash TEXT;
+
+      ALTER TABLE app_users
+      ADD COLUMN IF NOT EXISTS email_verification_expires_at TIMESTAMP;
+    `,
+  },
 ];
 
 async function createBaseTables() {

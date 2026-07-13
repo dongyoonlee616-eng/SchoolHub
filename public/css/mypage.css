@@ -480,3 +480,107 @@
     flex-shrink: 0;
   }
 }
+
+/* ==============================
+   Account Info Polish
+============================== */
+.account-info-card div {
+  align-items: center;
+  min-height: 66px;
+}
+
+.account-email-row,
+.account-password-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-height: 34px;
+}
+
+.account-email-row strong,
+.account-password-row strong {
+  line-height: 1;
+}
+
+.account-email-verify-form {
+  margin: 0;
+}
+
+.account-small-button,
+.account-verify-button,
+.account-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.account-small-button {
+  background: var(--primary-soft);
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.account-small-button:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.account-verify-button {
+  border: none;
+  background: var(--primary-soft);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.account-verify-button:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.account-verified-badge {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.account-delete-form {
+  padding: 24px;
+  background: white;
+  border: 1px solid #fecaca;
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+
+.account-delete-form button {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 15px;
+  background: #dc2626;
+  color: white;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.account-delete-form button:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 760px) {
+  .account-info-card div {
+    align-items: flex-start;
+  }
+
+  .account-email-row,
+  .account-password-row {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

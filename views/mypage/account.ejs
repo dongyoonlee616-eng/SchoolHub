@@ -29,6 +29,18 @@
 
     <%- include("_nav", { activePage: "account" }) %>
 
+    <% if (emailVerifySent) { %>
+      <div class="success-box">
+        이메일 인증 메일을 보냈습니다. 메일함을 확인해주세요.
+      </div>
+    <% } %>
+
+    <% if (emailVerified) { %>
+      <div class="success-box">
+        이메일 인증이 완료되었습니다.
+      </div>
+    <% } %>
+
     <section class="mypage-section">
       <div class="mypage-section-header">
         <h2>기본 정보</h2>
@@ -43,7 +55,24 @@
 
         <div>
           <span>이메일</span>
-          <strong><%= account.email %></strong>
+
+          <div class="account-email-row">
+            <strong><%= account.email %></strong>
+
+            <% if (account.email_verified) { %>
+              <span class="account-verified-badge">인증 완료</span>
+            <% } else { %>
+              <form
+                action="/mypage/email/verify-request"
+                method="POST"
+                class="account-email-verify-form"
+              >
+                <button type="submit" class="account-verify-button">
+                  이메일 인증
+                </button>
+              </form>
+            <% } %>
+          </div>
         </div>
 
         <div>

@@ -2,6 +2,62 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("../db");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+
+function hashEmailToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+async function sendVerificationEmail(to, verificationUrl) {
+  if (
+    !process.env.SMTP_HOST ||
+    !process.env.SMTP_PORT ||
+    !process.env.SMTP_USER ||
+    !process.env.SMTP_PASS
+  ) {
+    throw new Error("SMTP 환경변수가 설정되지 않았습니다.");
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: Number(process.env.SMTP_PORT) === 465,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    to,
+    subject: "SchoolHub 이메일 인증",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.7;">
+        <h2>SchoolHub 이메일 인증</h2>
+        <p>아래 버튼을 눌러 이메일 인증을 완료해주세요.</p>
+        <p>
+          <a
+            href="${verificationUrl}"
+            style="
+              display: inline-block;
+              padding: 12px 18px;
+              background: #3b5bdb;
+              color: white;
+              text-decoration: none;
+              border-radius: 10px;
+              font-weight: bold;
+            "
+          >
+            이메일 인증하기
+          </a>
+        </p>
+        <p>이 링크는 30분 동안만 유효합니다.</p>
+      </div>
+    `,
+  });
+}
 
 function requireLogin(req, res, next) {
   if (!req.session.user) return res.redirect("/login");
@@ -113,7 +169,7 @@ router.get("/mypage/account", requireLogin, async (req, res) => {
 
     const userResult = await pool.query(
       `
-      SELECT id, nickname, email, role, created_at
+      SELECT id, nickname, email, role, email_verified, created_at
       FROM app_users
       WHERE id = $1
       `,
@@ -129,6 +185,8 @@ router.get("/mypage/account", requireLogin, async (req, res) => {
       school: null,
       user,
       account: userResult.rows[0],
+      emailVerifySent: req.query.emailVerifySent === "1",
+      emailVerified: req.query.emailVerified === "1",
     });
   } catch (error) {
     console.error(error);
@@ -251,6 +309,111 @@ router.post("/mypage/delete", requireLogin, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("계정을 삭제하는 중 오류가 발생했습니다.");
+  }
+});
+
+router.post("/mypage/email/verify-request", requireLogin, async (req, res) => {
+  try {
+    const user = req.session.user;
+
+    const userResult = await pool.query(
+      `
+      SELECT id, email, email_verified
+      FROM app_users
+      WHERE id = $1
+      `,
+      [user.id]
+    );
+
+    if (userResult.rows.length === 0) {
+      req.session.user = null;
+      return res.redirect("/login");
+    }
+
+    const account = userResult.rows[0];
+
+    if (account.email_verified) {
+      return res.redirect("/mypage/account?emailVerified=1");
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const tokenHash = hashEmailToken(token);
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+    await pool.query(
+      `
+      UPDATE app_users
+      SET email_verification_token_hash = $1,
+          email_verification_expires_at = $2
+      WHERE id = $3
+      `,
+      [tokenHash, expiresAt, user.id]
+    );
+
+    const baseUrl =
+      process.env.APP_BASE_URL ||
+      `${req.protocol}://${req.get("host")}`;
+
+    const verificationUrl = `${baseUrl}/verify-email?token=${token}`;
+
+    await sendVerificationEmail(account.email, verificationUrl);
+
+    res.redirect("/mypage/account?emailVerifySent=1");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("이메일 인증 메일을 보내는 중 오류가 발생했습니다.");
+  }
+});
+
+router.get("/verify-email", async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).send("인증 토큰이 없습니다.");
+    }
+
+    const tokenHash = hashEmailToken(token);
+
+    const userResult = await pool.query(
+      `
+      SELECT id
+      FROM app_users
+      WHERE email_verification_token_hash = $1
+        AND email_verification_expires_at > CURRENT_TIMESTAMP
+      `,
+      [tokenHash]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(400).send("유효하지 않거나 만료된 인증 링크입니다.");
+    }
+
+    const verifiedUser = userResult.rows[0];
+
+    await pool.query(
+      `
+      UPDATE app_users
+      SET email_verified = true,
+          email_verified_at = CURRENT_TIMESTAMP,
+          email_verification_token_hash = NULL,
+          email_verification_expires_at = NULL
+      WHERE id = $1
+      `,
+      [verifiedUser.id]
+    );
+
+    if (
+      req.session.user &&
+      Number(req.session.user.id) === Number(verifiedUser.id)
+    ) {
+      return res.redirect("/mypage/account?emailVerified=1");
+    }
+
+    res.send("이메일 인증이 완료되었습니다. SchoolHub에 다시 로그인해주세요.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("이메일 인증 중 오류가 발생했습니다.");
   }
 });
 
