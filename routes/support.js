@@ -43,6 +43,9 @@ router.post("/support", async (req, res) => {
     const titleValue = title?.trim();
     const contentValue = content?.trim();
 
+    const currentUser = req.session.user || null;
+    const userId = currentUser ? currentUser.id : null;
+
     const nicknameValue =
       nickname && nickname.trim() ? nickname.trim() : "익명";
 
@@ -72,6 +75,7 @@ router.post("/support", async (req, res) => {
     await pool.query(
       `
       INSERT INTO support_tickets (
+        user_id,
         ticket_type,
         nickname,
         contact,
@@ -79,9 +83,10 @@ router.post("/support", async (req, res) => {
         content,
         status
       )
-      VALUES ($1, $2, $3, $4, $5, 'pending')
+      VALUES ($1, $2, $3, $4, $5, $6, 'pending')
       `,
       [
+        userId,
         ticketTypeValue,
         nicknameValue,
         contactValue,

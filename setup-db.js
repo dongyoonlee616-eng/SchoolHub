@@ -190,6 +190,16 @@ const migrations = [
       DROP TABLE IF EXISTS admins;
     `,
   },
+  {
+    name: "20260712_01_add_user_id_to_support_tickets",
+    sql: `
+      ALTER TABLE support_tickets
+      ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES app_users(id) ON DELETE SET NULL;
+
+      CREATE INDEX IF NOT EXISTS idx_support_tickets_user_id
+      ON support_tickets (user_id);
+    `,
+  },
 ];
 
 async function createBaseTables() {

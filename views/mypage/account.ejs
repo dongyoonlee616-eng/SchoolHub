@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>계정 정보 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/mypage.css" />
+</head>
+<body>
+  <%- include("../partials/header", { school: null }) %>
+
+  <main class="container">
+    <a href="/" class="back-link">← 메인으로 돌아가기</a>
+
+    <section class="mypage-hero">
+      <div>
+        <span class="mypage-label">ACCOUNT</span>
+        <h1>계정 정보</h1>
+        <p>내 SchoolHub 계정 정보를 확인할 수 있습니다.</p>
+      </div>
+
+      <div class="mypage-profile-card">
+        <strong><%= account.nickname %></strong>
+        <span><%= account.email %></span>
+        <em><%= account.role === "admin" ? "관리자 계정" : "일반 회원" %></em>
+      </div>
+    </section>
+
+    <%- include("_nav", { activePage: "account" }) %>
+
+    <section class="mypage-stats">
+      <div><strong><%= counts.posts_count %></strong><span>게시글</span></div>
+      <div><strong><%= counts.comments_count %></strong><span>댓글</span></div>
+      <div><strong><%= counts.support_count %></strong><span>문의</span></div>
+    </section>
+
+    <section class="mypage-section">
+      <div class="mypage-section-header">
+        <h2>기본 정보</h2>
+        <p>회원가입 시 등록한 계정 정보입니다.</p>
+      </div>
+
+      <div class="account-info-card">
+        <div><span>닉네임</span><strong><%= account.nickname %></strong></div>
+        <div><span>이메일</span><strong><%= account.email %></strong></div>
+        <div><span>권한</span><strong><%= account.role === "admin" ? "관리자" : "일반 회원" %></strong></div>
+        <div><span>가입일</span><strong><%= new Date(account.created_at).toLocaleString("ko-KR") %></strong></div>
+      </div>
+    </section>
+  </main>
+
+  <%- include("../partials/footer") %>
+</body>
+</html>

@@ -807,3 +807,114 @@ p {
     -webkit-tap-highlight-color: transparent;
   }
 }
+
+/* ==============================
+   Public Header Dropdown
+============================== */
+.site-nav-dropdown {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.site-nav-dropdown summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px;
+  color: #dbeafe;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.18s;
+  white-space: nowrap;
+}
+
+.site-nav-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-nav-dropdown summary::after {
+  content: "▾";
+  font-size: 10px;
+  opacity: 0.75;
+}
+
+.site-nav-dropdown[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.site-nav-dropdown summary:hover,
+.site-nav-dropdown[open] summary {
+  background: rgba(255, 255, 255, 0.13);
+  color: white;
+}
+
+.site-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 999;
+  min-width: 150px;
+  padding: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+}
+
+.site-nav-dropdown[open] .site-dropdown-menu {
+  display: grid;
+  gap: 4px;
+}
+
+.site-dropdown-menu a {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 10px 12px;
+  color: #374151;
+  background: transparent;
+  border-radius: 12px;
+}
+
+.site-dropdown-menu a:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.site-header,
+.site-header-inner {
+  overflow: visible;
+}
+
+@media (min-width: 761px) {
+  .site-nav {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 760px) {
+  .site-nav-dropdown summary {
+    background: #f3f4f6;
+    color: #475569;
+    border: 1px solid #e5e7eb;
+  }
+
+  .site-nav-dropdown summary:hover,
+  .site-nav-dropdown[open] summary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  .site-dropdown-menu {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    top: 92px;
+    min-width: auto;
+    border-radius: 18px;
+  }
+}

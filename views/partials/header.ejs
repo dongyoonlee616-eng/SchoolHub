@@ -20,7 +20,15 @@
 
       <% if (currentUser) { %>
 
-        <a href="/mypage">마이페이지</a>
+        <details class="site-nav-dropdown">
+          <summary>마이페이지</summary>
+
+          <div class="site-dropdown-menu">
+            <a href="/mypage/activity">내 활동</a>
+            <a href="/mypage/support">내 문의</a>
+            <a href="/mypage/account">계정 정보</a>
+          </div>
+        </details>
         
         <span class="site-user-badge"><%= currentUser.nickname %>님</span>
 
