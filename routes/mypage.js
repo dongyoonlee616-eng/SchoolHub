@@ -1,60 +1,33 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const { Resend } = require("resend");
 const router = express.Router();
 const pool = require("../db");
-const crypto = require("crypto");
-const nodemailer = require("nodemailer");
-const dns = require("dns").promises;
+
+function hashEmailToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
 
 function hashEmailToken(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
 async function sendVerificationEmail(to, verificationUrl) {
-  if (
-    !process.env.SMTP_HOST ||
-    !process.env.SMTP_PORT ||
-    !process.env.SMTP_USER ||
-    !process.env.SMTP_PASS
-  ) {
-    throw new Error("SMTP 환경변수가 설정되지 않았습니다.");
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY 환경변수가 설정되지 않았습니다.");
   }
 
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = Number(process.env.SMTP_PORT);
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
-  const ipv4Addresses = await dns.resolve4(smtpHost);
-
-  if (!ipv4Addresses || ipv4Addresses.length === 0) {
-    throw new Error("SMTP IPv4 주소를 찾을 수 없습니다.");
-  }
-
-  const smtpIPv4 = ipv4Addresses[0];
-
-  const transporter = nodemailer.createTransport({
-    host: smtpIPv4,
-    port: smtpPort,
-    secure: smtpPort === 465,
-    requireTLS: smtpPort === 587,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-    tls: {
-      servername: smtpHost,
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
-  });
-
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM || process.env.SMTP_USER,
-    to,
+  const { data, error } = await resend.emails.send({
+    from: process.env.MAIL_FROM || "SchoolHub <onboarding@resend.dev>",
+    to: [to],
     subject: "SchoolHub 이메일 인증",
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.7;">
         <h2>SchoolHub 이메일 인증</h2>
+
         <p>아래 버튼을 눌러 이메일 인증을 완료해주세요.</p>
 
         <p>
@@ -78,6 +51,12 @@ async function sendVerificationEmail(to, verificationUrl) {
       </div>
     `,
   });
+
+  if (error) {
+    throw new Error(error.message || "Resend 이메일 발송 오류");
+  }
+
+  return data;
 }
 
 function requireLogin(req, res, next) {
@@ -381,8 +360,8 @@ router.post("/mypage/email/verify-request", requireLogin, async (req, res) => {
 
     res.redirect("/mypage/account?emailVerifySent=1");
   } catch (error) {
-    console.error(error);
-    res.status(500).send("이메일 인증 메일을 보내는 중 오류가 발생했습니다.");
+    console.error("이메일 인증 메일 발송 오류:", error);
+    res.status(500).send(`이메일 인증 메일 발송 오류: ${error.message}`);
   }
 });
 
