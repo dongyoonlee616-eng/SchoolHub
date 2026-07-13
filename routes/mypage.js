@@ -5,6 +5,7 @@ const pool = require("../db");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const dns = require("dns");
+const dns = require("dns").promises;
 
 function hashEmailToken(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
@@ -20,16 +21,28 @@ async function sendVerificationEmail(to, verificationUrl) {
     throw new Error("SMTP 환경변수가 설정되지 않았습니다.");
   }
 
-  dns.setDefaultResultOrder("ipv4first");
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = Number(process.env.SMTP_PORT);
+
+  const ipv4Addresses = await dns.resolve4(smtpHost);
+
+  if (!ipv4Addresses || ipv4Addresses.length === 0) {
+    throw new Error("SMTP IPv4 주소를 찾을 수 없습니다.");
+  }
+
+  const smtpIPv4 = ipv4Addresses[0];
 
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    secure: false,
-    requireTLS: true,
+    host: smtpIPv4,
+    port: smtpPort,
+    secure: smtpPort === 465,
+    requireTLS: smtpPort === 587,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
+    },
+    tls: {
+      servername: smtpHost,
     },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
@@ -44,6 +57,7 @@ async function sendVerificationEmail(to, verificationUrl) {
       <div style="font-family: Arial, sans-serif; line-height: 1.7;">
         <h2>SchoolHub 이메일 인증</h2>
         <p>아래 버튼을 눌러 이메일 인증을 완료해주세요.</p>
+
         <p>
           <a
             href="${verificationUrl}"
@@ -60,6 +74,7 @@ async function sendVerificationEmail(to, verificationUrl) {
             이메일 인증하기
           </a>
         </p>
+
         <p>이 링크는 30분 동안만 유효합니다.</p>
       </div>
     `,
