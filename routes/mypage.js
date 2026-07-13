@@ -4,7 +4,6 @@ const router = express.Router();
 const pool = require("../db");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const dns = require("dns");
 const dns = require("dns").promises;
 
 function hashEmailToken(token) {
