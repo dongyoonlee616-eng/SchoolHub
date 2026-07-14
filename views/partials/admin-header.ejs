@@ -29,17 +29,9 @@
           <summary>승인</summary>
 
           <div class="admin-dropdown-menu">
-            <a href="/admin/schools/<%= school.slug %>/posts/pending">
-              게시글 승인
-            </a>
-
-            <a href="/admin/schools/<%= school.slug %>/comments/pending">
-              댓글 승인
-            </a>
-
-            <a href="/admin/schools/<%= school.slug %>/lost-items/pending">
-              분실물 승인
-            </a>
+            <a href="/admin/schools/<%= school.slug %>/posts/pending">게시글 승인</a>
+            <a href="/admin/schools/<%= school.slug %>/comments/pending">댓글 승인</a>
+            <a href="/admin/schools/<%= school.slug %>/lost-items/pending">분실물 승인</a>
           </div>
         </details>
 
@@ -47,31 +39,23 @@
           <summary>관리</summary>
 
           <div class="admin-dropdown-menu">
-            <a href="/admin/schools/<%= school.slug %>/board">
-              게시판 관리
-            </a>
-
-            <a href="/admin/schools/<%= school.slug %>/lost-items">
-              분실물 관리
-            </a>
-
-            <a href="/admin/schools/<%= school.slug %>/reports">
-              신고 관리
-            </a>
+            <a href="/admin/schools/<%= school.slug %>/board">게시판 관리</a>
+            <a href="/admin/schools/<%= school.slug %>/lost-items">분실물 관리</a>
+            <a href="/admin/schools/<%= school.slug %>/reports">신고 관리</a>
           </div>
         </details>
 
         <a href="/admin/schools/<%= school.slug %>/notices">공지사항</a>
       <% } %>
-
-      <a href="/admin/support">문의 확인</a>
-
-      <% if (isSuperAdmin) { %>
-        <a href="/admin/users">회원 관리</a>
-      <% } %>
     </nav>
 
     <div class="admin-header-right">
+      <a href="/admin/support" class="admin-header-shortcut">문의 센터</a>
+
+      <% if (isSuperAdmin) { %>
+        <a href="/admin/users" class="admin-header-shortcut">유저 관리</a>
+      <% } %>
+
       <a href="/admin" class="admin-header-shortcut">학교 선택</a>
       <a href="/admin/schools" class="admin-header-shortcut">학교 관리</a>
 
