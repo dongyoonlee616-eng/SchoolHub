@@ -1,3 +1,17 @@
+<%
+  const headerUser =
+    typeof currentUser !== "undefined" && currentUser
+      ? currentUser
+      : typeof admin !== "undefined" && admin
+        ? admin
+        : null;
+
+  const isSuperAdmin =
+    headerUser &&
+    headerUser.email &&
+    headerUser.email.toLowerCase() === "dong.yoon.lee616@gmail.com";
+%>
+
 <header class="admin-site-header">
   <div class="admin-site-header-inner">
     <a href="/admin" class="admin-site-logo">
