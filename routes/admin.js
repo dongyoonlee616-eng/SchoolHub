@@ -435,8 +435,8 @@ router.post("/admin/schools/:slug/posts/:id/reject", requireAdmin, async (req, r
   try {
     const { slug, id } = req.params;
 
-    const school = await getSchoolBySlug(slug);
-    if (!school) return renderSchoolNotFound(res);
+    const school = await getAdminSchoolBySlug(slug);
+    if (!school) return renderAdminSchoolNotFound(res);
 
     await pool.query(
       `
@@ -780,8 +780,8 @@ router.post("/admin/schools/:slug/comments/:id/reject", requireAdmin, async (req
   try {
     const { slug, id } = req.params;
 
-    const school = await getSchoolBySlug(slug);
-    if (!school) return renderSchoolNotFound(res);
+    const school = await getAdminSchoolBySlug(slug);
+    if (!school) return renderAdminSchoolNotFound(res);
 
     await pool.query(
       `
@@ -1189,8 +1189,8 @@ router.post("/admin/schools/:slug/lost-items/:id/reject", requireAdmin, async (r
   try {
     const { slug, id } = req.params;
 
-    const school = await getSchoolBySlug(slug);
-    if (!school) return renderSchoolNotFound(res);
+    const school = await getAdminSchoolBySlug(slug);
+    if (!school) return renderAdminSchoolNotFound(res);
 
     await pool.query(
       `
