@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>계정 삭제 - SchoolHub</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/mypage.css" />
+  <link rel="stylesheet" href="/css/post-new.css" />
+</head>
+<body>
+  <%- include("../partials/header", { school: null }) %>
+
+  <main class="container">
+    <a href="/mypage/account" class="back-link">← 계정 정보로 돌아가기</a>
+
+    <section class="mypage-hero">
+      <div>
+        <span class="mypage-label">DELETE ACCOUNT</span>
+        <h1>계정 삭제</h1>
+        <p>계정을 삭제하면 다시 복구할 수 없습니다.</p>
+      </div>
+    </section>
+
+    <% if (error) { %>
+      <div class="error-box"><%= error %></div>
+    <% } %>
+
+    <form
+      action="/mypage/delete"
+      method="POST"
+      class="post-form"
+      onsubmit="return confirm('정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');"
+    >
+      <div class="delete-warning">
+        계정을 삭제해도 이미 작성한 게시글, 댓글, 분실물 글은 바로 삭제되지 않습니다.
+        단, 해당 글은 더 이상 회원 계정과 연결되지 않습니다.
+      </div>
+
+      <label>
+        비밀번호 확인
+        <input
+          type="password"
+          name="currentPassword"
+          autocomplete="current-password"
+          required
+        />
+      </label>
+
+      <button type="submit" class="danger-submit-button">
+        계정 삭제하기
+      </button>
+    </form>
+  </main>
+
+  <%- include("../partials/footer") %>
+</body>
+</html>

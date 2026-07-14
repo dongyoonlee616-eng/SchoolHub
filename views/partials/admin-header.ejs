@@ -51,6 +51,10 @@
       <% } %>
 
       <a href="/admin/support">문의 확인</a>
+
+      <% if (isSuperAdmin) { %>
+        <a href="/admin/users">회원 관리</a>
+      <% } %>
     </nav>
 
     <div class="admin-header-right">

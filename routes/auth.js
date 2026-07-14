@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("../db");
+const SUPER_ADMIN_EMAIL = "dong.yoon.lee616@gmail.com";
 
 function redirectIfLoggedIn(req, res, next) {
   if (req.session.user) {

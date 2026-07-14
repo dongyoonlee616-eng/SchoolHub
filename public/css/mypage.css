@@ -584,3 +584,73 @@
     justify-content: space-between;
   }
 }
+
+.account-nickname-form {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.account-nickname-form input {
+  width: 180px;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: #172554;
+  font-weight: 900;
+}
+
+.account-nickname-form button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.account-nickname-form button:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.account-danger-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 16px;
+  background: #dc2626;
+  color: white;
+  border-radius: 15px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.account-danger-link:hover {
+  background: #b91c1c;
+}
+
+.danger-submit-button {
+  background: #dc2626 !important;
+}
+
+.danger-submit-button:hover {
+  background: #b91c1c !important;
+}
+
+@media (max-width: 760px) {
+  .account-nickname-form {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .account-nickname-form input {
+    width: 100%;
+  }
+}

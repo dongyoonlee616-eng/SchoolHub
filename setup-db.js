@@ -216,6 +216,14 @@ const migrations = [
       ADD COLUMN IF NOT EXISTS email_verification_expires_at TIMESTAMP;
     `,
   },
+  {
+    name: "20260714_01_set_super_admin_email",
+    sql: `
+      UPDATE app_users
+      SET role = 'admin'
+      WHERE LOWER(email) = 'dong.yoon.lee616@gmail.com';
+    `,
+  },
 ];
 
 async function createBaseTables() {

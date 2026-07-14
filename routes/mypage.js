@@ -187,6 +187,8 @@ router.get("/mypage/account", requireLogin, async (req, res) => {
       account: userResult.rows[0],
       emailVerifySent: req.query.emailVerifySent === "1",
       emailVerified: req.query.emailVerified === "1",
+      nicknameChanged: req.query.nicknameChanged === "1",
+      nicknameError: req.query.nicknameError || null,
     });
   } catch (error) {
     console.error(error);
@@ -289,6 +291,42 @@ router.post("/mypage/password", requireLogin, async (req, res) => {
 router.post("/mypage/delete", requireLogin, async (req, res) => {
   try {
     const user = req.session.user;
+    const { currentPassword } = req.body;
+
+    if (!currentPassword) {
+      return res.render("mypage/delete", {
+        school: null,
+        user,
+        error: "비밀번호를 입력해주세요.",
+      });
+    }
+
+    const userResult = await pool.query(
+      `
+      SELECT password_hash
+      FROM app_users
+      WHERE id = $1
+      `,
+      [user.id]
+    );
+
+    if (userResult.rows.length === 0) {
+      req.session.user = null;
+      return res.redirect("/login");
+    }
+
+    const isMatch = await bcrypt.compare(
+      currentPassword,
+      userResult.rows[0].password_hash
+    );
+
+    if (!isMatch) {
+      return res.render("mypage/delete", {
+        school: null,
+        user,
+        error: "비밀번호가 올바르지 않습니다.",
+      });
+    }
 
     await pool.query(
       `
@@ -301,7 +339,9 @@ router.post("/mypage/delete", requireLogin, async (req, res) => {
     req.session.destroy((error) => {
       if (error) {
         console.error(error);
-        return res.status(500).send("계정 삭제 후 로그아웃하는 중 오류가 발생했습니다.");
+        return res
+          .status(500)
+          .send("계정 삭제 후 로그아웃하는 중 오류가 발생했습니다.");
       }
 
       res.redirect("/");
@@ -414,6 +454,51 @@ router.get("/verify-email", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("이메일 인증 중 오류가 발생했습니다.");
+  }
+});
+
+router.post("/mypage/nickname", requireLogin, async (req, res) => {
+  try {
+    const user = req.session.user;
+    const nicknameValue = req.body.nickname ? req.body.nickname.trim() : "";
+
+    if (!nicknameValue) {
+      return res.redirect("/mypage/account?nicknameError=empty");
+    }
+
+    if (nicknameValue.length > 50) {
+      return res.redirect("/mypage/account?nicknameError=tooLong");
+    }
+
+    const duplicateResult = await pool.query(
+      `
+      SELECT id
+      FROM app_users
+      WHERE nickname = $1
+        AND id <> $2
+      `,
+      [nicknameValue, user.id]
+    );
+
+    if (duplicateResult.rows.length > 0) {
+      return res.redirect("/mypage/account?nicknameError=duplicate");
+    }
+
+    await pool.query(
+      `
+      UPDATE app_users
+      SET nickname = $1
+      WHERE id = $2
+      `,
+      [nicknameValue, user.id]
+    );
+
+    req.session.user.nickname = nicknameValue;
+
+    res.redirect("/mypage/account?nicknameChanged=1");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("닉네임을 변경하는 중 오류가 발생했습니다.");
   }
 });
 

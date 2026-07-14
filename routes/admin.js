@@ -2,6 +2,22 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("../db");
+const SUPER_ADMIN_EMAIL = "dong.yoon.lee616@gmail.com";
+
+function requireSuperAdmin(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  if (
+    !req.session.user.email ||
+    req.session.user.email.toLowerCase() !== SUPER_ADMIN_EMAIL
+  ) {
+    return res.status(403).send("회원 관리 권한이 없습니다.");
+  }
+
+  next();
+}
 
 function requireAdmin(req, res, next) {
   if (!req.session.user || req.session.user.role !== "admin") {
@@ -1968,6 +1984,73 @@ router.post("/admin/support/:id/delete", requireAdmin, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("문의를 삭제하는 중 오류가 발생했습니다.");
+  }
+});
+
+router.get("/admin/users", requireSuperAdmin, async (req, res) => {
+  try {
+    const usersResult = await pool.query(
+      `
+      SELECT id, nickname, email, role, email_verified, created_at
+      FROM app_users
+      ORDER BY
+        CASE WHEN LOWER(email) = $1 THEN 0 ELSE 1 END,
+        created_at DESC
+      `,
+      [SUPER_ADMIN_EMAIL]
+    );
+
+    res.render("admin/users", {
+      users: usersResult.rows,
+      superAdminEmail: SUPER_ADMIN_EMAIL,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("회원 목록을 불러오는 중 오류가 발생했습니다.");
+  }
+});
+
+router.post("/admin/users/:id/role", requireSuperAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).send("올바르지 않은 권한입니다.");
+    }
+
+    const targetResult = await pool.query(
+      `
+      SELECT id, email
+      FROM app_users
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    if (targetResult.rows.length === 0) {
+      return res.status(404).send("회원을 찾을 수 없습니다.");
+    }
+
+    const targetUser = targetResult.rows[0];
+
+    if (targetUser.email.toLowerCase() === SUPER_ADMIN_EMAIL && role !== "admin") {
+      return res.status(400).send("최고 관리자 계정은 일반 회원으로 변경할 수 없습니다.");
+    }
+
+    await pool.query(
+      `
+      UPDATE app_users
+      SET role = $1
+      WHERE id = $2
+      `,
+      [role, id]
+    );
+
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("회원 권한을 변경하는 중 오류가 발생했습니다.");
   }
 });
 
