@@ -288,6 +288,14 @@ router.post("/mypage/password", requireLogin, async (req, res) => {
   }
 });
 
+router.get("/mypage/delete", requireLogin, (req, res) => {
+  res.render("mypage/delete", {
+    school: null,
+    user: req.session.user,
+    error: null,
+  });
+});
+
 router.post("/mypage/delete", requireLogin, async (req, res) => {
   try {
     const user = req.session.user;
