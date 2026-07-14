@@ -430,25 +430,31 @@ router.post("/admin/schools/:slug/posts/:id/approve", requireAdmin, async (req, 
   }
 });
 
-// 학교별 게시글 삭제
-router.post("/admin/schools/:slug/posts/:id/delete", requireAdmin, async (req, res) => {
+// 학교별 게시글 거절
+router.post("/admin/schools/:slug/posts/:id/reject", requireAdmin, async (req, res) => {
   try {
     const { slug, id } = req.params;
-    const school = await getAdminSchoolBySlug(slug);
 
-    if (!school) {
-      return renderAdminSchoolNotFound(res);
-    }
+    const school = await getSchoolBySlug(slug);
+    if (!school) return renderSchoolNotFound(res);
 
     await pool.query(
-      "DELETE FROM posts WHERE id = $1 AND school_id = $2",
+      `
+      UPDATE posts
+      SET status = 'rejected',
+          approved_at = NULL,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+        AND school_id = $2
+        AND status = 'pending'
+      `,
       [id, school.id]
     );
 
-    res.redirect(`/admin/schools/${school.slug}/posts/pending`);
+    res.redirect(`/admin/schools/${school.slug}/posts/pending?rejected=1`);
   } catch (error) {
     console.error(error);
-    res.status(500).send("게시글 삭제 중 오류가 발생했습니다.");
+    res.status(500).send("게시글을 거절하는 중 오류가 발생했습니다.");
   }
 });
 
@@ -769,25 +775,29 @@ router.post("/admin/schools/:slug/comments/:id/approve", requireAdmin, async (re
   }
 });
 
-// 학교별 댓글 삭제
-router.post("/admin/schools/:slug/comments/:id/delete", requireAdmin, async (req, res) => {
+// 학교별 댓글 거절
+router.post("/admin/schools/:slug/comments/:id/reject", requireAdmin, async (req, res) => {
   try {
     const { slug, id } = req.params;
-    const school = await getAdminSchoolBySlug(slug);
 
-    if (!school) {
-      return renderAdminSchoolNotFound(res);
-    }
+    const school = await getSchoolBySlug(slug);
+    if (!school) return renderSchoolNotFound(res);
 
     await pool.query(
-      "DELETE FROM comments WHERE id = $1 AND school_id = $2",
+      `
+      UPDATE comments
+      SET status = 'rejected'
+      WHERE id = $1
+        AND school_id = $2
+        AND status = 'pending'
+      `,
       [id, school.id]
     );
 
-    res.redirect(`/admin/schools/${school.slug}/comments/pending`);
+    res.redirect(`/admin/schools/${school.slug}/comments/pending?rejected=1`);
   } catch (error) {
     console.error(error);
-    res.status(500).send("댓글 삭제 중 오류가 발생했습니다.");
+    res.status(500).send("댓글을 거절하는 중 오류가 발생했습니다.");
   }
 });
 
@@ -1174,25 +1184,29 @@ router.get("/admin/schools/:slug/lost-items/:id", requireAdmin, async (req, res)
   }
 });
 
-// 학교별 분실물 삭제
-router.post("/admin/schools/:slug/lost-items/:id/delete", requireAdmin, async (req, res) => {
+// 학교별 분실물 거절
+router.post("/admin/schools/:slug/lost-items/:id/reject", requireAdmin, async (req, res) => {
   try {
     const { slug, id } = req.params;
-    const school = await getAdminSchoolBySlug(slug);
 
-    if (!school) {
-      return renderAdminSchoolNotFound(res);
-    }
+    const school = await getSchoolBySlug(slug);
+    if (!school) return renderSchoolNotFound(res);
 
     await pool.query(
-      "DELETE FROM lost_items WHERE id = $1 AND school_id = $2",
+      `
+      UPDATE lost_items
+      SET status = 'rejected'
+      WHERE id = $1
+        AND school_id = $2
+        AND status = 'pending'
+      `,
       [id, school.id]
     );
 
-    res.redirect(`/admin/schools/${school.slug}/lost-items`);
+    res.redirect(`/admin/schools/${school.slug}/lost-items/pending?rejected=1`);
   } catch (error) {
     console.error(error);
-    res.status(500).send("분실물 삭제 중 오류가 발생했습니다.");
+    res.status(500).send("분실물을 거절하는 중 오류가 발생했습니다.");
   }
 });
 

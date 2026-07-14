@@ -3,82 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>회원 관리 - SchoolHub Admin</title>
+  <title>유저 관리 - SchoolHub Admin</title>
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
   <%- include("../partials/admin-header", { school: null }) %>
 
-  <main class="admin-container">
-    <section class="admin-page-header">
+  <main class="admin-users-page">
+    <section class="admin-users-hero">
       <div>
         <span class="admin-label">USERS</span>
-        <h1>회원 관리</h1>
-        <p>회원 목록을 확인하고 관리자 권한을 설정할 수 있습니다.</p>
+        <h1>유저 관리</h1>
+        <p>가입한 유저 목록을 확인하고 관리자 권한을 설정할 수 있습니다.</p>
       </div>
     </section>
 
     <section class="admin-users-card">
-      <table class="admin-users-table">
-        <thead>
-          <tr>
-            <th>닉네임</th>
-            <th>이메일</th>
-            <th>이메일 인증</th>
-            <th>권한</th>
-            <th>가입일</th>
-            <th>권한 변경</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <% users.forEach((user) => { %>
+      <div class="admin-users-table-wrap">
+        <table class="admin-users-table">
+          <thead>
             <tr>
-              <td><%= user.nickname %></td>
-              <td>
-                <%= user.email %>
-                <% if (user.email.toLowerCase() === superAdminEmail) { %>
-                  <span class="super-admin-badge">최고 관리자</span>
-                <% } %>
-              </td>
-              <td>
-                <% if (user.email_verified) { %>
-                  <span class="status-badge approved">인증 완료</span>
-                <% } else { %>
-                  <span class="status-badge pending">미인증</span>
-                <% } %>
-              </td>
-              <td>
-                <strong>
-                  <%= user.role === "admin" ? "관리자" : "일반 회원" %>
-                </strong>
-              </td>
-              <td>
-                <%= new Date(user.created_at).toLocaleString("ko-KR") %>
-              </td>
-              <td>
-                <% if (user.email.toLowerCase() === superAdminEmail) { %>
-                  <span class="role-locked">변경 불가</span>
-                <% } else { %>
-                  <form action="/admin/users/<%= user.id %>/role" method="POST" class="role-form">
-                    <select name="role">
-                      <option value="user" <%= user.role === "user" ? "selected" : "" %>>
-                        일반 회원
-                      </option>
-                      <option value="admin" <%= user.role === "admin" ? "selected" : "" %>>
-                        관리자
-                      </option>
-                    </select>
-
-                    <button type="submit">변경</button>
-                  </form>
-                <% } %>
-              </td>
+              <th>닉네임</th>
+              <th>이메일</th>
+              <th>이메일 인증</th>
+              <th>권한</th>
+              <th>가입일</th>
+              <th>권한 변경</th>
             </tr>
-          <% }) %>
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            <% users.forEach((user) => { %>
+              <tr>
+                <td>
+                  <strong class="user-nickname"><%= user.nickname %></strong>
+                </td>
+
+                <td>
+                  <div class="user-email-cell">
+                    <span><%= user.email %></span>
+
+                    <% if (user.email.toLowerCase() === superAdminEmail) { %>
+                      <span class="super-admin-badge">최고 관리자</span>
+                    <% } %>
+                  </div>
+                </td>
+
+                <td>
+                  <% if (user.email_verified) { %>
+                    <span class="status-badge approved">인증 완료</span>
+                  <% } else { %>
+                    <span class="status-badge pending">미인증</span>
+                  <% } %>
+                </td>
+
+                <td>
+                  <strong class="role-text">
+                    <%= user.role === "admin" ? "관리자" : "일반 회원" %>
+                  </strong>
+                </td>
+
+                <td>
+                  <span class="date-text">
+                    <%= new Date(user.created_at).toLocaleString("ko-KR") %>
+                  </span>
+                </td>
+
+                <td>
+                  <% if (user.email.toLowerCase() === superAdminEmail) { %>
+                    <span class="role-locked">변경 불가</span>
+                  <% } else { %>
+                    <form
+                      action="/admin/users/<%= user.id %>/role"
+                      method="POST"
+                      class="role-form"
+                    >
+                      <select name="role">
+                        <option value="user" <%= user.role === "user" ? "selected" : "" %>>
+                          일반 회원
+                        </option>
+                        <option value="admin" <%= user.role === "admin" ? "selected" : "" %>>
+                          관리자
+                        </option>
+                      </select>
+
+                      <button type="submit">변경</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
     </section>
   </main>
 

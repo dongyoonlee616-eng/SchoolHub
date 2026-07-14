@@ -504,3 +504,12 @@
     z-index: 9999;
   }
 }
+
+.reject-button {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+.reject-button:hover {
+  background: #fecaca !important;
+}

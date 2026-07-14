@@ -1,37 +1,104 @@
+.admin-users-page {
+  width: min(1280px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 42px 0 90px;
+}
+
+.admin-users-hero {
+  margin-bottom: 26px;
+  padding: 34px 36px;
+  background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+.admin-users-hero h1 {
+  margin: 8px 0 10px;
+  color: #172554;
+  font-size: clamp(34px, 4vw, 52px);
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.admin-users-hero p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
 .admin-users-card {
-  margin-top: 24px;
   padding: 22px;
   background: white;
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 26px;
   box-shadow: var(--shadow);
+}
+
+.admin-users-table-wrap {
   overflow-x: auto;
 }
 
 .admin-users-table {
   width: 100%;
+  min-width: 980px;
   border-collapse: collapse;
-  min-width: 900px;
 }
 
 .admin-users-table th,
 .admin-users-table td {
-  padding: 14px 12px;
+  padding: 18px 16px;
   border-bottom: 1px solid var(--border);
   text-align: left;
   vertical-align: middle;
-  font-size: 14px;
 }
 
 .admin-users-table th {
-  color: #475569;
   background: #f8fafc;
+  color: #475569;
+  font-size: 14px;
   font-weight: 900;
 }
 
 .admin-users-table td {
   color: #374151;
+  font-size: 14px;
   font-weight: 700;
+}
+
+.admin-users-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.admin-users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.user-nickname {
+  color: #172554;
+  font-weight: 900;
+}
+
+.user-email-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: #172554;
+  font-weight: 800;
+}
+
+.role-text {
+  color: #172554;
+  font-weight: 900;
+}
+
+.date-text {
+  color: #475569;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .super-admin-badge,
@@ -40,8 +107,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-left: 6px;
-  padding: 6px 9px;
+  padding: 7px 10px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 900;
@@ -64,7 +130,6 @@
 }
 
 .role-locked {
-  margin-left: 0;
   background: #f3f4f6;
   color: #6b7280;
 }
@@ -76,20 +141,43 @@
 }
 
 .role-form select {
-  min-height: 38px;
-  padding: 0 10px;
+  min-height: 40px;
+  padding: 0 12px;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  font-weight: 800;
+  border-radius: 13px;
+  background: white;
+  color: #172554;
+  font-weight: 900;
 }
 
 .role-form button {
-  min-height: 38px;
-  padding: 0 12px;
+  min-height: 40px;
+  padding: 0 14px;
   border: none;
-  border-radius: 12px;
+  border-radius: 13px;
   background: var(--primary);
   color: white;
   font-weight: 900;
   cursor: pointer;
+}
+
+.role-form button:hover {
+  background: var(--primary-dark);
+}
+
+@media (max-width: 760px) {
+  .admin-users-page {
+    width: min(100% - 28px, 1280px);
+    padding: 26px 0 70px;
+  }
+
+  .admin-users-hero {
+    padding: 26px 22px;
+    border-radius: 22px;
+  }
+
+  .admin-users-card {
+    padding: 14px;
+    border-radius: 22px;
+  }
 }

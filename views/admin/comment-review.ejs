@@ -42,8 +42,12 @@
             <button type="submit" class="approve-button">댓글 승인</button>
           </form>
 
-          <form action="/admin/schools/<%= school.slug %>/comments/<%= item.id %>/delete" method="POST">
-            <button type="submit" class="delete-button">댓글 삭제</button>
+          <form
+            action="/admin/schools/<%= school.slug %>/comments/<%= comment.id %>/reject"
+            method="POST"
+            onsubmit="return confirm('이 댓글을 거절하시겠습니까?');"
+          >
+            <button type="submit" class="reject-button">거절</button>
           </form>
         </div>
       </aside>
