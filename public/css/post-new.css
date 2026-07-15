@@ -193,9 +193,9 @@ h1 {
 
 .auth-help-row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   margin-top: -6px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .auth-sub-link {
@@ -225,12 +225,12 @@ h1 {
 
 @media (max-width: 760px) {
   .auth-help-row {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .auth-sub-link {
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    justify-content: flex-start;
   }
 }
 
