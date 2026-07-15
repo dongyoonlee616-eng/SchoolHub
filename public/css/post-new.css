@@ -233,3 +233,64 @@ h1 {
     justify-content: center;
   }
 }
+
+.auth-extra-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.auth-extra-row a {
+  color: var(--primary);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.auth-extra-row a:hover {
+  text-decoration: underline;
+}
+
+.auth-policy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 12px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.auth-policy-row a {
+  color: var(--primary);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.auth-policy-row a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .auth-extra-row {
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+
+  .auth-policy-row {
+    padding: 0 8px;
+    text-align: center;
+  }
+}
