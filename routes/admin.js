@@ -2016,37 +2016,4 @@ router.get("/superadmin", requireSuperAdmin, async (req, res) => {
   }
 });
 
-router.get("/superadmin/schools/:slug/dashboard", requireSuperAdmin, async (req, res) => {
-  try {
-    const { slug } = req.params;
-
-    const school = await getAdminSchoolBySlug(slug);
-    if (!school) return renderAdminSchoolNotFound(res);
-
-    const countsResult = await pool.query(
-      `
-      SELECT
-        (SELECT COUNT(*)::int FROM posts WHERE school_id = $1 AND status = 'pending') AS pending_posts_count,
-        (SELECT COUNT(*)::int FROM comments WHERE school_id = $1 AND status = 'pending') AS pending_comments_count,
-        (SELECT COUNT(*)::int FROM lost_items WHERE school_id = $1 AND status = 'pending') AS pending_lost_items_count,
-        (SELECT COUNT(*)::int FROM post_reports WHERE school_id = $1) AS post_reports_count,
-        (SELECT COUNT(*)::int FROM comment_reports WHERE school_id = $1) AS comment_reports_count,
-        (SELECT COUNT(*)::int FROM notices WHERE school_id = $1) AS notices_count,
-        (SELECT COUNT(*)::int FROM posts WHERE school_id = $1) AS posts_count,
-        (SELECT COUNT(*)::int FROM comments WHERE school_id = $1) AS comments_count,
-        (SELECT COUNT(*)::int FROM lost_items WHERE school_id = $1) AS lost_items_count
-      `,
-      [school.id]
-    );
-
-    res.render("admin/super-school-dashboard", {
-      school,
-      counts: countsResult.rows[0],
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("최고 관리자 학교 대시보드를 불러오는 중 오류가 발생했습니다.");
-  }
-});
-
 module.exports = router;
