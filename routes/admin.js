@@ -153,9 +153,6 @@ router.post("/admin/logout", requireAdmin, (req, res) => {
 // 관리자 메인 - 학교 선택
 router.get("/admin", requireAdmin, async (req, res) => {
   try {
-    if (isSuperAdminUser(req.session.user)) {
-      return res.redirect("/superadmin");
-    }
 
     const schoolsResult = await pool.query(
       `
