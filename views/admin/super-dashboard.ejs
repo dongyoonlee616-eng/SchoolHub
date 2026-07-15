@@ -20,13 +20,13 @@
     </section>
 
     <section class="admin-dashboard-grid">
-      <a href="/admin/users" class="admin-dashboard-card">
+      <a href="/superadmin/users" class="admin-dashboard-card">
         <strong>유저 관리</strong>
         <span>가입한 유저 목록과 권한을 관리합니다.</span>
         <em><%= usersCount %>명</em>
       </a>
 
-      <a href="/admin/schools" class="admin-dashboard-card">
+      <a href="/superadmin/schools" class="admin-dashboard-card">
         <strong>학교 관리</strong>
         <span>학교 추가, 활성화, 비활성화 기능을 관리합니다.</span>
       </a>
@@ -47,9 +47,9 @@
             </div>
 
             <div class="admin-school-actions">
-              <a href="/admin/schools/<%= school.slug %>/dashboard">일반 관리</a>
-              <a href="/admin/schools/<%= school.slug %>/board">게시판 관리</a>
-              <a href="/admin/schools/<%= school.slug %>/lost-items">분실물 관리</a>
+              <a href="/superadmin/schools/<%= school.slug %>/dashboard">학교 관리</a>
+              <a href="/superadmin/schools/<%= school.slug %>/board">게시판 관리</a>
+              <a href="/superadmin/schools/<%= school.slug %>/lost-items">분실물 관리</a>
             </div>
           </article>
         <% }) %>
