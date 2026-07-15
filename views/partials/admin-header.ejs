@@ -1,17 +1,3 @@
-<%
-  const headerUser =
-    typeof currentUser !== "undefined" && currentUser
-      ? currentUser
-      : typeof admin !== "undefined" && admin
-        ? admin
-        : null;
-
-  const isSuperAdmin =
-    headerUser &&
-    headerUser.email &&
-    headerUser.email.toLowerCase() === "dong.yoon.lee616@gmail.com";
-%>
-
 <header class="admin-site-header">
   <div class="admin-site-header-inner">
     <a href="/admin" class="admin-site-logo">
@@ -35,29 +21,13 @@
           </div>
         </details>
 
-        <details class="admin-nav-dropdown">
-          <summary>관리</summary>
-
-          <div class="admin-dropdown-menu">
-            <a href="/admin/schools/<%= school.slug %>/board">게시판 관리</a>
-            <a href="/admin/schools/<%= school.slug %>/lost-items">분실물 관리</a>
-            <a href="/admin/schools/<%= school.slug %>/reports">신고 관리</a>
-          </div>
-        </details>
-
         <a href="/admin/schools/<%= school.slug %>/notices">공지사항</a>
+        <a href="/admin/schools/<%= school.slug %>/reports">신고 관리</a>
       <% } %>
     </nav>
 
     <div class="admin-header-right">
       <a href="/admin/support" class="admin-header-shortcut">문의 센터</a>
-
-      <% if (isSuperAdmin) { %>
-        <a href="/admin/users" class="admin-header-shortcut">유저 관리</a>
-      <% } %>
-
-      <a href="/admin" class="admin-header-shortcut">학교 선택</a>
-      <a href="/admin/schools" class="admin-header-shortcut">학교 관리</a>
 
       <form action="/logout" method="POST" class="admin-header-logout">
         <button type="submit">로그아웃</button>

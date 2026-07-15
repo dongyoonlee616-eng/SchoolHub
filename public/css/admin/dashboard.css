@@ -254,3 +254,120 @@
     font-size: 16px;
   }
 }
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.admin-dashboard-card {
+  display: block;
+  padding: 26px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+
+.admin-dashboard-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #172554;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.admin-dashboard-card span {
+  display: block;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.admin-dashboard-card em {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 7px 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 999px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.admin-school-list {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-school-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+}
+
+.admin-school-card h3 {
+  margin: 0 0 6px;
+  color: #172554;
+  font-size: 22px;
+}
+
+.admin-school-card p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.admin-school-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-school-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 13px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.admin-school-actions a:hover {
+  background: var(--primary);
+  color: white;
+}
+
+@media (max-width: 760px) {
+  .admin-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-school-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-school-actions {
+    justify-content: stretch;
+  }
+
+  .admin-school-actions a {
+    width: 100%;
+  }
+}

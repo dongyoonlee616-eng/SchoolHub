@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>최고 관리자 - SchoolHub Admin</title>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <%- include("../partials/superadmin-header", { school: null }) %>
+
+  <main class="admin-container">
+    <section class="admin-page-header">
+      <div>
+        <span class="admin-label">SUPER ADMIN</span>
+        <h1>최고 관리자 페이지</h1>
+        <p>학교, 유저, 게시판, 분실물 관리 기능에 접근할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="admin-dashboard-grid">
+      <a href="/admin/users" class="admin-dashboard-card">
+        <strong>유저 관리</strong>
+        <span>가입한 유저 목록과 권한을 관리합니다.</span>
+        <em><%= usersCount %>명</em>
+      </a>
+
+      <a href="/admin/schools" class="admin-dashboard-card">
+        <strong>학교 관리</strong>
+        <span>학교 추가, 활성화, 비활성화 기능을 관리합니다.</span>
+      </a>
+    </section>
+
+    <section class="admin-section">
+      <div class="admin-section-header">
+        <h2>학교별 관리</h2>
+        <p>학교를 선택하면 게시판, 분실물, 공지, 신고, 승인 기능을 관리할 수 있습니다.</p>
+      </div>
+
+      <div class="admin-school-list">
+        <% schools.forEach((school) => { %>
+          <article class="admin-school-card">
+            <div>
+              <h3><%= school.name %></h3>
+              <p>/<%= school.slug %></p>
+            </div>
+
+            <div class="admin-school-actions">
+              <a href="/admin/schools/<%= school.slug %>/dashboard">일반 관리</a>
+              <a href="/admin/schools/<%= school.slug %>/board">게시판 관리</a>
+              <a href="/admin/schools/<%= school.slug %>/lost-items">분실물 관리</a>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  </main>
+
+  <%- include("../partials/admin-footer") %>
+</body>
+</html>

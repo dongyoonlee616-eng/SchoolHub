@@ -4,24 +4,29 @@ const router = express.Router();
 const pool = require("../db");
 const SUPER_ADMIN_EMAIL = "dong.yoon.lee616@gmail.com";
 
-function requireSuperAdmin(req, res, next) {
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
-
-  if (
-    !req.session.user.email ||
-    req.session.user.email.toLowerCase() !== SUPER_ADMIN_EMAIL
-  ) {
-    return res.status(403).send("회원 관리 권한이 없습니다.");
-  }
-
-  next();
+function isSuperAdminUser(user) {
+  return (
+    user &&
+    user.email &&
+    user.email.toLowerCase() === SUPER_ADMIN_EMAIL
+  );
 }
 
 function requireAdmin(req, res, next) {
   if (!req.session.user || req.session.user.role !== "admin") {
     return res.redirect("/login");
+  }
+
+  next();
+}
+
+function requireSuperAdmin(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  if (!isSuperAdminUser(req.session.user)) {
+    return res.status(403).send("최고 관리자만 접근할 수 있습니다.");
   }
 
   next();
@@ -139,114 +144,26 @@ router.post("/admin/logout", requireAdmin, (req, res) => {
 // 관리자 메인 - 학교 선택
 router.get("/admin", requireAdmin, async (req, res) => {
   try {
-    const { q, filter } = req.query;
-
-    const searchQuery = q ? q.trim() : "";
-    const selectedFilter = filter === "needsReview" ? "needsReview" : "";
-
-    const values = [];
-    const conditions = [];
-
-    if (searchQuery) {
-      values.push(`%${searchQuery}%`);
-      conditions.push(`
-        (
-          schools.name ILIKE $${values.length}
-          OR schools.slug ILIKE $${values.length}
-        )
-      `);
+    if (isSuperAdminUser(req.session.user)) {
+      return res.redirect("/superadmin");
     }
-
-    if (selectedFilter === "needsReview") {
-      conditions.push(`
-        (
-          COALESCE(pending_posts.count, 0)
-          + COALESCE(pending_comments.count, 0)
-          + COALESCE(pending_lost_items.count, 0)
-        ) > 0
-      `);
-    }
-
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     const schoolsResult = await pool.query(
       `
-      SELECT
-        schools.*,
-
-        (
-          SELECT COUNT(*)
-          FROM posts
-          WHERE posts.school_id = schools.id
-        ) AS posts_count,
-
-        (
-          SELECT COUNT(*)
-          FROM comments
-          JOIN posts ON comments.post_id = posts.id
-          WHERE posts.school_id = schools.id
-        ) AS comments_count,
-
-        (
-          SELECT COUNT(*)
-          FROM notices
-          WHERE notices.school_id = schools.id
-        ) AS notices_count,
-
-        (
-          SELECT COUNT(*)
-          FROM lost_items
-          WHERE lost_items.school_id = schools.id
-        ) AS lost_items_count,
-
-        COALESCE(pending_posts.count, 0) AS pending_posts_count,
-        COALESCE(pending_comments.count, 0) AS pending_comments_count,
-        COALESCE(pending_lost_items.count, 0) AS pending_lost_items_count
-
+      SELECT *
       FROM schools
-
-      LEFT JOIN (
-        SELECT school_id, COUNT(*) AS count
-        FROM posts
-        WHERE status = 'pending'
-        GROUP BY school_id
-      ) AS pending_posts
-      ON schools.id = pending_posts.school_id
-
-      LEFT JOIN (
-        SELECT posts.school_id, COUNT(*) AS count
-        FROM comments
-        JOIN posts ON comments.post_id = posts.id
-        WHERE comments.status = 'pending'
-        GROUP BY posts.school_id
-      ) AS pending_comments
-      ON schools.id = pending_comments.school_id
-
-      LEFT JOIN (
-        SELECT school_id, COUNT(*) AS count
-        FROM lost_items
-        WHERE status = 'pending'
-        GROUP BY school_id
-      ) AS pending_lost_items
-      ON schools.id = pending_lost_items.school_id
-
-      ${whereClause}
-
-      ORDER BY schools.name ASC, schools.id ASC
-      `,
-      values
+      WHERE is_active = true
+      ORDER BY name ASC
+      `
     );
 
     res.render("admin/dashboard", {
-      admin: req.session.user,
       schools: schoolsResult.rows,
-      searchQuery,
-      selectedFilter,
+      adminMode: "normal",
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("관리자 메인 페이지를 불러오는 중 오류가 발생했습니다.");
+    res.status(500).send("관리자 페이지를 불러오는 중 오류가 발생했습니다.");
   }
 });
 
@@ -802,7 +719,7 @@ router.post("/admin/schools/:slug/comments/:id/reject", requireAdmin, async (req
 });
 
 // 학교별 게시판 관리 목록
-router.get("/admin/schools/:slug/board", requireAdmin, async (req, res) => {
+router.get("/admin/schools/:slug/board", requireSuperAdmin, async (req, res) => {
   try {
     const { slug } = req.params;
     const { q, status } = req.query;
@@ -868,7 +785,7 @@ router.get("/admin/schools/:slug/board", requireAdmin, async (req, res) => {
 });
 
 // 학교별 관리자 게시글 상세
-router.get("/admin/schools/:slug/board/posts/:id", requireAdmin, async (req, res) => {
+router.get("/admin/schools/:slug/board/posts/:id", requireSuperAdmin, async (req, res) => {
   try {
     const { slug, id } = req.params;
     const school = await getAdminSchoolBySlug(slug);
@@ -919,7 +836,7 @@ router.get("/admin/schools/:slug/board/posts/:id", requireAdmin, async (req, res
 });
 
 // 학교별 관리자 게시글 삭제
-router.post("/admin/schools/:slug/board/posts/:id/delete", requireAdmin, async (req, res) => {
+router.post("/admin/schools/:slug/board/posts/:id/delete", requireSuperAdmin, async (req, res) => {
   try {
     const { slug, id } = req.params;
     const school = await getAdminSchoolBySlug(slug);
@@ -941,7 +858,7 @@ router.post("/admin/schools/:slug/board/posts/:id/delete", requireAdmin, async (
 });
 
 // 학교별 관리자 댓글 삭제
-router.post("/admin/schools/:slug/board/comments/:id/delete", requireAdmin, async (req, res) => {
+router.post("/admin/schools/:slug/board/comments/:id/delete", requireSuperAdmin, async (req, res) => {
   try {
     const { slug, id } = req.params;
     const school = await getAdminSchoolBySlug(slug);
@@ -1083,7 +1000,7 @@ router.post("/admin/schools/:slug/lost-items/:id/approve", requireAdmin, async (
 });
 
 // 학교별 분실물 관리 목록
-router.get("/admin/schools/:slug/lost-items", requireAdmin, async (req, res) => {
+router.get("/admin/schools/:slug/lost-items", requireSuperAdmin, async (req, res) => {
   try {
     const { slug } = req.params;
     const { q, status } = req.query;
@@ -1145,7 +1062,7 @@ router.get("/admin/schools/:slug/lost-items", requireAdmin, async (req, res) => 
 });
 
 // 학교별 관리자 분실물 상세
-router.get("/admin/schools/:slug/lost-items/:id", requireAdmin, async (req, res) => {
+router.get("/admin/schools/:slug/lost-items/:id", requireSuperAdmin, async (req, res) => {
   try {
     const { slug, id } = req.params;
     const school = await getAdminSchoolBySlug(slug);
@@ -1211,7 +1128,7 @@ router.post("/admin/schools/:slug/lost-items/:id/reject", requireAdmin, async (r
 });
 
 // 관리자 학교 관리 목록
-router.get("/admin/schools", requireAdmin, async (req, res) => {
+router.get("/admin/schools", requireSuperAdmin, async (req, res) => {
   try {
     const errorMessage = req.query.error || null;
 
@@ -1239,7 +1156,7 @@ router.get("/admin/schools", requireAdmin, async (req, res) => {
 });
 
 // 학교 추가 페이지
-router.get("/admin/schools/new", requireAdmin, (req, res) => {
+router.get("/admin/schools/new", requireSuperAdmin, (req, res) => {
   res.render("admin/school-new", {
     pageTitle: "학교 추가 - SchoolHub",
     admin: req.session.user,
@@ -1248,7 +1165,7 @@ router.get("/admin/schools/new", requireAdmin, (req, res) => {
 });
 
 // 학교 추가 처리
-router.post("/admin/schools", requireAdmin, async (req, res) => {
+router.post("/admin/schools", requireSuperAdmin, async (req, res) => {
   const client = await pool.connect();
 
   try {
@@ -1322,7 +1239,7 @@ router.post("/admin/schools", requireAdmin, async (req, res) => {
 });
 
 // 학교 수정 페이지
-router.get("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
+router.get("/admin/schools/:id/edit", requireSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -1345,7 +1262,7 @@ router.get("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
 });
 
 // 학교 수정 처리
-router.post("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
+router.post("/admin/schools/:id/edit", requireSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     let { name, slug } = req.body;
@@ -1413,7 +1330,7 @@ router.post("/admin/schools/:id/edit", requireAdmin, async (req, res) => {
 });
 
 // 학교 활성화 / 비활성화
-router.post("/admin/schools/:id/toggle", requireAdmin, async (req, res) => {
+router.post("/admin/schools/:id/toggle", requireSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -1435,7 +1352,7 @@ router.post("/admin/schools/:id/toggle", requireAdmin, async (req, res) => {
 });
 
 // 학교 삭제 처리 - 연결된 데이터가 없을 때만 가능
-router.post("/admin/schools/:id/delete", requireAdmin, async (req, res) => {
+router.post("/admin/schools/:id/delete", requireSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -2065,6 +1982,33 @@ router.post("/admin/users/:id/role", requireSuperAdmin, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("회원 권한을 변경하는 중 오류가 발생했습니다.");
+  }
+});
+
+router.get("/superadmin", requireSuperAdmin, async (req, res) => {
+  try {
+    const schoolsResult = await pool.query(
+      `
+      SELECT *
+      FROM schools
+      ORDER BY name ASC
+      `
+    );
+
+    const usersCountResult = await pool.query(
+      `
+      SELECT COUNT(*)::int AS count
+      FROM app_users
+      `
+    );
+
+    res.render("admin/super-dashboard", {
+      schools: schoolsResult.rows,
+      usersCount: usersCountResult.rows[0].count,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("최고 관리자 페이지를 불러오는 중 오류가 발생했습니다.");
   }
 });
 

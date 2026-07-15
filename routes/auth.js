@@ -192,9 +192,18 @@ router.post("/login", redirectIfLoggedIn, async (req, res) => {
       role: user.role,
     };
 
+    if (
+      user.role === "admin" &&
+      user.email.toLowerCase() === SUPER_ADMIN_EMAIL
+    ) {
+      return res.redirect("/superadmin");
+    }
+
     if (user.role === "admin") {
       return res.redirect("/admin");
     }
+
+    res.redirect("/");
 
     res.redirect("/");
   } catch (error) {
