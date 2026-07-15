@@ -441,3 +441,41 @@
     width: 100%;
   }
 }
+
+.school-dashboard-card-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.school-dashboard-card {
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.school-dashboard-card h2 {
+  font-size: 20px;
+}
+
+.school-dashboard-card p {
+  margin-top: 18px;
+  font-size: 30px;
+}
+
+@media (max-width: 1150px) {
+  .school-dashboard-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .school-dashboard-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .school-dashboard-card {
+    min-height: 130px;
+  }
+}

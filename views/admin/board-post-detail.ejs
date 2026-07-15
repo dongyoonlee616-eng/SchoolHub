@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
-  <%- include("../partials/admin-header") %>
+  <%- include("../partials/superadmin-header", { school }) %>
   <main class="container">
-    <a href="/admin/schools/<%= school.slug %>/board" class="back-link">← 게시판 관리 목록으로 돌아가기</a>
+    <a href="/superadmin/schools/<%= school.slug %>/board" class="back-link">← 게시판 관리 목록으로 돌아가기</a>
 
     <article class="admin-board-detail-card">
       <header class="admin-board-detail-header">

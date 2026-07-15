@@ -19,7 +19,7 @@
       <div>
         <h1><%= school.name %> 관리자 대시보드</h1>
         <p>
-          이 페이지에서는 <strong><%= school.name %></strong>의 게시글, 댓글, 공지사항, 분실물을 관리합니다.
+          이 페이지에서는 <strong><%= school.name %></strong>의 승인 대기 항목, 공지사항, 신고 내역을 관리합니다.
         </p>
       </div>
 
@@ -30,59 +30,32 @@
       <% } %>
     </section>
 
-    <div class="admin-card-grid">
-      <a href="/admin/schools/<%= school.slug %>/posts/pending" class="admin-card">
+    <div class="admin-card-grid school-dashboard-card-grid">
+      <a href="/admin/schools/<%= school.slug %>/posts/pending" class="admin-card school-dashboard-card">
         <h2>승인 대기 게시글</h2>
         <p><%= pendingPostsCount %>개</p>
       </a>
 
-      <a href="/admin/schools/<%= school.slug %>/comments/pending" class="admin-card">
+      <a href="/admin/schools/<%= school.slug %>/comments/pending" class="admin-card school-dashboard-card">
         <h2>승인 대기 댓글</h2>
         <p><%= pendingCommentsCount %>개</p>
       </a>
 
-      <a href="/admin/schools/<%= school.slug %>/lost-items/pending" class="admin-card">
+      <a href="/admin/schools/<%= school.slug %>/lost-items/pending" class="admin-card school-dashboard-card">
         <h2>승인 대기 분실물</h2>
         <p><%= pendingLostItemsCount %>개</p>
       </a>
 
-      <a href="/admin/schools/<%= school.slug %>/reports" class="admin-card">
+      <a href="/admin/schools/<%= school.slug %>/reports" class="admin-card school-dashboard-card">
         <h2>신고 관리</h2>
         <p><%= reportsCount %>개</p>
       </a>
 
-      <a href="/admin/schools/<%= school.slug %>/notices" class="admin-card">
+      <a href="/admin/schools/<%= school.slug %>/notices" class="admin-card school-dashboard-card">
         <h2>공지사항</h2>
         <p><%= noticesCount %>개</p>
       </a>
     </div>
-
-    <section class="admin-service-section">
-      <div class="admin-service-header">
-        <h2>학교 전용 관리 페이지</h2>
-        <p>선택한 학교의 데이터만 따로 관리합니다.</p>
-      </div>
-
-      <div class="admin-service-grid">
-        <a href="/admin/schools/<%= school.slug %>/board" class="admin-service-card">
-          <span>MANAGE</span>
-          <h3>게시판 관리</h3>
-          <p>
-            <%= school.name %>의 게시글과 댓글을 확인하고 관리합니다.
-            현재 공개 게시글은 <strong><%= approvedPostsCount %>개</strong>입니다.
-          </p>
-        </a>
-
-        <a href="/admin/schools/<%= school.slug %>/lost-items" class="admin-service-card">
-          <span>MANAGE</span>
-          <h3>분실물 관리</h3>
-          <p>
-            <%= school.name %>의 분실물 등록글을 확인하고 관리합니다.
-            전체 분실물은 <strong><%= approvedLostItemsCount %>개</strong>입니다.
-          </p>
-        </a>
-      </div>
-    </section>
   </main>
 
   <%- include("../partials/admin-footer") %>
