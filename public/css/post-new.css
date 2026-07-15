@@ -190,3 +190,46 @@ h1 {
     background: #2563eb;
   }
 }
+
+.auth-help-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
+  margin-bottom: 4px;
+}
+
+.auth-sub-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #f1f5ff;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: 0.18s ease;
+}
+
+.auth-sub-link::before {
+  content: "🔐";
+  font-size: 13px;
+}
+
+.auth-sub-link:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 760px) {
+  .auth-help-row {
+    justify-content: center;
+  }
+
+  .auth-sub-link {
+    width: 100%;
+    justify-content: center;
+  }
+}
