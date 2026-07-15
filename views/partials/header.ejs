@@ -20,13 +20,6 @@
 
       <% if (currentUser) { %>
 
-        <% if (currentUser.role === "superadmin") { %>
-          <a href="/superadmin">최고 관리자</a>
-          <a href="/admin">일반 관리자</a>
-        <% } else if (currentUser.role === "admin") { %>
-          <a href="/admin">관리자</a>
-        <% } %>
-
         <details class="site-nav-dropdown">
           <summary>마이페이지</summary>
 
@@ -42,6 +35,14 @@
         <form action="/logout" method="POST" class="site-logout-form">
           <button type="submit">로그아웃</button>
         </form>
+
+        <% if (currentUser.role === "superadmin") { %>
+          <a href="/superadmin">최고 관리자</a>
+          <a href="/admin">일반 관리자</a>
+        <% } else if (currentUser.role === "admin") { %>
+          <a href="/admin">관리자</a>
+        <% } %>
+
       <% } else { %>
         <a href="/login">로그인</a>
         <a href="/register">회원가입</a>
