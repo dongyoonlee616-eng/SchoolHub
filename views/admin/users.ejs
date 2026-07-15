@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>유저 관리 - SchoolHub Admin</title>
+  <title>유저 관리 - SchoolHub Super Admin</title>
   <link rel="stylesheet" href="/css/common.css" />
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
-  <%- include("../partials/admin-header", { school: null }) %>
+  <%- include("../partials/superadmin-header", { school: null }) %>
 
   <main class="admin-users-page">
     <section class="admin-users-hero">
@@ -60,7 +60,13 @@
 
                 <td>
                   <strong class="role-text">
-                    <%= user.role === "admin" ? "관리자" : "일반 회원" %>
+                    <% if (user.role === "superadmin") { %>
+                      최고 관리자
+                    <% } else if (user.role === "admin") { %>
+                      관리자
+                    <% } else { %>
+                      일반 회원
+                    <% } %>
                   </strong>
                 </td>
 
@@ -75,7 +81,7 @@
                     <span class="role-locked">변경 불가</span>
                   <% } else { %>
                     <form
-                      action="/admin/users/<%= user.id %>/role"
+                      action="/superadmin/users/<%= user.id %>/role"
                       method="POST"
                       class="role-form"
                     >

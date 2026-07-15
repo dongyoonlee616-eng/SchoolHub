@@ -1931,15 +1931,13 @@ router.get("/superadmin/users", requireSuperAdmin, async (req, res) => {
       SELECT id, nickname, email, role, email_verified, created_at
       FROM app_users
       ORDER BY
-        CASE WHEN LOWER(email) = $1 THEN 0 ELSE 1 END,
+        CASE WHEN role = 'superadmin' THEN 0 ELSE 1 END,
         created_at DESC
-      `,
-      [SUPER_ADMIN_EMAIL]
+      `
     );
 
     res.render("admin/users", {
       users: usersResult.rows,
-      superAdminEmail: SUPER_ADMIN_EMAIL,
     });
   } catch (error) {
     console.error(error);
@@ -1947,7 +1945,7 @@ router.get("/superadmin/users", requireSuperAdmin, async (req, res) => {
   }
 });
 
-router.post("/admin/users/:id/role", requireSuperAdmin, async (req, res) => {
+router.post("/superadmin/users/:id/role", requireSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
@@ -1984,7 +1982,7 @@ router.post("/admin/users/:id/role", requireSuperAdmin, async (req, res) => {
       [role, id]
     );
 
-    res.redirect("/admin/users");
+    res.redirect("/superadmin/users");
   } catch (error) {
     console.error(error);
     res.status(500).send("회원 권한을 변경하는 중 오류가 발생했습니다.");
