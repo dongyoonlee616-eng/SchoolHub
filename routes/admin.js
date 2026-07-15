@@ -8,14 +8,6 @@ function isSuperAdminUser(user) {
 }
 
 function requireAdmin(req, res, next) {
-  if (!req.session.user || req.session.user.role !== "admin") {
-    return res.redirect("/login");
-  }
-
-  next();
-}
-
-function requireAnyAdmin(req, res, next) {
   if (
     !req.session.user ||
     !["admin", "superadmin"].includes(req.session.user.role)
@@ -33,6 +25,17 @@ function requireSuperAdmin(req, res, next) {
 
   if (req.session.user.role !== "superadmin") {
     return res.status(403).send("최고 관리자만 접근할 수 있습니다.");
+  }
+
+  next();
+}
+
+function requireAnyAdmin(req, res, next) {
+  if (
+    !req.session.user ||
+    !["admin", "superadmin"].includes(req.session.user.role)
+  ) {
+    return res.redirect("/login");
   }
 
   next();

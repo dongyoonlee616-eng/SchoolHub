@@ -1,3 +1,15 @@
+<%
+  const headerUser =
+    typeof currentUser !== "undefined" && currentUser
+      ? currentUser
+      : typeof admin !== "undefined" && admin
+        ? admin
+        : null;
+
+  const isSuperAdmin =
+    headerUser && headerUser.role === "superadmin";
+%>
+
 <header class="admin-site-header">
   <div class="admin-site-header-inner">
     <a href="/admin" class="admin-site-logo">
@@ -27,6 +39,11 @@
     </nav>
 
     <div class="admin-header-right">
+      <% if (isSuperAdmin) { %>
+        <a href="/superadmin" class="admin-header-shortcut">최고 관리자</a>
+      <% } %>
+
+      <a href="/" class="admin-header-shortcut">사용자 화면</a>
       <a href="/admin/support" class="admin-header-shortcut">문의 센터</a>
 
       <form action="/logout" method="POST" class="admin-header-logout">
