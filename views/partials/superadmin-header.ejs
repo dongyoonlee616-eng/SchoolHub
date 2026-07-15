@@ -7,16 +7,19 @@
       <span>SchoolHub Super Admin</span>
     </a>
 
-    <div class="admin-header-right">
-        <a href="/admin" class="admin-header-shortcut">일반 관리자</a>
-        <a href="/" class="admin-header-shortcut">사용자 화면</a>
-        <a href="/superadmin/users" class="admin-header-shortcut">유저 관리</a>
-        <a href="/superadmin/schools" class="admin-header-shortcut">학교 관리</a>
-        <a href="/superadmin/support" class="admin-header-shortcut">문의 센터</a>
+    <nav class="admin-site-nav">
+      <a href="/admin">일반 관리자</a>
+      <a href="/">사용자 화면</a>
+    </nav>
 
-        <form action="/logout" method="POST" class="admin-header-logout">
-            <button type="submit">로그아웃</button>
-        </form>
+    <div class="admin-header-right">
+      <a href="/superadmin/users" class="admin-header-shortcut">유저 관리</a>
+      <a href="/superadmin/schools" class="admin-header-shortcut">학교 관리</a>
+      <a href="/superadmin/support" class="admin-header-shortcut">문의 센터</a>
+
+      <form action="/logout" method="POST" class="admin-header-logout">
+        <button type="submit">로그아웃</button>
+      </form>
     </div>
   </div>
 </header>
