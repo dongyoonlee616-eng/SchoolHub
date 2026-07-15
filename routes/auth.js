@@ -242,6 +242,7 @@ router.post("/login", redirectIfLoggedIn, async (req, res) => {
       return res.render("auth/login", {
         school: null,
         error: "이메일 또는 비밀번호가 올바르지 않습니다.",
+        passwordReset: false,
         form: {
           email: trimmedEmail,
         },

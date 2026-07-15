@@ -21,7 +21,7 @@
     <% if (error) { %>
       <div class="error-box"><%= error %></div>
     <% } %>
-    <% if (passwordReset) { %>
+    <% if (typeof passwordReset !== "undefined" && passwordReset) { %>
       <div class="success-box">
         비밀번호가 변경되었습니다. 새 비밀번호로 로그인해주세요.
       </div>
