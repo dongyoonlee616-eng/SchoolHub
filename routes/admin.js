@@ -2,18 +2,16 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("../db");
-const SUPER_ADMIN_EMAIL = "dong.yoon.lee616@gmail.com";
 
 function isSuperAdminUser(user) {
-  return (
-    user &&
-    user.email &&
-    user.email.toLowerCase() === SUPER_ADMIN_EMAIL
-  );
+  return user && user.role === "superadmin";
 }
 
 function requireAdmin(req, res, next) {
-  if (!req.session.user || req.session.user.role !== "admin") {
+  if (
+    !req.session.user ||
+    !["admin", "superadmin"].includes(req.session.user.role)
+  ) {
     return res.redirect("/login");
   }
 
@@ -25,7 +23,7 @@ function requireSuperAdmin(req, res, next) {
     return res.redirect("/login");
   }
 
-  if (!isSuperAdminUser(req.session.user)) {
+  if (req.session.user.role !== "superadmin") {
     return res.status(403).send("최고 관리자만 접근할 수 있습니다.");
   }
 
@@ -1952,7 +1950,7 @@ router.post("/admin/users/:id/role", requireSuperAdmin, async (req, res) => {
 
     const targetResult = await pool.query(
       `
-      SELECT id, email
+      SELECT id, role
       FROM app_users
       WHERE id = $1
       `,
@@ -1965,8 +1963,8 @@ router.post("/admin/users/:id/role", requireSuperAdmin, async (req, res) => {
 
     const targetUser = targetResult.rows[0];
 
-    if (targetUser.email.toLowerCase() === SUPER_ADMIN_EMAIL && role !== "admin") {
-      return res.status(400).send("최고 관리자 계정은 일반 회원으로 변경할 수 없습니다.");
+    if (targetUser.role === "superadmin") {
+      return res.status(400).send("최고 관리자 계정의 권한은 변경할 수 없습니다.");
     }
 
     await pool.query(

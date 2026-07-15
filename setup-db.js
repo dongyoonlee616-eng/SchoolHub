@@ -224,6 +224,14 @@ const migrations = [
       WHERE LOWER(email) = 'dong.yoon.lee616@gmail.com';
     `,
   },
+  {
+    name: "20260715_01_set_superadmin_role",
+    sql: `
+      UPDATE app_users
+      SET role = 'superadmin'
+      WHERE LOWER(email) = 'dong.yoon.lee616@gmail.com';
+    `,
+  },
 ];
 
 async function createBaseTables() {

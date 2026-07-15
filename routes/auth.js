@@ -102,13 +102,18 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const insertResult = await pool.query(
+    const role =
+    emailValue.toLowerCase() === SUPER_ADMIN_EMAIL
+      ? "superadmin"
+      : "user";
+
+    const userResult = await pool.query(
       `
-      INSERT INTO app_users (nickname, email, password_hash)
-      VALUES ($1, $2, $3)
+      INSERT INTO app_users (nickname, email, password_hash, role)
+      VALUES ($1, $2, $3, $4)
       RETURNING id, nickname, email, role
       `,
-      [trimmedNickname, trimmedEmail, passwordHash]
+      [nicknameValue, emailValue, passwordHash, role]
     );
 
     const user = insertResult.rows[0];
@@ -192,16 +197,15 @@ router.post("/login", redirectIfLoggedIn, async (req, res) => {
       role: user.role,
     };
 
-    if (
-      user.role === "admin" &&
-      user.email.toLowerCase() === SUPER_ADMIN_EMAIL
-    ) {
+    if (user.role === "superadmin") {
       return res.redirect("/superadmin");
     }
 
     if (user.role === "admin") {
       return res.redirect("/admin");
     }
+
+res.redirect("/");
 
     res.redirect("/");
 

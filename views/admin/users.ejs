@@ -44,7 +44,7 @@
                   <div class="user-email-cell">
                     <span><%= user.email %></span>
 
-                    <% if (user.email.toLowerCase() === superAdminEmail) { %>
+                    <% if (user.role === "superadmin") { %>
                       <span class="super-admin-badge">최고 관리자</span>
                     <% } %>
                   </div>
@@ -71,7 +71,7 @@
                 </td>
 
                 <td>
-                  <% if (user.email.toLowerCase() === superAdminEmail) { %>
+                  <% if (user.role === "superadmin") { %>
                     <span class="role-locked">변경 불가</span>
                   <% } else { %>
                     <form
