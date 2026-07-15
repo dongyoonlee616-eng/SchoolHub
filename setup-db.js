@@ -232,6 +232,16 @@ const migrations = [
       WHERE LOWER(email) = 'dong.yoon.lee616@gmail.com';
     `,
   },
+    {
+    name: "20260715_02_add_password_reset_fields",
+    sql: `
+      ALTER TABLE app_users
+      ADD COLUMN IF NOT EXISTS password_reset_token_hash TEXT;
+
+      ALTER TABLE app_users
+      ADD COLUMN IF NOT EXISTS password_reset_expires_at TIMESTAMP;
+    `,
+  },
 ];
 
 async function createBaseTables() {

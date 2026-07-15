@@ -21,6 +21,11 @@
     <% if (error) { %>
       <div class="error-box"><%= error %></div>
     <% } %>
+    <% if (passwordReset) { %>
+      <div class="success-box">
+        비밀번호가 변경되었습니다. 새 비밀번호로 로그인해주세요.
+      </div>
+    <% } %>
 
     <form action="/login" method="POST" class="post-form">
       <label>
@@ -44,6 +49,10 @@
           required
         />
       </label>
+
+      <a href="/forgot-password" class="auth-sub-link">
+        비밀번호를 잊으셨나요?
+      </a>
 
       <button type="submit">로그인</button>
     </form>
