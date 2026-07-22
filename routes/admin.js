@@ -2,6 +2,13 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("../db");
+const {
+  logApproval,
+  logReject,
+  logDelete,
+  logAccount,
+  logEtc,
+} = require("../utils/discord-log");
 
 function isSuperAdminUser(user) {
   return user && user.role === "superadmin";
@@ -346,6 +353,13 @@ router.post("/admin/schools/:slug/posts/:id/approve", requireAdmin, async (req, 
       [id, school.id]
     );
 
+    await logApproval(req, {
+      action: "게시글 승인",
+      school,
+      target: `게시글 ID: ${id}`,
+      detail: "승인 대기 게시글이 승인되었습니다.",
+    });
+
     res.redirect(`/admin/schools/${school.slug}/posts/pending`);
   } catch (error) {
     console.error(error);
@@ -373,6 +387,13 @@ router.post("/admin/schools/:slug/posts/:id/reject", requireAdmin, async (req, r
       `,
       [id, school.id]
     );
+
+    await logReject(req, {
+      action: "게시글 거절",
+      school,
+      target: `게시글 ID: ${id}`,
+      detail: "승인 대기 게시글이 거절되었습니다.",
+    });
 
     res.redirect(`/admin/schools/${school.slug}/posts/pending?rejected=1`);
   } catch (error) {
@@ -691,6 +712,13 @@ router.post("/admin/schools/:slug/comments/:id/approve", requireAdmin, async (re
       [id, school.id]
     );
 
+    await logApproval(req, {
+      action: "댓글 승인",
+      school,
+      target: `댓글 ID: ${id}`,
+      detail: "승인 대기 댓글이 승인되었습니다.",
+    });
+
     res.redirect(`/admin/schools/${school.slug}/comments/pending`);
   } catch (error) {
     console.error(error);
@@ -716,6 +744,13 @@ router.post("/admin/schools/:slug/comments/:id/reject", requireAdmin, async (req
       `,
       [id, school.id]
     );
+
+    await logReject(req, {
+      action: "댓글 거절",
+      school,
+      target: `댓글 ID: ${id}`,
+      detail: "승인 대기 댓글이 거절되었습니다.",
+    });
 
     res.redirect(`/admin/schools/${school.slug}/comments/pending?rejected=1`);
   } catch (error) {
@@ -863,6 +898,13 @@ router.post("/admin/schools/:slug/board/posts/:id/delete", requireSuperAdmin, as
   }
 });
 
+  await logDelete(req, {
+    action: "게시글 삭제",
+    school,
+    target: `게시글 ID: ${id}`,
+    detail: "최고 관리자가 게시글을 삭제했습니다.",
+  });
+
 // 학교별 관리자 댓글 삭제
 router.post("/admin/schools/:slug/board/comments/:id/delete", requireSuperAdmin, async (req, res) => {
   try {
@@ -884,6 +926,13 @@ router.post("/admin/schools/:slug/board/comments/:id/delete", requireSuperAdmin,
       `,
       [id, school.id]
     );
+
+    await logDelete(req, {
+      action: "댓글 삭제",
+      school,
+      target: `댓글 ID: ${id}`,
+      detail: "최고 관리자가 댓글을 삭제했습니다.",
+    });
 
     if (commentResult.rows.length === 0) {
       return res.redirect(`/admin/schools/${school.slug}/board`);
@@ -998,6 +1047,13 @@ router.post("/admin/schools/:slug/lost-items/:id/approve", requireAdmin, async (
       [id, school.id]
     );
 
+    await logApproval(req, {
+      action: "분실물 승인",
+      school,
+      target: `분실물 ID: ${id}`,
+      detail: "승인 대기 분실물 글이 승인되었습니다.",
+    });
+
     res.redirect(`/admin/schools/${school.slug}/lost-items/pending`);
   } catch (error) {
     console.error(error);
@@ -1107,6 +1163,43 @@ router.get("/admin/schools/:slug/lost-items/:id", requireSuperAdmin, async (req,
   }
 });
 
+// 학교별 관리자 분실물 삭제
+router.post(
+  "/superadmin/schools/:slug/lost-items/:id/delete",
+  requireSuperAdmin,
+  async (req, res) => {
+    try {
+      const { slug, id } = req.params;
+
+      const school = await getAdminSchoolBySlug(slug);
+      if (!school) {
+        return renderAdminSchoolNotFound(res);
+      }
+
+      await pool.query(
+        `
+        DELETE FROM lost_items
+        WHERE id = $1
+          AND school_id = $2
+        `,
+        [id, school.id]
+      );
+
+      await logDelete(req, {
+        action: "분실물 삭제",
+        school,
+        target: `분실물 ID: ${id}`,
+        detail: "최고 관리자가 분실물 글을 삭제했습니다.",
+      });
+
+      res.redirect(`/superadmin/schools/${school.slug}/lost-items`);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("분실물을 삭제하는 중 오류가 발생했습니다.");
+    }
+  }
+);
+
 // 학교별 분실물 거절
 router.post("/admin/schools/:slug/lost-items/:id/reject", requireAdmin, async (req, res) => {
   try {
@@ -1125,6 +1218,13 @@ router.post("/admin/schools/:slug/lost-items/:id/reject", requireAdmin, async (r
       `,
       [id, school.id]
     );
+
+    await logReject(req, {
+      action: "분실물 거절",
+      school,
+      target: `분실물 ID: ${id}`,
+      detail: "승인 대기 분실물 글이 거절되었습니다.",
+    });
 
     res.redirect(`/admin/schools/${school.slug}/lost-items/pending?rejected=1`);
   } catch (error) {
@@ -1391,6 +1491,12 @@ router.post("/admin/schools/:id/delete", requireSuperAdmin, async (req, res) => 
     }
 
     await pool.query("DELETE FROM schools WHERE id = $1", [id]);
+
+    await logDelete(req, {
+      action: "학교 삭제",
+      target: `학교 ID: ${id}`,
+      detail: "최고 관리자가 학교를 삭제했습니다.",
+    });
 
     res.redirect("/admin/schools");
   } catch (error) {
@@ -1699,6 +1805,7 @@ router.post("/admin/schools/:slug/reports/comment/:id/resolve", requireAdmin, as
   }
 });
 
+// 신고된 댓글 삭제
 router.post("/admin/schools/:slug/reports/comment/:id/delete-comment", requireAdmin, async (req, res) => {
   try {
     const { slug, id } = req.params;

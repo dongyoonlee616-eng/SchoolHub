@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("../db");
+const { logEtc } = require("../utils/discord-log");
 
 async function getSchoolBySlug(slug) {
   const result = await pool.query(
@@ -352,6 +353,13 @@ router.post("/schools/:slug/posts/:id/report", async (req, res) => {
       ]
     );
 
+    await logEtc(req, {
+      action: "게시글 신고",
+      school,
+      target: `게시글 ID: ${post.id}`,
+      detail: "사용자가 게시글을 신고했습니다.",
+    });
+
     res.redirect(`/schools/${school.slug}/posts/${post.id}?reportSubmitted=1`);
   } catch (error) {
     console.error(error);
@@ -531,6 +539,13 @@ router.post("/schools/:slug/posts/:postId/comments/:commentId/report", async (re
       ]
     );
 
+    await logEtc(req, {
+      action: "댓글 신고",
+      school,
+      target: `댓글 ID: ${comment.id}`,
+      detail: "사용자가 댓글을 신고했습니다.",
+    });
+
     res.redirect(`/schools/${school.slug}/posts/${postId}?commentReportSubmitted=1`);
   } catch (error) {
     console.error(error);
@@ -591,6 +606,13 @@ router.post("/schools/:slug/posts/:id/comments", async (req, res) => {
       `,
       [id, school.id, userId, content.trim(), displayNickname]
     );
+
+    await logEtc(req, {
+      action: "댓글 작성",
+      school,
+      target: `게시글 ID: ${id}`,
+      detail: "사용자가 댓글을 작성했습니다. 승인 대기 상태로 저장되었습니다.",
+    });
 
     res.redirect(`/schools/${school.slug}/posts/${id}?commentSubmitted=1`);
   } catch (error) {
@@ -874,6 +896,13 @@ router.post("/schools/:slug/posts", async (req, res) => {
         displayNickname,
       ]
     );
+
+    await logEtc(req, {
+      action: "게시글 작성",
+      school,
+      target: `제목: ${title.trim()}`,
+      detail: "사용자가 게시글을 작성했습니다. 승인 대기 상태로 저장되었습니다.",
+    });
 
     res.redirect(`/schools/${school.slug}/posts?submitted=1`);
   } catch (error) {

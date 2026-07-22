@@ -5,6 +5,7 @@ const pool = require("../db");
 const SUPER_ADMIN_EMAIL = "dong.yoon.lee616@gmail.com";
 const crypto = require("crypto");
 const { Resend } = require("resend");
+const { logAccount } = require("../utils/discord-log");
 
 function hashPasswordResetToken(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
@@ -166,6 +167,29 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
       `,
       [nicknameValue, emailValue, passwordHash, role]
     );
+    
+    await logAccount(req, {
+      action: "회원가입",
+      target: `유저 ID: ${newUser.id}`,
+      detail: "새 계정이 생성되었습니다.",
+      fields: [
+        {
+          name: "이메일",
+          value: newUser.email,
+          inline: true,
+        },
+        {
+          name: "닉네임",
+          value: newUser.nickname,
+          inline: true,
+        },
+        {
+          name: "권한",
+          value: newUser.role,
+          inline: true,
+        },
+      ],
+    });
 
     const user = insertResult.rows[0];
 
@@ -255,6 +279,12 @@ router.post("/login", redirectIfLoggedIn, async (req, res) => {
       email: user.email,
       role: user.role,
     };
+
+    await logAccount(req, {
+      action: "로그인",
+      target: `유저 ID: ${user.id}`,
+      detail: "사용자가 로그인했습니다.",
+    });
 
     if (user.role === "superadmin") {
       return res.redirect("/superadmin");

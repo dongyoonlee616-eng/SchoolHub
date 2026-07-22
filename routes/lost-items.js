@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const { logEtc } = require("../utils/discord-log");
 
 async function getSchoolBySlug(slug) {
   const result = await pool.query(
@@ -190,6 +191,13 @@ router.post("/schools/:slug/lost-items", async (req, res) => {
         displayNickname,
       ]
     );
+
+    await logEtc(req, {
+      action: "분실물 등록",
+      school,
+      target: `제목: ${titleValue}`,
+      detail: "사용자가 분실물 글을 등록했습니다. 승인 대기 상태로 저장되었습니다.",
+    });
 
     res.redirect(`/schools/${school.slug}/lost-items?submitted=1`);
   } catch (error) {

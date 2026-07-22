@@ -1,5 +1,6 @@
 const express = require("express");
 const pool = require("../db");
+const { logEtc } = require("../utils/discord-log");
 
 const router = express.Router();
 
@@ -94,6 +95,12 @@ router.post("/support", async (req, res) => {
         contentValue,
       ]
     );
+
+    await logEtc(req, {
+      action: "문의 제출",
+      target: `문의 제목: ${titleValue}`,
+      detail: "사용자가 문의센터에 문의를 제출했습니다.",
+    });
 
     res.redirect("/support?submitted=1");
   } catch (error) {

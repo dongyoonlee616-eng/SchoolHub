@@ -44,8 +44,12 @@
       </section>
 
       <div class="review-actions">
-        <form action="/admin/schools/<%= school.slug %>/lost-items/<%= item.id %>/delete" method="POST">
-            <button type="submit" class="delete-button">삭제</button>
+        <form
+          action="/superadmin/schools/<%= school.slug %>/lost-items/<%= item.id %>/delete"
+          method="POST"
+          onsubmit="return confirm('이 분실물 글을 삭제하시겠습니까?');"
+        >
+          <button type="submit" class="delete-button">삭제</button>
         </form>
       </div>
     </article>

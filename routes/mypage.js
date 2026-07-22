@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const { Resend } = require("resend");
 const router = express.Router();
 const pool = require("../db");
+const { logAccount } = require("../utils/discord-log");
 
 function hashEmailToken(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
@@ -344,6 +345,12 @@ router.post("/mypage/delete", requireLogin, async (req, res) => {
       [user.id]
     );
 
+    await logAccount(req, {
+      action: "계정 삭제",
+      target: `유저 ID: ${user.id}`,
+      detail: "사용자가 계정을 삭제했습니다.",
+    });
+
     req.session.destroy((error) => {
       if (error) {
         console.error(error);
@@ -500,6 +507,19 @@ router.post("/mypage/nickname", requireLogin, async (req, res) => {
       `,
       [nicknameValue, user.id]
     );
+
+    await logAccount(req, {
+      action: "닉네임 변경",
+      target: `유저 ID: ${user.id}`,
+      detail: "사용자가 닉네임을 변경했습니다.",
+      fields: [
+        {
+          name: "변경된 닉네임",
+          value: nicknameValue,
+          inline: true,
+        },
+      ],
+    });
 
     req.session.user.nickname = nicknameValue;
 
