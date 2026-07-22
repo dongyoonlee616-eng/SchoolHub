@@ -891,19 +891,19 @@ router.post("/admin/schools/:slug/board/posts/:id/delete", requireSuperAdmin, as
       [id, school.id]
     );
 
+    await logDelete(req, {
+      action: "게시글 삭제",
+      school,
+      target: `게시글 ID: ${id}`,
+      detail: "최고 관리자가 게시글을 삭제했습니다.",
+    });
+
     res.redirect(`/admin/schools/${school.slug}/board`);
   } catch (error) {
     console.error(error);
     res.status(500).send("게시글 삭제 중 오류가 발생했습니다.");
   }
 });
-
-  await logDelete(req, {
-    action: "게시글 삭제",
-    school,
-    target: `게시글 ID: ${id}`,
-    detail: "최고 관리자가 게시글을 삭제했습니다.",
-  });
 
 // 학교별 관리자 댓글 삭제
 router.post("/admin/schools/:slug/board/comments/:id/delete", requireSuperAdmin, async (req, res) => {
