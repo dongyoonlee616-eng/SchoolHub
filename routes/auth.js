@@ -208,6 +208,23 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
   }
 });
 
+router.get("/login", redirectIfLoggedIn, (req, res) => {
+  res.render("auth/login", {
+    school: null,
+    error: null,
+    form: {
+      email: "",
+    },
+  });
+
+  router.get("/login", (req, res) => {
+    res.render("auth/login", {
+      error: null,
+      passwordReset: req.query.passwordReset === "1",
+    });
+  });
+});
+
 router.post("/login", redirectIfLoggedIn, async (req, res) => {
   try {
     const { email, password } = req.body;
