@@ -137,6 +137,7 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
 
     if (duplicateResult.rows.length > 0) {
       const duplicateUser = duplicateResult.rows[0];
+
       const message =
         duplicateUser.email === trimmedEmail
           ? "이미 사용 중인 이메일입니다."
@@ -155,9 +156,9 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const role =
-    emailValue.toLowerCase() === SUPER_ADMIN_EMAIL
-      ? "superadmin"
-      : "user";
+      trimmedEmail === SUPER_ADMIN_EMAIL
+        ? "superadmin"
+        : "user";
 
     const userResult = await pool.query(
       `
@@ -165,9 +166,11 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
       VALUES ($1, $2, $3, $4)
       RETURNING id, nickname, email, role
       `,
-      [nicknameValue, emailValue, passwordHash, role]
+      [trimmedNickname, trimmedEmail, passwordHash, role]
     );
-    
+
+    const newUser = userResult.rows[0];
+
     await logAccount(req, {
       action: "회원가입",
       target: `유저 ID: ${newUser.id}`,
@@ -191,13 +194,11 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
       ],
     });
 
-    const user = insertResult.rows[0];
-
     req.session.user = {
-      id: user.id,
-      nickname: user.nickname,
-      email: user.email,
-      role: user.role,
+      id: newUser.id,
+      nickname: newUser.nickname,
+      email: newUser.email,
+      role: newUser.role,
     };
 
     res.redirect("/");
@@ -205,23 +206,6 @@ router.post("/register", redirectIfLoggedIn, async (req, res) => {
     console.error(error);
     res.status(500).send("회원가입 중 오류가 발생했습니다.");
   }
-});
-
-router.get("/login", redirectIfLoggedIn, (req, res) => {
-  res.render("auth/login", {
-    school: null,
-    error: null,
-    form: {
-      email: "",
-    },
-  });
-
-  router.get("/login", (req, res) => {
-    res.render("auth/login", {
-      error: null,
-      passwordReset: req.query.passwordReset === "1",
-    });
-  });
 });
 
 router.post("/login", redirectIfLoggedIn, async (req, res) => {
@@ -361,6 +345,12 @@ router.post("/forgot-password", async (req, res) => {
       [tokenHash, expiresAt, user.id]
     );
 
+    await logAccount(req, {
+      action: "비밀번호 재설정",
+      target: `유저 ID: ${user.id}`,
+      detail: "사용자가 이메일 링크를 통해 비밀번호를 재설정했습니다.",
+    });
+
     const baseUrl =
       process.env.APP_BASE_URL ||
       `${req.protocol}://${req.get("host")}`;
@@ -475,6 +465,12 @@ router.post("/reset-password", async (req, res) => {
       `,
       [passwordHash, user.id]
     );
+
+    await logAccount(req, {
+      action: "비밀번호 재설정",
+      target: `유저 ID: ${user.id}`,
+      detail: "사용자가 기존 비밀번호를 통해 비밀번호를 재설정했습니다.",
+    });
 
     res.redirect("/login?passwordReset=1");
   } catch (error) {
